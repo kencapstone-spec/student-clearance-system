@@ -65,11 +65,6 @@ const approvedCount = computed(() => {
         .length;
 });
 
-const rejectedCount = computed(() => {
-    return approvals.value.filter((approval) => approval.status === 'rejected')
-        .length;
-});
-
 const pendingCount = computed(() => {
     if (!props.clearanceRequest) {
         return 0;
@@ -182,17 +177,33 @@ const progressMessage = computed(() => {
 });
 
 const statusLabel = (status: string) => {
-    if (status === 'approved') return 'Cleared';
-    if (status === 'pending') return 'Pending';
-    if (status === 'rejected') return 'Not Cleared';
+    if (status === 'approved') {
+return 'Cleared';
+}
+
+    if (status === 'pending') {
+return 'Pending';
+}
+
+    if (status === 'rejected') {
+return 'Not Cleared';
+}
 
     return 'Not Started';
 };
 
 const statusClass = (status: string) => {
-    if (status === 'approved') return 'text-green-700';
-    if (status === 'pending') return 'text-orange-600';
-    if (status === 'rejected') return 'text-red-600';
+    if (status === 'approved') {
+return 'text-green-700';
+}
+
+    if (status === 'pending') {
+return 'text-orange-600';
+}
+
+    if (status === 'rejected') {
+return 'text-red-600';
+}
 
     return 'text-slate-500';
 };
