@@ -54,9 +54,17 @@ defineProps<{
 }>();
 
 const statusLabel = (status: string) => {
-    if (status === 'approved') return 'Approved';
-    if (status === 'rejected') return 'Rejected';
-    if (status === 'cleared') return 'Cleared';
+    if (status === 'approved') {
+return 'Approved';
+}
+
+    if (status === 'rejected') {
+return 'Rejected';
+}
+
+    if (status === 'cleared') {
+return 'Cleared';
+}
 
     return 'Pending';
 };

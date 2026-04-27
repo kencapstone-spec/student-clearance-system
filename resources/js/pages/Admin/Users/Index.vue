@@ -251,10 +251,21 @@ const submitToggleUserActive = () => {
 };
 
 const roleLabel = (role: string) => {
-    if (role === 'student') return 'Student';
-    if (role === 'staff') return 'Staff / Approver';
-    if (role === 'admin') return 'Admin / OSAS';
-    if (role === 'president') return 'President';
+    if (role === 'student') {
+return 'Student';
+}
+
+    if (role === 'staff') {
+return 'Staff / Approver';
+}
+
+    if (role === 'admin') {
+return 'Admin / OSAS';
+}
+
+    if (role === 'president') {
+return 'President';
+}
 
     return role;
 };

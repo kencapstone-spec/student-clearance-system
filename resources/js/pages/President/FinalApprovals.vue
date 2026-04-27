@@ -59,7 +59,9 @@ const closeFinalApproveModal = () => {
 };
 
 const confirmFinalApproval = () => {
-    if (!selectedRequest.value) return;
+    if (!selectedRequest.value) {
+return;
+}
 
     successMessage.value = '';
     errorMessage.value = '';

@@ -112,7 +112,9 @@ const closeApproveModal = () => {
 };
 
 const confirmApprove = () => {
-    if (!selectedApprovalForApproval.value) return;
+    if (!selectedApprovalForApproval.value) {
+return;
+}
 
     clearMessages();
 
@@ -153,6 +155,7 @@ const submitRejectRequest = () => {
 
     if (!rejectRemarks.value.trim()) {
         errorMessage.value = 'Remarks are required.';
+
         return;
     }
 
@@ -178,8 +181,13 @@ const submitRejectRequest = () => {
 };
 
 const statusLabel = (status: string) => {
-    if (status === 'approved') return 'Approved';
-    if (status === 'rejected') return 'Rejected';
+    if (status === 'approved') {
+return 'Approved';
+}
+
+    if (status === 'rejected') {
+return 'Rejected';
+}
 
     return 'Pending';
 };
