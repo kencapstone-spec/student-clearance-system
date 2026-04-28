@@ -17,6 +17,7 @@ class PendingRequestController extends Controller
 
         $approvals = ClearanceApproval::query()
             ->where('office_id', $user->office_id)
+            ->whereIn('status', ['pending', 'approved', 'rejected'])
             ->with([
                 'clearanceRequest.user.course',
                 'office',
@@ -39,6 +40,10 @@ class PendingRequestController extends Controller
             abort(403);
         }
 
+        if ($approval->status !== 'pending') {
+            return back()->with('error', 'Only pending clearance requests can be approved.');
+        }
+
         $approval->update([
             'status' => 'approved',
             'approved_by' => $user->id,
@@ -55,6 +60,10 @@ class PendingRequestController extends Controller
 
         if ($approval->office_id !== $user->office_id) {
             abort(403);
+        }
+
+        if ($approval->status !== 'pending') {
+            return back()->with('error', 'Only pending clearance requests can be rejected.');
         }
 
         $validated = $request->validate([

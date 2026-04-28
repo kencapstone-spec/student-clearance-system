@@ -52,6 +52,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware('role:student')->group(function () {
         Route::post('student/clearance-requests', [ClearanceRequestController::class, 'store'])
             ->name('student.clearance-requests.store');
+
+        Route::patch('student/clearance-requests/request-more-offices', [ClearanceRequestController::class, 'requestMoreOffices'])
+            ->name('student.clearance-requests.request-more-offices');
+
+        Route::patch('student/clearance-approvals/{approval}/mark-as-complied', [ClearanceRequestController::class, 'markAsComplied'])
+            ->name('student.clearance-approvals.mark-as-complied');
     });
 
     Route::middleware('role:staff')->group(function () {

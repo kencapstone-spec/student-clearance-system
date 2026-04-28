@@ -16,6 +16,11 @@ class ClearanceRequestController extends Controller
     {
         $user = $request->user();
 
+        $validated = $request->validate([
+            'office_ids' => ['required', 'array', 'min:1'],
+            'office_ids.*' => ['integer', 'exists:offices,id'],
+        ]);
+
         $semester = '1st Semester';
         $schoolYear = '2026-2027';
 
@@ -28,7 +33,20 @@ class ClearanceRequestController extends Controller
             return back()->with('error', 'You already submitted a clearance request for this semester.');
         }
 
-        DB::transaction(function () use ($user, $semester, $schoolYear) {
+        $regularOfficeIds = Office::query()
+            ->where('is_final_approver', false)
+            ->pluck('id');
+
+        $selectedOfficeIds = collect($validated['office_ids'])
+            ->unique()
+            ->intersect($regularOfficeIds)
+            ->values();
+
+        if ($selectedOfficeIds->isEmpty()) {
+            return back()->with('error', 'Please select at least one regular office to request clearance from.');
+        }
+
+        DB::transaction(function () use ($user, $semester, $schoolYear, $selectedOfficeIds) {
             $clearanceRequest = ClearanceRequest::create([
                 'user_id' => $user->id,
                 'semester' => $semester,
@@ -43,11 +61,84 @@ class ClearanceRequestController extends Controller
                 ClearanceApproval::create([
                     'clearance_request_id' => $clearanceRequest->id,
                     'office_id' => $office->id,
-                    'status' => 'pending',
+                    'status' => $selectedOfficeIds->contains($office->id)
+                        ? 'pending'
+                        : 'not_requested',
                 ]);
             }
         });
 
         return back()->with('success', 'Clearance request submitted successfully.');
+    }
+
+    public function requestMoreOffices(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+
+        $validated = $request->validate([
+            'office_ids' => ['required', 'array', 'min:1'],
+            'office_ids.*' => ['integer', 'exists:offices,id'],
+        ]);
+
+        $semester = '1st Semester';
+        $schoolYear = '2026-2027';
+
+        $clearanceRequest = ClearanceRequest::where('user_id', $user->id)
+            ->where('semester', $semester)
+            ->where('school_year', $schoolYear)
+            ->first();
+
+        if (! $clearanceRequest) {
+            return back()->with('error', 'Please submit a clearance request first.');
+        }
+
+        $regularOfficeIds = Office::query()
+            ->where('is_final_approver', false)
+            ->pluck('id');
+
+        $selectedOfficeIds = collect($validated['office_ids'])
+            ->unique()
+            ->intersect($regularOfficeIds)
+            ->values();
+
+        if ($selectedOfficeIds->isEmpty()) {
+            return back()->with('error', 'Please select at least one regular office to request clearance from.');
+        }
+
+        $updatedCount = ClearanceApproval::where('clearance_request_id', $clearanceRequest->id)
+            ->whereIn('office_id', $selectedOfficeIds)
+            ->where('status', 'not_requested')
+            ->update([
+                'status' => 'pending',
+            ]);
+
+        if ($updatedCount === 0) {
+            return back()->with('error', 'The selected offices have already been requested or processed.');
+        }
+
+        return back()->with('success', 'Selected offices have been requested successfully.');
+    }
+
+    public function markAsComplied(Request $request, ClearanceApproval $approval): RedirectResponse
+    {
+        $user = $request->user();
+
+        $approval->load('clearanceRequest');
+
+        if ($approval->clearanceRequest->user_id !== $user->id) {
+            abort(403);
+        }
+
+        if ($approval->status !== 'rejected') {
+            return back()->with('error', 'Only rejected clearance items can be marked as complied.');
+        }
+
+        $approval->update([
+            'status' => 'pending',
+            'approved_by' => null,
+            'acted_at' => null,
+        ]);
+
+        return back()->with('success', 'Marked as complied. The office can now review your clearance again.');
     }
 }
