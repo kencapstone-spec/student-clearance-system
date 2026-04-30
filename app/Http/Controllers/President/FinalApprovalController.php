@@ -16,29 +16,7 @@ class FinalApprovalController extends Controller
      */
     public function index()
     {
-        $clearanceRequests = ClearanceRequest::with([
-            'user.course',
-            'approvals.office',
-            'approvals.approver',
-        ])
-            ->latest()
-            ->get()
-            ->filter(function ($clearanceRequest) {
-                $regularApprovals = $clearanceRequest->approvals->filter(function ($approval) {
-                    return ! $approval->office?->is_final_approver;
-                });
-
-                $presidentApproval = $clearanceRequest->approvals->first(function ($approval) {
-                    return $approval->office?->is_final_approver;
-                });
-
-                return $regularApprovals->isNotEmpty()
-                    && $regularApprovals->every(fn($approval) => $approval->status === 'approved')
-                    && $presidentApproval
-                    && $presidentApproval->status === 'pending'
-                    && $clearanceRequest->status !== 'cleared';
-            })
-            ->values();
+        $clearanceRequests = $this->readyClearanceRequests();
 
         return Inertia::render('President/FinalApprovals', [
             'clearanceRequests' => $clearanceRequests,
@@ -47,7 +25,7 @@ class FinalApprovalController extends Controller
     }
 
     /**
-     * Approve the final clearance request.
+     * Approve one final clearance request.
      */
     public function approve(Request $request, ClearanceRequest $clearanceRequest)
     {
@@ -56,6 +34,65 @@ class FinalApprovalController extends Controller
             'approvals.office',
         ]);
 
+        if (! $this->isReadyForFinalApproval($clearanceRequest)) {
+            return back()->with('error', 'This clearance request is not yet ready for final approval.');
+        }
+
+        $this->finalizeClearanceRequest(
+            clearanceRequest: $clearanceRequest,
+            presidentId: $request->user()->id
+        );
+
+        return back()->with('success', 'Clearance request has been finally approved.');
+    }
+
+    /**
+     * Auto approve all clearance requests that are ready for final approval.
+     */
+    public function approveAll(Request $request)
+    {
+        $clearanceRequests = $this->readyClearanceRequests();
+
+        if ($clearanceRequests->isEmpty()) {
+            return back()->with('error', 'There are no clearance requests ready for final approval.');
+        }
+
+        foreach ($clearanceRequests as $clearanceRequest) {
+            $this->finalizeClearanceRequest(
+                clearanceRequest: $clearanceRequest,
+                presidentId: $request->user()->id
+            );
+        }
+
+        return back()->with(
+            'success',
+            $clearanceRequests->count() . ' clearance request(s) have been automatically approved.'
+        );
+    }
+
+    /**
+     * Get all clearance requests ready for President final approval.
+     */
+    private function readyClearanceRequests()
+    {
+        return ClearanceRequest::with([
+            'user.course',
+            'approvals.office',
+            'approvals.approver',
+        ])
+            ->latest()
+            ->get()
+            ->filter(function ($clearanceRequest) {
+                return $this->isReadyForFinalApproval($clearanceRequest);
+            })
+            ->values();
+    }
+
+    /**
+     * Check if a clearance request is ready for final approval.
+     */
+    private function isReadyForFinalApproval(ClearanceRequest $clearanceRequest): bool
+    {
         $regularApprovals = $clearanceRequest->approvals->filter(function ($approval) {
             return ! $approval->office?->is_final_approver;
         });
@@ -64,41 +101,54 @@ class FinalApprovalController extends Controller
             return $approval->office?->is_final_approver;
         });
 
-        if ($regularApprovals->isEmpty()) {
-            return back()->with('error', 'This clearance request has no regular office approvals.');
-        }
+        return $regularApprovals->isNotEmpty()
+            && $regularApprovals->every(fn ($approval) => $approval->status === 'approved')
+            && $presidentApproval
+            && $presidentApproval->status === 'pending'
+            && $clearanceRequest->status !== 'cleared';
+    }
 
-        if (! $regularApprovals->every(fn($approval) => $approval->status === 'approved')) {
-            return back()->with('error', 'This clearance request is not yet ready for final approval.');
-        }
+    /**
+     * Finalize a clearance request, generate receipt details, and notify the student.
+     */
+    private function finalizeClearanceRequest(ClearanceRequest $clearanceRequest, int $presidentId): void
+    {
+        $clearanceRequest->loadMissing([
+            'user',
+            'approvals.office',
+        ]);
+
+        $presidentApproval = $clearanceRequest->approvals->first(function ($approval) {
+            return $approval->office?->is_final_approver;
+        });
 
         if (! $presidentApproval) {
-            return back()->with('error', 'President approval record was not found.');
-        }
-
-        if ($presidentApproval->status !== 'pending') {
-            return back()->with('error', 'This clearance request has already been processed.');
+            return;
         }
 
         $presidentApproval->update([
             'status' => 'approved',
             'remarks' => null,
-            'approved_by' => $request->user()->id,
+            'approved_by' => $presidentId,
             'acted_at' => now(),
         ]);
 
         $receiptNumber = $clearanceRequest->receipt_number
             ?: sprintf('TPC-CLR-%s-%06d', now()->format('Y'), $clearanceRequest->id);
 
-        do {
-            $verificationCode = Str::upper(Str::random(32));
-        } while (ClearanceRequest::where('verification_code', $verificationCode)->exists());
+        $verificationCode = $clearanceRequest->verification_code;
+
+        if (! $verificationCode) {
+            do {
+                $verificationCode = Str::upper(Str::random(32));
+            } while (ClearanceRequest::where('verification_code', $verificationCode)->exists());
+        }
 
         $clearanceRequest->update([
             'status' => 'cleared',
             'cleared_at' => now(),
             'receipt_number' => $receiptNumber,
-            'verification_code' => $clearanceRequest->verification_code ?: $verificationCode,
+            'verification_code' => $verificationCode,
         ]);
 
         NotificationService::send(
@@ -107,7 +157,5 @@ class FinalApprovalController extends Controller
             message: 'Your clearance request has been fully approved by the College President.',
             link: '/dashboard'
         );
-
-        return back()->with('success', 'Clearance request has been finally approved.');
     }
 }

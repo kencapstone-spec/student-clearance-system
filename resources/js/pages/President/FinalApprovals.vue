@@ -53,6 +53,7 @@ const readyApprovalCount = computed(() => {
 
 const selectedRequest = ref<ClearanceRequest | null>(null);
 const showFinalApproveModal = ref(false);
+const showAutoApproveModal = ref(false);
 const successMessage = ref('');
 const errorMessage = ref('');
 
@@ -66,6 +67,20 @@ const openFinalApproveModal = (request: ClearanceRequest) => {
 const closeFinalApproveModal = () => {
     selectedRequest.value = null;
     showFinalApproveModal.value = false;
+};
+
+const openAutoApproveModal = () => {
+    if (readyApprovalCount.value === 0) {
+        return;
+    }
+
+    successMessage.value = '';
+    errorMessage.value = '';
+    showAutoApproveModal.value = true;
+};
+
+const closeAutoApproveModal = () => {
+    showAutoApproveModal.value = false;
 };
 
 const confirmFinalApproval = () => {
@@ -93,6 +108,28 @@ const confirmFinalApproval = () => {
         },
     );
 };
+
+const confirmAutoApproveAll = () => {
+    successMessage.value = '';
+    errorMessage.value = '';
+
+    router.patch(
+        '/president/final-approvals/approve-all',
+        {},
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                closeAutoApproveModal();
+                successMessage.value =
+                    'All ready clearance requests have been automatically approved.';
+            },
+            onError: () => {
+                errorMessage.value =
+                    'Unable to auto approve ready requests. Please try again.';
+            },
+        },
+    );
+};
 </script>
 
 <template>
@@ -105,21 +142,42 @@ const confirmFinalApproval = () => {
                     President / Final Approver Panel
                 </p>
 
-                <h1 class="mt-2 text-3xl font-bold text-blue-950">
-                    Final Clearance Approvals
-                </h1>
+                <div
+                    class="mt-2 flex flex-col gap-4 md:flex-row md:items-start md:justify-between"
+                >
+                    <div>
+                        <h1 class="text-3xl font-bold text-blue-950">
+                            Final Clearance Approvals
+                        </h1>
 
-                <p class="mt-2 text-slate-600">
-                    Review students whose clearance requests have been approved
-                    by all regular offices and are ready for final approval.
-                </p>
+                        <p class="mt-2 text-slate-600">
+                            Review students whose clearance requests have been
+                            approved by all regular offices and are ready for
+                            final approval.
+                        </p>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="rounded-xl px-5 py-3 text-sm font-semibold text-white transition"
+                        :class="
+                            readyApprovalCount === 0
+                                ? 'cursor-not-allowed bg-slate-400'
+                                : 'bg-green-700 hover:bg-green-800'
+                        "
+                        :disabled="readyApprovalCount === 0"
+                        @click="openAutoApproveModal"
+                    >
+                        Auto Approve All Ready Requests
+                    </button>
+                </div>
 
                 <div
                     class="mt-4 rounded-xl bg-blue-50 p-4 text-sm text-blue-900"
                 >
                     Only requests approved by all regular offices are shown
-                    here. Confirming final approval will complete the President
-                    clearance step.
+                    here. You may approve one student manually, or use Auto
+                    Approve All to approve every currently ready request.
                 </div>
 
                 <div
@@ -147,18 +205,47 @@ const confirmFinalApproval = () => {
                         {{ readyApprovalCount }}
                     </p>
                 </div>
+
+                <div class="rounded-2xl border bg-white p-6 shadow-sm">
+                    <p class="font-semibold text-green-700">
+                        Available Actions
+                    </p>
+
+                    <p class="mt-2 text-sm text-slate-600">
+                        Approve one request manually or approve all ready
+                        requests at once.
+                    </p>
+                </div>
             </section>
 
             <section class="rounded-2xl border bg-white shadow-sm">
-                <div class="border-b p-6">
-                    <h2 class="text-xl font-bold text-blue-950">
-                        Clearance Requests
-                    </h2>
+                <div
+                    class="flex flex-col gap-4 border-b p-6 md:flex-row md:items-center md:justify-between"
+                >
+                    <div>
+                        <h2 class="text-xl font-bold text-blue-950">
+                            Clearance Requests
+                        </h2>
 
-                    <p class="mt-1 text-sm text-slate-500">
-                        These requests already passed all regular office
-                        approvals.
-                    </p>
+                        <p class="mt-1 text-sm text-slate-500">
+                            These requests already passed all regular office
+                            approvals.
+                        </p>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="rounded-xl px-4 py-2 text-sm font-semibold text-white transition"
+                        :class="
+                            readyApprovalCount === 0
+                                ? 'cursor-not-allowed bg-slate-400'
+                                : 'bg-green-700 hover:bg-green-800'
+                        "
+                        :disabled="readyApprovalCount === 0"
+                        @click="openAutoApproveModal"
+                    >
+                        Auto Approve All
+                    </button>
                 </div>
 
                 <div
@@ -264,6 +351,7 @@ const confirmFinalApproval = () => {
         </div>
     </div>
 
+    <!-- Single Final Approval Modal -->
     <div
         v-if="showFinalApproveModal"
         class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
@@ -328,6 +416,58 @@ const confirmFinalApproval = () => {
                     @click="confirmFinalApproval"
                 >
                     Confirm Final Approval
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auto Approve All Modal -->
+    <div
+        v-if="showAutoApproveModal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+        @click.self="closeAutoApproveModal"
+    >
+        <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+            <h2 class="text-xl font-bold text-blue-950">
+                Auto Approve All Ready Requests?
+            </h2>
+
+            <p class="mt-2 text-sm text-slate-600">
+                This will give final approval to all clearance requests that are
+                currently ready for President approval.
+            </p>
+
+            <div class="mt-4 rounded-xl border border-green-200 bg-green-50 p-4">
+                <p class="text-sm font-semibold text-green-800">
+                    Requests to approve:
+                </p>
+
+                <p class="mt-1 text-3xl font-bold text-green-900">
+                    {{ readyApprovalCount }}
+                </p>
+
+                <p class="mt-2 text-sm text-green-800">
+                    Each request will be marked as cleared, assigned a receipt
+                    number, assigned a verification code, and the student will
+                    receive a notification.
+                </p>
+            </div>
+
+            <div class="mt-6 flex justify-end gap-3">
+                <button
+                    type="button"
+                    class="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100"
+                    @click="closeAutoApproveModal"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="button"
+                    class="rounded-xl bg-green-700 px-4 py-2 text-sm font-semibold text-white hover:bg-green-800"
+                    @click="confirmAutoApproveAll"
+                >
+                    Confirm Auto Approve All
                 </button>
             </div>
         </div>
