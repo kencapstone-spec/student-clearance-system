@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Head, router } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
 type Course = {
     id: number;
@@ -37,9 +37,19 @@ type ClearanceRequest = {
     approvals: Approval[];
 };
 
-defineProps<{
-    requests: ClearanceRequest[];
+const props = defineProps<{
+    clearanceRequests?: ClearanceRequest[];
+    requests?: ClearanceRequest[];
+    readyCount?: number;
 }>();
+
+const approvalRequests = computed(() => {
+    return props.clearanceRequests ?? props.requests ?? [];
+});
+
+const readyApprovalCount = computed(() => {
+    return props.readyCount ?? approvalRequests.value.length;
+});
 
 const selectedRequest = ref<ClearanceRequest | null>(null);
 const showFinalApproveModal = ref(false);
@@ -60,8 +70,8 @@ const closeFinalApproveModal = () => {
 
 const confirmFinalApproval = () => {
     if (!selectedRequest.value) {
-return;
-}
+        return;
+    }
 
     successMessage.value = '';
     errorMessage.value = '';
@@ -108,8 +118,8 @@ return;
                     class="mt-4 rounded-xl bg-blue-50 p-4 text-sm text-blue-900"
                 >
                     Only requests approved by all regular offices are shown
-                    here. Confirming final approval will complete the
-                    President clearance step.
+                    here. Confirming final approval will complete the President
+                    clearance step.
                 </div>
 
                 <div
@@ -134,7 +144,7 @@ return;
                     </p>
 
                     <p class="mt-2 text-4xl font-bold text-blue-950">
-                        {{ requests.length }}
+                        {{ readyApprovalCount }}
                     </p>
                 </div>
             </section>
@@ -151,7 +161,10 @@ return;
                     </p>
                 </div>
 
-                <div v-if="requests.length === 0" class="p-8 text-center">
+                <div
+                    v-if="approvalRequests.length === 0"
+                    class="p-8 text-center"
+                >
                     <p class="font-medium text-slate-700">
                         No requests ready for final approval.
                     </p>
@@ -198,7 +211,7 @@ return;
 
                         <tbody>
                             <tr
-                                v-for="request in requests"
+                                v-for="request in approvalRequests"
                                 :key="request.id"
                                 class="border-t"
                             >

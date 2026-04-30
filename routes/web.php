@@ -3,6 +3,8 @@
 use App\Http\Controllers\Admin\AdminClearanceRequestController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\ClearanceReceipt\ClearanceReceiptController;
+use App\Http\Controllers\ClearanceReceipt\ClearanceVerificationController;
 use App\Http\Controllers\Notifications\NotificationController;
 use App\Http\Controllers\President\FinalApprovalController;
 use App\Http\Controllers\Staff\PendingRequestController;
@@ -17,6 +19,9 @@ use Laravel\Fortify\Features;
 Route::inertia('/', 'Welcome', [
     'canRegister' => Features::enabled(Features::registration()),
 ])->name('home');
+
+Route::get('/verify-clearance/{verificationCode}', [ClearanceVerificationController::class, 'show'])
+    ->name('clearance-verification.show');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function (Request $request) {
@@ -55,6 +60,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::patch('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])
         ->name('notifications.mark-all-as-read');
+
+    Route::get('/clearance-receipts/{clearanceRequest}', [ClearanceReceiptController::class, 'show'])
+        ->name('clearance-receipts.show');
 
     Route::middleware('role:student')->group(function () {
         Route::post('student/clearance-requests', [ClearanceRequestController::class, 'store'])

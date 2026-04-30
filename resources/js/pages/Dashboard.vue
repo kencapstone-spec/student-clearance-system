@@ -236,6 +236,14 @@ const closeClearanceDetailsModal = () => {
     showClearanceDetailsModal.value = false;
 };
 
+const openClearanceReceipt = () => {
+    if (!props.clearanceRequest || !isFullyCleared.value) {
+        return;
+    }
+
+    router.visit(`/clearance-receipts/${props.clearanceRequest.id}`);
+};
+
 const regularOffices = computed(() => {
     return props.offices.filter((office) => !office.is_final_approver);
 });
@@ -404,6 +412,14 @@ const submitClearanceRequest = () => {
                                     received final approval from the College
                                     President.
                                 </p>
+
+                                <button
+                                    type="button"
+                                    class="mt-4 rounded-xl bg-green-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-green-800"
+                                    @click="openClearanceReceipt"
+                                >
+                                    Print Clearance Receipt →
+                                </button>
                             </div>
 
                             <div
@@ -621,6 +637,15 @@ const submitClearanceRequest = () => {
                             @click="openClearanceDetailsModal"
                         >
                             View Clearance Details →
+                        </button>
+
+                        <button
+                            v-if="isFullyCleared"
+                            type="button"
+                            class="mt-3 w-full rounded-xl bg-green-700 px-4 py-3 font-semibold text-white transition hover:bg-green-800"
+                            @click="openClearanceReceipt"
+                        >
+                            Print Clearance Receipt →
                         </button>
                     </div>
                 </div>
