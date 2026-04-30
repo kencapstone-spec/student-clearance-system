@@ -55,9 +55,9 @@ class User extends Authenticatable
         return $this->hasMany(ClearanceApproval::class, 'approved_by');
     }
 
-    public function systemNotifications(): HasMany
+    public function notifications(): HasMany
     {
-        return $this->hasMany(Notification::class);
+        return $this->hasMany(UserNotification::class);
     }
 
     /**

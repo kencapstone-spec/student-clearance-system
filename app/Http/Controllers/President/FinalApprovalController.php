@@ -4,6 +4,7 @@ namespace App\Http\Controllers\President;
 
 use App\Http\Controllers\Controller;
 use App\Models\ClearanceRequest;
+use App\Services\NotificationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -44,7 +45,7 @@ class FinalApprovalController extends Controller
 
     public function approve(Request $request, ClearanceRequest $clearanceRequest): RedirectResponse
     {
-        $clearanceRequest->load(['approvals.office']);
+        $clearanceRequest->load(['user', 'approvals.office']);
 
         $regularApprovals = $clearanceRequest->approvals->filter(function ($approval) {
             return ! $approval->office->is_final_approver;
@@ -88,6 +89,13 @@ class FinalApprovalController extends Controller
             'status' => 'cleared',
             'cleared_at' => now(),
         ]);
+
+        NotificationService::send(
+            $clearanceRequest->user,
+            'Clearance fully cleared',
+            'Congratulations! Your clearance request has been fully cleared.',
+            '/dashboard'
+        );
 
         return redirect()
             ->route('president.final-approvals.index')

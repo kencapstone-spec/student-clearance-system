@@ -1,6 +1,13 @@
 <script setup lang="ts">
-import { Link, usePage } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, Menu, Search } from 'lucide-vue-next';
+import { Link, router, usePage } from '@inertiajs/vue3';
+import {
+    Bell,
+    BookOpen,
+    Folder,
+    LayoutGrid,
+    Menu,
+    Search,
+} from 'lucide-vue-next';
 import { computed } from 'vue';
 import AppLogo from '@/components/AppLogo.vue';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
@@ -42,12 +49,48 @@ type Props = {
     breadcrumbs?: BreadcrumbItem[];
 };
 
+type SharedNotification = {
+    id: number;
+    title: string;
+    message: string;
+    link: string | null;
+    read_at: string | null;
+    created_at: string | null;
+    created_at_human: string | null;
+};
+
+type NotificationsProp = {
+    items: SharedNotification[];
+    unread_count: number;
+};
+
 const props = withDefaults(defineProps<Props>(), {
     breadcrumbs: () => [],
 });
 
 const page = usePage();
 const auth = computed(() => page.props.auth);
+const notifications = computed<NotificationsProp>(() => {
+    const sharedNotifications = page.props.notifications as
+        | NotificationsProp
+        | undefined;
+
+    return {
+        items: sharedNotifications?.items ?? [],
+        unread_count: sharedNotifications?.unread_count ?? 0,
+    };
+});
+
+const markAllNotificationsAsRead = () => {
+    router.patch(
+        '/notifications/mark-all-as-read',
+        {},
+        {
+            preserveScroll: true,
+        },
+    );
+};
+
 const { isCurrentUrl, whenCurrentUrl } = useCurrentUrl();
 
 const activeItemStyles =
@@ -92,9 +135,9 @@ const rightNavItems: NavItem[] = [
                             </Button>
                         </SheetTrigger>
                         <SheetContent side="left" class="w-[300px] p-6">
-                            <SheetTitle class="sr-only"
-                                >Navigation menu</SheetTitle
-                            >
+                            <SheetTitle class="sr-only">
+                                Navigation menu
+                            </SheetTitle>
                             <SheetHeader class="flex justify-start text-left">
                                 <AppLogoIcon
                                     class="size-6 fill-current text-black dark:text-white"
@@ -219,9 +262,9 @@ const rightNavItems: NavItem[] = [
                                                     target="_blank"
                                                     rel="noopener noreferrer"
                                                 >
-                                                    <span class="sr-only">{{
-                                                        item.title
-                                                    }}</span>
+                                                    <span class="sr-only">
+                                                        {{ item.title }}
+                                                    </span>
                                                     <component
                                                         :is="item.icon"
                                                         class="size-5 opacity-80 group-hover:opacity-100"
@@ -237,6 +280,108 @@ const rightNavItems: NavItem[] = [
                             </template>
                         </div>
                     </div>
+
+                    <DropdownMenu>
+                        <DropdownMenuTrigger :as-child="true">
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                class="relative h-9 w-9 cursor-pointer"
+                            >
+                                <Bell class="size-5 opacity-80" />
+                                <span
+                                    v-if="notifications.unread_count > 0"
+                                    class="absolute -top-1 -right-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1 text-xs font-bold text-white"
+                                >
+                                    {{
+                                        notifications.unread_count > 99
+                                            ? '99+'
+                                            : notifications.unread_count
+                                    }}
+                                </span>
+                                <span class="sr-only">
+                                    Open notifications
+                                </span>
+                            </Button>
+                        </DropdownMenuTrigger>
+
+                        <DropdownMenuContent align="end" class="w-80 p-0">
+                            <div
+                                class="flex items-center justify-between border-b px-4 py-3"
+                            >
+                                <div>
+                                    <p class="text-sm font-semibold">
+                                        Notifications
+                                    </p>
+                                    <p class="text-xs text-muted-foreground">
+                                        {{ notifications.unread_count }} unread
+                                    </p>
+                                </div>
+
+                                <button
+                                    v-if="notifications.unread_count > 0"
+                                    type="button"
+                                    class="text-xs font-medium text-blue-600 hover:underline"
+                                    @click="markAllNotificationsAsRead"
+                                >
+                                    Mark all as read
+                                </button>
+                            </div>
+
+                            <div
+                                v-if="notifications.items.length === 0"
+                                class="px-4 py-6 text-center text-sm text-muted-foreground"
+                            >
+                                No notifications yet.
+                            </div>
+
+                            <div v-else class="max-h-96 overflow-y-auto">
+                                <Link
+                                    v-for="notification in notifications.items"
+                                    :key="notification.id"
+                                    :href="`/notifications/${notification.id}/open`"
+                                    class="block border-b px-4 py-3 text-left last:border-b-0 hover:bg-accent"
+                                    :class="
+                                        notification.read_at
+                                            ? 'opacity-70'
+                                            : 'bg-accent/40'
+                                    "
+                                >
+                                    <div class="flex items-start gap-3">
+                                        <span
+                                            v-if="!notification.read_at"
+                                            class="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-blue-600"
+                                        ></span>
+                                        <span
+                                            v-else
+                                            class="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-transparent"
+                                        ></span>
+
+                                        <div class="min-w-0 flex-1">
+                                            <p class="text-sm font-medium">
+                                                {{ notification.title }}
+                                            </p>
+                                            <p
+                                                class="mt-1 line-clamp-2 text-xs text-muted-foreground"
+                                            >
+                                                {{ notification.message }}
+                                            </p>
+                                            <p
+                                                v-if="
+                                                    notification.created_at_human
+                                                "
+                                                class="mt-1 text-xs text-muted-foreground"
+                                            >
+                                                {{
+                                                    notification.created_at_human
+                                                }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </Link>
+                            </div>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
 
                     <DropdownMenu>
                         <DropdownMenuTrigger :as-child="true">

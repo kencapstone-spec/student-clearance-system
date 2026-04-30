@@ -6,8 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\ClearanceApproval;
 use App\Models\ClearanceRequest;
 use App\Models\Office;
+use App\Models\User;
+use App\Services\NotificationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class ClearanceRequestController extends Controller
@@ -66,6 +69,13 @@ class ClearanceRequestController extends Controller
                         : 'not_requested',
                 ]);
             }
+
+            $this->notifyOfficeStaff(
+                $selectedOfficeIds,
+                'New clearance request',
+                "{$user->name} submitted a clearance request for your office.",
+                '/staff/pending-requests'
+            );
         });
 
         return back()->with('success', 'Clearance request submitted successfully.');
@@ -105,16 +115,28 @@ class ClearanceRequestController extends Controller
             return back()->with('error', 'Please select at least one regular office to request clearance from.');
         }
 
-        $updatedCount = ClearanceApproval::where('clearance_request_id', $clearanceRequest->id)
+        $requestableOfficeIds = ClearanceApproval::where('clearance_request_id', $clearanceRequest->id)
             ->whereIn('office_id', $selectedOfficeIds)
+            ->where('status', 'not_requested')
+            ->pluck('office_id');
+
+        if ($requestableOfficeIds->isEmpty()) {
+            return back()->with('error', 'The selected offices have already been requested or processed.');
+        }
+
+        ClearanceApproval::where('clearance_request_id', $clearanceRequest->id)
+            ->whereIn('office_id', $requestableOfficeIds)
             ->where('status', 'not_requested')
             ->update([
                 'status' => 'pending',
             ]);
 
-        if ($updatedCount === 0) {
-            return back()->with('error', 'The selected offices have already been requested or processed.');
-        }
+        $this->notifyOfficeStaff(
+            $requestableOfficeIds,
+            'New clearance request',
+            "{$user->name} requested clearance from your office.",
+            '/staff/pending-requests'
+        );
 
         return back()->with('success', 'Selected offices have been requested successfully.');
     }
@@ -123,7 +145,7 @@ class ClearanceRequestController extends Controller
     {
         $user = $request->user();
 
-        $approval->load('clearanceRequest');
+        $approval->load(['clearanceRequest', 'office']);
 
         if ($approval->clearanceRequest->user_id !== $user->id) {
             abort(403);
@@ -139,6 +161,24 @@ class ClearanceRequestController extends Controller
             'acted_at' => null,
         ]);
 
+        $this->notifyOfficeStaff(
+            collect([$approval->office_id]),
+            'Clearance marked as complied',
+            "{$user->name} marked the {$approval->office->name} clearance requirement as complied.",
+            '/staff/pending-requests'
+        );
+
         return back()->with('success', 'Marked as complied. The office can now review your clearance again.');
+    }
+
+    private function notifyOfficeStaff(Collection $officeIds, string $title, string $message, string $link): void
+    {
+        User::where('role', 'staff')
+            ->where('is_active', true)
+            ->whereIn('office_id', $officeIds)
+            ->get()
+            ->each(function (User $staff) use ($title, $message, $link) {
+                NotificationService::send($staff, $title, $message, $link);
+            });
     }
 }

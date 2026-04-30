@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdminClearanceRequestController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\Notifications\NotificationController;
 use App\Http\Controllers\President\FinalApprovalController;
 use App\Http\Controllers\Staff\PendingRequestController;
 use App\Http\Controllers\Student\ClearanceRequestController;
@@ -48,6 +49,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'clearanceRequest' => $clearanceRequest,
         ]);
     })->name('dashboard');
+
+    Route::get('/notifications/{notification}/open', [NotificationController::class, 'open'])
+        ->name('notifications.open');
+
+    Route::patch('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])
+        ->name('notifications.mark-all-as-read');
 
     Route::middleware('role:student')->group(function () {
         Route::post('student/clearance-requests', [ClearanceRequestController::class, 'store'])
