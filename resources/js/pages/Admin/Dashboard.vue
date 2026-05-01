@@ -78,6 +78,13 @@ defineProps<{
                     >
                         Monitor Clearances
                     </Link>
+
+                    <Link
+                        href="/admin/reports"
+                        class="rounded-xl bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-700"
+                    >
+                        View Reports
+                    </Link>
                 </div>
             </section>
 

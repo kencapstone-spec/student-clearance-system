@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminClearanceRequestController;
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminReportController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\ClearanceReceipt\ClearanceReceiptController;
 use App\Http\Controllers\ClearanceReceipt\ClearanceVerificationController;
@@ -15,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
+
 
 Route::inertia('/', 'Welcome', [
     'canRegister' => Features::enabled(Features::registration()),
@@ -110,6 +112,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::get('/admin/clearance-requests/{clearanceRequest}', [AdminClearanceRequestController::class, 'show'])
             ->name('admin.clearance-requests.show');
+
+        Route::get('/admin/reports', [AdminReportController::class, 'index'])
+            ->name('admin.reports.index');
+
+        Route::get('/admin/reports/export-csv', [AdminReportController::class, 'exportCsv'])
+            ->name('admin.reports.export-csv');
+
+        Route::get('/admin/reports/print', [AdminReportController::class, 'printReport'])
+            ->name('admin.reports.print');
     });
 
     Route::middleware('role:president')->group(function () {
