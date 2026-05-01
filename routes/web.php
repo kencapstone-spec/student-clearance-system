@@ -106,7 +106,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::get('/admin/course-modules', [AdminCourseModuleController::class, 'index'])
             ->name('admin.course-modules.index');
-            
+
+        Route::patch('/admin/course-modules/{course}', [AdminCourseModuleController::class, 'update'])
+            ->name('admin.course-modules.update');
+
         Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])
             ->name('admin.dashboard');
 
