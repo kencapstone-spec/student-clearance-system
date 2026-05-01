@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminClearanceRequestController;
+use App\Http\Controllers\Admin\AdminCourseModuleController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminReportController;
 use App\Http\Controllers\Admin\AdminUserController;
@@ -27,7 +28,7 @@ Route::get('/verify-clearance/{verificationCode}', [ClearanceVerificationControl
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function (Request $request) {
-        $user = $request->user()->load('course');
+        $user = $request->user()->load('course.offices');
 
         if ($user->role === 'admin') {
             return redirect()->route('admin.dashboard');
@@ -41,8 +42,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
             return redirect()->route('staff.pending-requests.index');
         }
 
-        $offices = Office::orderBy('sort_order')
+        $courseOffices = $user->course?->offices ?? collect();
+
+        $regularOffices = $courseOffices
+            ->where('is_final_approver', false)
+            ->sortBy('sort_order')
+            ->values();
+
+        $finalApproverOffices = Office::query()
+            ->where('is_final_approver', true)
+            ->orderBy('sort_order')
             ->get(['id', 'name', 'group', 'sort_order', 'is_final_approver']);
+
+        $offices = $regularOffices
+            ->merge($finalApproverOffices)
+            ->values();
 
         $clearanceRequest = ClearanceRequest::query()
             ->where('user_id', $user->id)
@@ -89,6 +103,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::middleware(['role:admin'])->group(function () {
+
+        Route::get('/admin/course-modules', [AdminCourseModuleController::class, 'index'])
+            ->name('admin.course-modules.index');
+            
         Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])
             ->name('admin.dashboard');
 

@@ -36,20 +36,24 @@ class ClearanceRequestController extends Controller
             return back()->with('error', 'You already submitted a clearance request for this semester.');
         }
 
-        $regularOfficeIds = Office::query()
-            ->where('is_final_approver', false)
-            ->pluck('id');
+        $courseRegularOfficeIds = $this->courseRegularOfficeIds($user);
+
+        if ($courseRegularOfficeIds->isEmpty()) {
+            return back()->with('error', 'No clearance offices are configured for your course yet.');
+        }
 
         $selectedOfficeIds = collect($validated['office_ids'])
             ->unique()
-            ->intersect($regularOfficeIds)
+            ->intersect($courseRegularOfficeIds)
             ->values();
 
         if ($selectedOfficeIds->isEmpty()) {
-            return back()->with('error', 'Please select at least one regular office to request clearance from.');
+            return back()->with('error', 'Please select at least one office assigned to your course.');
         }
 
-        DB::transaction(function () use ($user, $semester, $schoolYear, $selectedOfficeIds) {
+        $approvalOfficeIds = $this->courseApprovalOfficeIds($user);
+
+        DB::transaction(function () use ($user, $semester, $schoolYear, $selectedOfficeIds, $approvalOfficeIds) {
             $clearanceRequest = ClearanceRequest::create([
                 'user_id' => $user->id,
                 'semester' => $semester,
@@ -58,7 +62,10 @@ class ClearanceRequestController extends Controller
                 'submitted_at' => now(),
             ]);
 
-            $offices = Office::orderBy('sort_order')->get();
+            $offices = Office::query()
+                ->whereIn('id', $approvalOfficeIds)
+                ->orderBy('sort_order')
+                ->get();
 
             foreach ($offices as $office) {
                 ClearanceApproval::create([
@@ -102,17 +109,19 @@ class ClearanceRequestController extends Controller
             return back()->with('error', 'Please submit a clearance request first.');
         }
 
-        $regularOfficeIds = Office::query()
-            ->where('is_final_approver', false)
-            ->pluck('id');
+        $courseRegularOfficeIds = $this->courseRegularOfficeIds($user);
+
+        if ($courseRegularOfficeIds->isEmpty()) {
+            return back()->with('error', 'No clearance offices are configured for your course yet.');
+        }
 
         $selectedOfficeIds = collect($validated['office_ids'])
             ->unique()
-            ->intersect($regularOfficeIds)
+            ->intersect($courseRegularOfficeIds)
             ->values();
 
         if ($selectedOfficeIds->isEmpty()) {
-            return back()->with('error', 'Please select at least one regular office to request clearance from.');
+            return back()->with('error', 'Please select at least one office assigned to your course.');
         }
 
         $requestableOfficeIds = ClearanceApproval::where('clearance_request_id', $clearanceRequest->id)
@@ -169,6 +178,32 @@ class ClearanceRequestController extends Controller
         );
 
         return back()->with('success', 'Marked as complied. The office can now review your clearance again.');
+    }
+
+    private function courseRegularOfficeIds(User $user): Collection
+    {
+        $user->loadMissing('course.offices');
+
+        if (! $user->course) {
+            return collect();
+        }
+
+        return $user->course->offices
+            ->where('is_final_approver', false)
+            ->pluck('id')
+            ->values();
+    }
+
+    private function courseApprovalOfficeIds(User $user): Collection
+    {
+        $finalApproverOfficeIds = Office::query()
+            ->where('is_final_approver', true)
+            ->pluck('id');
+
+        return $this->courseRegularOfficeIds($user)
+            ->merge($finalApproverOfficeIds)
+            ->unique()
+            ->values();
     }
 
     private function notifyOfficeStaff(Collection $officeIds, string $title, string $message, string $link): void

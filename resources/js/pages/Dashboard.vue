@@ -52,11 +52,142 @@ type ClearanceRequest = {
     approvals: Approval[];
 } | null;
 
+type CourseTheme = {
+    label: string;
+    bannerClass: string;
+    accentTextClass: string;
+    softTextClass: string;
+    headingTextClass: string;
+    iconBgClass: string;
+    progressBarClass: string;
+    statusBoxClass: string;
+    primaryButtonClass: string;
+    primaryButtonHoverClass: string;
+    selectedOfficeClass: string;
+    selectedCheckClass: string;
+};
+
 const props = defineProps<{
     student: Student;
     offices: Office[];
     clearanceRequest: ClearanceRequest;
 }>();
+
+const courseTheme = computed<CourseTheme>(() => {
+    const courseCode = props.student.course?.code ?? 'BSIS';
+
+    const themes: Record<string, CourseTheme> = {
+        BSIS: {
+            label: 'BSIS Theme',
+            bannerClass:
+                'border border-blue-100 bg-gradient-to-r from-blue-100 via-blue-50 to-white',
+            accentTextClass: 'text-blue-700',
+            softTextClass: 'text-blue-900/80',
+            headingTextClass: 'text-blue-950',
+            iconBgClass: 'bg-blue-200',
+            progressBarClass: 'bg-blue-600',
+            statusBoxClass: 'border-blue-200 bg-blue-50 text-blue-800',
+            primaryButtonClass: 'bg-blue-600',
+            primaryButtonHoverClass: 'hover:bg-blue-700',
+            selectedOfficeClass: 'border-blue-600 bg-blue-50 text-blue-900',
+            selectedCheckClass: 'border-blue-600 bg-blue-600 text-white',
+        },
+        BAEL: {
+            label: 'BAEL Theme',
+            bannerClass:
+                'border border-yellow-100 bg-gradient-to-r from-yellow-100 via-yellow-50 to-white',
+            accentTextClass: 'text-yellow-700',
+            softTextClass: 'text-yellow-900/80',
+            headingTextClass: 'text-yellow-950',
+            iconBgClass: 'bg-yellow-200',
+            progressBarClass: 'bg-yellow-500',
+            statusBoxClass: 'border-yellow-200 bg-yellow-50 text-yellow-800',
+            primaryButtonClass: 'bg-yellow-500',
+            primaryButtonHoverClass: 'hover:bg-yellow-600',
+            selectedOfficeClass:
+                'border-yellow-500 bg-yellow-50 text-yellow-900',
+            selectedCheckClass: 'border-yellow-500 bg-yellow-500 text-white',
+        },
+        BAPS: {
+            label: 'BAPS Theme',
+            bannerClass:
+                'border border-red-100 bg-gradient-to-r from-red-100 via-red-50 to-white',
+            accentTextClass: 'text-red-700',
+            softTextClass: 'text-red-900/80',
+            headingTextClass: 'text-red-950',
+            iconBgClass: 'bg-red-200',
+            progressBarClass: 'bg-red-600',
+            statusBoxClass: 'border-red-200 bg-red-50 text-red-800',
+            primaryButtonClass: 'bg-red-600',
+            primaryButtonHoverClass: 'hover:bg-red-700',
+            selectedOfficeClass: 'border-red-600 bg-red-50 text-red-900',
+            selectedCheckClass: 'border-red-600 bg-red-600 text-white',
+        },
+        BSA: {
+            label: 'BSA Theme',
+            bannerClass:
+                'border border-green-100 bg-gradient-to-r from-green-100 via-green-50 to-white',
+            accentTextClass: 'text-green-700',
+            softTextClass: 'text-green-900/80',
+            headingTextClass: 'text-green-950',
+            iconBgClass: 'bg-green-200',
+            progressBarClass: 'bg-green-600',
+            statusBoxClass: 'border-green-200 bg-green-50 text-green-800',
+            primaryButtonClass: 'bg-green-600',
+            primaryButtonHoverClass: 'hover:bg-green-700',
+            selectedOfficeClass: 'border-green-600 bg-green-50 text-green-900',
+            selectedCheckClass: 'border-green-600 bg-green-600 text-white',
+        },
+        BSAIS: {
+            label: 'BSAIS Theme',
+            bannerClass:
+                'border border-gray-200 bg-gradient-to-r from-gray-200 via-gray-100 to-white',
+            accentTextClass: 'text-gray-700',
+            softTextClass: 'text-gray-800/80',
+            headingTextClass: 'text-gray-950',
+            iconBgClass: 'bg-gray-300',
+            progressBarClass: 'bg-gray-700',
+            statusBoxClass: 'border-gray-300 bg-gray-100 text-gray-800',
+            primaryButtonClass: 'bg-gray-700',
+            primaryButtonHoverClass: 'hover:bg-gray-800',
+            selectedOfficeClass: 'border-gray-700 bg-gray-100 text-gray-900',
+            selectedCheckClass: 'border-gray-700 bg-gray-700 text-white',
+        },
+        BECED: {
+            label: 'BECED Theme',
+            bannerClass:
+                'border border-sky-100 bg-gradient-to-r from-sky-100 via-sky-50 to-white',
+            accentTextClass: 'text-sky-700',
+            softTextClass: 'text-sky-900/80',
+            headingTextClass: 'text-sky-950',
+            iconBgClass: 'bg-sky-200',
+            progressBarClass: 'bg-sky-500',
+            statusBoxClass: 'border-sky-200 bg-sky-50 text-sky-800',
+            primaryButtonClass: 'bg-sky-500',
+            primaryButtonHoverClass: 'hover:bg-sky-600',
+            selectedOfficeClass: 'border-sky-500 bg-sky-50 text-sky-900',
+            selectedCheckClass: 'border-sky-500 bg-sky-500 text-white',
+        },
+        BSCRIM: {
+            label: 'BSCRIM Theme',
+            bannerClass:
+                'border border-orange-100 bg-gradient-to-r from-orange-100 via-orange-50 to-white',
+            accentTextClass: 'text-orange-700',
+            softTextClass: 'text-orange-900/80',
+            headingTextClass: 'text-orange-950',
+            iconBgClass: 'bg-orange-200',
+            progressBarClass: 'bg-orange-600',
+            statusBoxClass: 'border-orange-200 bg-orange-50 text-orange-800',
+            primaryButtonClass: 'bg-orange-600',
+            primaryButtonHoverClass: 'hover:bg-orange-700',
+            selectedOfficeClass:
+                'border-orange-600 bg-orange-50 text-orange-900',
+            selectedCheckClass: 'border-orange-600 bg-orange-600 text-white',
+        },
+    };
+
+    return themes[courseCode] ?? themes.BSIS;
+});
 
 const approvals = computed(() => props.clearanceRequest?.approvals ?? []);
 
@@ -346,29 +477,50 @@ const submitClearanceRequest = () => {
         <div class="mx-auto flex max-w-7xl flex-col gap-6">
             <!-- Welcome Banner -->
             <section
-                class="overflow-hidden rounded-2xl border border-blue-100 bg-gradient-to-r from-blue-100 via-blue-50 to-white shadow-sm"
+                class="overflow-hidden rounded-2xl shadow-sm"
+                :class="courseTheme.bannerClass"
             >
                 <div class="grid gap-6 p-6 md:grid-cols-[1fr_280px] md:p-8">
                     <div class="flex flex-col justify-center gap-4">
                         <div>
-                            <p class="text-sm font-medium text-blue-700">
+                            <p
+                                class="text-sm font-medium"
+                                :class="courseTheme.accentTextClass"
+                            >
                                 Student Clearance System
                             </p>
 
-                            <h1 class="mt-2 text-3xl font-bold text-blue-950">
+                            <h1
+                                class="mt-2 text-3xl font-bold"
+                                :class="courseTheme.headingTextClass"
+                            >
                                 Welcome, {{ student.name }}!
                             </h1>
 
-                            <p class="mt-2 max-w-xl text-blue-900/80">
+                            <p
+                                class="mt-2 max-w-xl"
+                                :class="courseTheme.softTextClass"
+                            >
                                 Track your clearance progress and submit
                                 requests as needed.
                             </p>
 
-                            <p class="mt-2 text-sm text-blue-800/70">
+                            <p
+                                class="mt-2 text-sm"
+                                :class="courseTheme.softTextClass"
+                            >
                                 Student ID: {{ student.student_id }}
                                 <span v-if="student.course">
                                     • {{ student.course.code }}
                                 </span>
+                            </p>
+
+                            <p
+                                v-if="student.course"
+                                class="mt-2 inline-flex rounded-full bg-white/80 px-3 py-1 text-xs font-semibold shadow-sm"
+                                :class="courseTheme.accentTextClass"
+                            >
+                                {{ student.course.code }} Course Theme
                             </p>
                         </div>
 
@@ -376,7 +528,10 @@ const submitClearanceRequest = () => {
                             class="rounded-2xl bg-white p-5 shadow-sm md:max-w-xl"
                         >
                             <div class="mb-3 flex items-center gap-2">
-                                <span class="text-lg font-bold text-green-700">
+                                <span
+                                    class="text-lg font-bold"
+                                    :class="courseTheme.accentTextClass"
+                                >
                                     {{ progressPercentage }}% Completed
                                 </span>
                             </div>
@@ -385,7 +540,8 @@ const submitClearanceRequest = () => {
                                 class="h-3 overflow-hidden rounded-full bg-slate-100"
                             >
                                 <div
-                                    class="h-full rounded-full bg-green-600 transition-all"
+                                    class="h-full rounded-full transition-all"
+                                    :class="courseTheme.progressBarClass"
                                     :style="{ width: `${progressPercentage}%` }"
                                 ></div>
                             </div>
@@ -424,7 +580,8 @@ const submitClearanceRequest = () => {
 
                             <div
                                 v-else
-                                class="mt-4 rounded-xl border border-blue-200 bg-blue-50 p-4 text-blue-800"
+                                class="mt-4 rounded-xl border p-4"
+                                :class="courseTheme.statusBoxClass"
                             >
                                 <p class="text-sm font-semibold">
                                     Final Clearance Status
@@ -445,7 +602,8 @@ const submitClearanceRequest = () => {
 
                     <div class="hidden items-center justify-center md:flex">
                         <div
-                            class="flex h-56 w-56 items-center justify-center rounded-full bg-blue-200 text-7xl"
+                            class="flex h-56 w-56 items-center justify-center rounded-full text-7xl"
+                            :class="courseTheme.iconBgClass"
                         >
                             🎓
                         </div>
@@ -458,15 +616,22 @@ const submitClearanceRequest = () => {
                 <div class="rounded-2xl border bg-white p-6 shadow-sm">
                     <div class="flex items-center gap-4">
                         <div
-                            class="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-100 text-2xl"
+                            class="flex h-14 w-14 items-center justify-center rounded-2xl text-2xl"
+                            :class="courseTheme.iconBgClass"
                         >
                             👥
                         </div>
                         <div>
-                            <p class="font-semibold text-blue-700">
+                            <p
+                                class="font-semibold"
+                                :class="courseTheme.accentTextClass"
+                            >
                                 Total Cleared
                             </p>
-                            <p class="mt-1 text-3xl font-bold text-blue-950">
+                            <p
+                                class="mt-1 text-3xl font-bold"
+                                :class="courseTheme.headingTextClass"
+                            >
                                 {{ approvedCount }} / {{ offices.length }}
                             </p>
                             <p class="text-sm text-slate-500">Departments</p>
@@ -485,7 +650,10 @@ const submitClearanceRequest = () => {
                             <p class="font-semibold text-orange-600">
                                 Pending Requests
                             </p>
-                            <p class="mt-1 text-3xl font-bold text-blue-950">
+                            <p
+                                class="mt-1 text-3xl font-bold"
+                                :class="courseTheme.headingTextClass"
+                            >
                                 {{ pendingCount }}
                             </p>
                             <p class="text-sm text-slate-500">Departments</p>
@@ -502,7 +670,10 @@ const submitClearanceRequest = () => {
                         </div>
                         <div>
                             <p class="font-semibold text-green-700">Approved</p>
-                            <p class="mt-1 text-3xl font-bold text-blue-950">
+                            <p
+                                class="mt-1 text-3xl font-bold"
+                                :class="courseTheme.headingTextClass"
+                            >
                                 {{ approvedCount }}
                             </p>
                             <p class="text-sm text-slate-500">Departments</p>
@@ -521,7 +692,10 @@ const submitClearanceRequest = () => {
                             <p class="font-semibold text-red-600">
                                 Not Cleared
                             </p>
-                            <p class="mt-1 text-3xl font-bold text-blue-950">
+                            <p
+                                class="mt-1 text-3xl font-bold"
+                                :class="courseTheme.headingTextClass"
+                            >
                                 {{ notClearedCount }}
                             </p>
                             <p class="text-sm text-slate-500">Departments</p>
@@ -535,10 +709,16 @@ const submitClearanceRequest = () => {
                 <!-- Recent Activity -->
                 <div class="rounded-2xl border bg-white p-6 shadow-sm">
                     <div class="mb-4 flex items-center justify-between">
-                        <h2 class="text-xl font-bold text-blue-950">
+                        <h2
+                            class="text-xl font-bold"
+                            :class="courseTheme.headingTextClass"
+                        >
                             Recent Activity
                         </h2>
-                        <button class="text-sm font-medium text-blue-600">
+                        <button
+                            class="text-sm font-medium"
+                            :class="courseTheme.accentTextClass"
+                        >
                             View All
                         </button>
                     </div>
@@ -562,7 +742,10 @@ const submitClearanceRequest = () => {
                             class="flex items-center justify-between border-b pb-3 text-sm"
                         >
                             <div>
-                                <p class="font-medium text-blue-950">
+                                <p
+                                    class="font-medium"
+                                    :class="courseTheme.headingTextClass"
+                                >
                                     {{ office.name }}
                                 </p>
                                 <p class="text-slate-500">
@@ -583,10 +766,16 @@ const submitClearanceRequest = () => {
                 <!-- My Clearance Status -->
                 <div class="rounded-2xl border bg-white p-6 shadow-sm">
                     <div class="mb-4 flex items-center justify-between">
-                        <h2 class="text-xl font-bold text-blue-950">
+                        <h2
+                            class="text-xl font-bold"
+                            :class="courseTheme.headingTextClass"
+                        >
                             My Clearance Status
                         </h2>
-                        <button class="text-sm font-medium text-blue-600">
+                        <button
+                            class="text-sm font-medium"
+                            :class="courseTheme.accentTextClass"
+                        >
                             View All
                         </button>
                     </div>
@@ -598,7 +787,10 @@ const submitClearanceRequest = () => {
                             class="flex items-start justify-between gap-4 border-b pb-3 text-sm"
                         >
                             <div>
-                                <span class="font-medium text-blue-950">
+                                <span
+                                    class="font-medium"
+                                    :class="courseTheme.headingTextClass"
+                                >
                                     {{ office.name }}
                                 </span>
 
@@ -633,7 +825,11 @@ const submitClearanceRequest = () => {
 
                         <button
                             type="button"
-                            class="mt-4 w-full rounded-xl bg-blue-600 px-4 py-3 font-semibold text-white transition hover:bg-blue-700"
+                            class="mt-4 w-full rounded-xl px-4 py-3 font-semibold text-white transition"
+                            :class="[
+                                courseTheme.primaryButtonClass,
+                                courseTheme.primaryButtonHoverClass,
+                            ]"
                             @click="openClearanceDetailsModal"
                         >
                             View Clearance Details →
@@ -657,12 +853,16 @@ const submitClearanceRequest = () => {
             >
                 <div class="flex items-center gap-4">
                     <div
-                        class="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-100 text-2xl"
+                        class="flex h-14 w-14 items-center justify-center rounded-2xl text-2xl"
+                        :class="courseTheme.iconBgClass"
                     >
                         📄
                     </div>
                     <div>
-                        <h2 class="text-xl font-bold text-blue-950">
+                        <h2
+                            class="text-xl font-bold"
+                            :class="courseTheme.headingTextClass"
+                        >
                             Submit New Clearance Request
                         </h2>
                         <p class="text-sm text-slate-500">
@@ -677,7 +877,10 @@ const submitClearanceRequest = () => {
                     :class="
                         requestableOffices.length === 0
                             ? 'cursor-not-allowed bg-slate-400'
-                            : 'bg-blue-600 hover:bg-blue-700'
+                            : [
+                                  courseTheme.primaryButtonClass,
+                                  courseTheme.primaryButtonHoverClass,
+                              ]
                     "
                     :disabled="requestableOffices.length === 0"
                     @click="openSubmitRequestModal"
@@ -704,7 +907,10 @@ const submitClearanceRequest = () => {
                         class="flex items-start justify-between border-b border-slate-200 px-6 py-4"
                     >
                         <div>
-                            <h2 class="text-xl font-bold text-blue-950">
+                            <h2
+                                class="text-xl font-bold"
+                                :class="courseTheme.headingTextClass"
+                            >
                                 Select Offices to Request
                             </h2>
 
@@ -726,7 +932,8 @@ const submitClearanceRequest = () => {
 
                     <div class="space-y-4 px-6 py-5">
                         <div
-                            class="rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800"
+                            class="rounded-xl border p-4 text-sm"
+                            :class="courseTheme.statusBoxClass"
                         >
                             Select at least one office. Selected offices will
                             become
@@ -743,7 +950,7 @@ const submitClearanceRequest = () => {
                                 class="rounded-xl border p-4 text-left transition"
                                 :class="
                                     selectedOfficeIds.includes(office.id)
-                                        ? 'border-blue-600 bg-blue-50 text-blue-900'
+                                        ? courseTheme.selectedOfficeClass
                                         : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
                                 "
                                 @click="toggleOfficeSelection(office.id)"
@@ -755,7 +962,7 @@ const submitClearanceRequest = () => {
                                             selectedOfficeIds.includes(
                                                 office.id,
                                             )
-                                                ? 'border-blue-600 bg-blue-600 text-white'
+                                                ? courseTheme.selectedCheckClass
                                                 : 'border-slate-300 bg-white'
                                         "
                                     >
@@ -790,7 +997,10 @@ const submitClearanceRequest = () => {
                     >
                         <p class="text-sm text-slate-500">
                             Selected offices:
-                            <span class="font-semibold text-blue-700">
+                            <span
+                                class="font-semibold"
+                                :class="courseTheme.accentTextClass"
+                            >
                                 {{ selectedOfficeIds.length }}
                             </span>
                         </p>
@@ -810,7 +1020,10 @@ const submitClearanceRequest = () => {
                                 :class="
                                     selectedOfficeIds.length === 0
                                         ? 'cursor-not-allowed bg-slate-400'
-                                        : 'bg-blue-600 hover:bg-blue-700'
+                                        : [
+                                              courseTheme.primaryButtonClass,
+                                              courseTheme.primaryButtonHoverClass,
+                                          ]
                                 "
                                 :disabled="selectedOfficeIds.length === 0"
                                 @click="submitClearanceRequest"
@@ -834,7 +1047,10 @@ const submitClearanceRequest = () => {
                         class="flex items-start justify-between border-b border-slate-200 px-6 py-4"
                     >
                         <div>
-                            <h2 class="text-xl font-bold text-blue-950">
+                            <h2
+                                class="text-xl font-bold"
+                                :class="courseTheme.headingTextClass"
+                            >
                                 Clearance Details
                             </h2>
                             <p class="mt-1 text-sm text-slate-500">
@@ -863,7 +1079,10 @@ const submitClearanceRequest = () => {
                                 >
                                     Student Name
                                 </p>
-                                <p class="mt-1 font-bold text-blue-950">
+                                <p
+                                    class="mt-1 font-bold"
+                                    :class="courseTheme.headingTextClass"
+                                >
                                     {{ student.name }}
                                 </p>
                             </div>
@@ -876,7 +1095,10 @@ const submitClearanceRequest = () => {
                                 >
                                     Student ID
                                 </p>
-                                <p class="mt-1 font-bold text-blue-950">
+                                <p
+                                    class="mt-1 font-bold"
+                                    :class="courseTheme.headingTextClass"
+                                >
                                     {{ student.student_id }}
                                 </p>
                             </div>
@@ -889,7 +1111,10 @@ const submitClearanceRequest = () => {
                                 >
                                     Course
                                 </p>
-                                <p class="mt-1 font-bold text-blue-950">
+                                <p
+                                    class="mt-1 font-bold"
+                                    :class="courseTheme.headingTextClass"
+                                >
                                     {{ student.course?.code ?? 'N/A' }}
                                 </p>
                             </div>
@@ -903,7 +1128,10 @@ const submitClearanceRequest = () => {
                                 >
                                     Semester
                                 </p>
-                                <p class="mt-1 font-bold text-blue-950">
+                                <p
+                                    class="mt-1 font-bold"
+                                    :class="courseTheme.headingTextClass"
+                                >
                                     {{
                                         clearanceRequest?.semester ??
                                         'No request yet'
@@ -917,7 +1145,10 @@ const submitClearanceRequest = () => {
                                 >
                                     School Year
                                 </p>
-                                <p class="mt-1 font-bold text-blue-950">
+                                <p
+                                    class="mt-1 font-bold"
+                                    :class="courseTheme.headingTextClass"
+                                >
                                     {{
                                         clearanceRequest?.school_year ??
                                         'No request yet'
@@ -931,7 +1162,10 @@ const submitClearanceRequest = () => {
                                 >
                                     Progress
                                 </p>
-                                <p class="mt-1 font-bold text-blue-950">
+                                <p
+                                    class="mt-1 font-bold"
+                                    :class="courseTheme.headingTextClass"
+                                >
                                     {{ approvedCount }} / {{ offices.length }}
                                 </p>
                             </div>
@@ -947,7 +1181,7 @@ const submitClearanceRequest = () => {
                                     :class="
                                         isFullyCleared
                                             ? 'bg-green-100 text-green-700'
-                                            : 'bg-blue-100 text-blue-700'
+                                            : courseTheme.statusBoxClass
                                     "
                                 >
                                     {{ finalClearanceLabel }}
@@ -957,7 +1191,10 @@ const submitClearanceRequest = () => {
 
                         <!-- Office Breakdown -->
                         <div>
-                            <h3 class="mb-3 text-lg font-bold text-blue-950">
+                            <h3
+                                class="mb-3 text-lg font-bold"
+                                :class="courseTheme.headingTextClass"
+                            >
                                 Office Approval Breakdown
                             </h3>
 
@@ -996,7 +1233,10 @@ const submitClearanceRequest = () => {
                                             class="hover:bg-slate-50"
                                         >
                                             <td
-                                                class="px-4 py-3 text-sm font-semibold text-blue-950"
+                                                class="px-4 py-3 text-sm font-semibold"
+                                                :class="
+                                                    courseTheme.headingTextClass
+                                                "
                                             >
                                                 {{ office.name }}
                                             </td>
@@ -1061,7 +1301,10 @@ const submitClearanceRequest = () => {
             >
                 <div class="w-full max-w-md rounded-2xl bg-white shadow-xl">
                     <div class="border-b border-slate-200 px-6 py-4">
-                        <h2 class="text-xl font-bold text-blue-950">
+                        <h2
+                            class="text-xl font-bold"
+                            :class="courseTheme.headingTextClass"
+                        >
                             Mark as Complied?
                         </h2>
 

@@ -85,6 +85,13 @@ defineProps<{
                     >
                         View Reports
                     </Link>
+
+                    <Link
+                        href="/admin/course-modules"
+                        class="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
+                    >
+                        Course Modules
+                    </Link>
                 </div>
             </section>
 
