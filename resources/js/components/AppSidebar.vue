@@ -1,8 +1,15 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3';
-import { BookOpen, FolderGit2, LayoutGrid } from 'lucide-vue-next';
+import { computed } from 'vue';
+import { Link, usePage } from '@inertiajs/vue3';
+import {
+    ClipboardCheck,
+    FileText,
+    LayoutGrid,
+    Settings,
+    ShieldCheck,
+    Users,
+} from 'lucide-vue-next';
 import AppLogo from '@/components/AppLogo.vue';
-import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
 import {
@@ -17,26 +24,73 @@ import {
 import { dashboard } from '@/routes';
 import type { NavItem } from '@/types';
 
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
-];
+type AuthUser = {
+    role?: string;
+};
 
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/vue-starter-kit',
-        icon: FolderGit2,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#vue',
-        icon: BookOpen,
-    },
-];
+const page = usePage();
+const authUser = computed(() => page.props.auth.user as AuthUser);
+const userRole = computed(() => authUser.value.role);
+
+const mainNavItems = computed<NavItem[]>(() => {
+    if (userRole.value === 'admin') {
+        return [
+            {
+                title: 'Dashboard',
+                href: '/admin/dashboard',
+                icon: LayoutGrid,
+            },
+            {
+                title: 'Manage Users',
+                href: '/admin/users',
+                icon: Users,
+            },
+            {
+                title: 'Monitor Clearances',
+                href: '/admin/clearance-requests',
+                icon: ClipboardCheck,
+            },
+            {
+                title: 'Reports',
+                href: '/admin/reports',
+                icon: FileText,
+            },
+            {
+                title: 'Course Modules',
+                href: '/admin/course-modules',
+                icon: Settings,
+            },
+        ];
+    }
+
+    if (userRole.value === 'staff') {
+        return [
+            {
+                title: 'Pending Requests',
+                href: '/staff/pending-requests',
+                icon: ClipboardCheck,
+            },
+        ];
+    }
+
+    if (userRole.value === 'president') {
+        return [
+            {
+                title: 'Final Approvals',
+                href: '/president/final-approvals',
+                icon: ShieldCheck,
+            },
+        ];
+    }
+
+    return [
+        {
+            title: 'Dashboard',
+            href: dashboard(),
+            icon: LayoutGrid,
+        },
+    ];
+});
 </script>
 
 <template>
@@ -58,7 +112,6 @@ const footerNavItems: NavItem[] = [
         </SidebarContent>
 
         <SidebarFooter>
-            <NavFooter :items="footerNavItems" />
             <NavUser />
         </SidebarFooter>
     </Sidebar>
