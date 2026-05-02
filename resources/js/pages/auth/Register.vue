@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { Form, Head } from '@inertiajs/vue3';
+import { Form, Head, Link } from '@inertiajs/vue3';
 import InputError from '@/components/InputError.vue';
 import PasswordInput from '@/components/PasswordInput.vue';
-import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -37,9 +36,12 @@ defineOptions({
         v-slot="{ errors, processing }"
         class="flex flex-col gap-6"
     >
-        <div class="grid gap-6">
+        <div class="grid gap-4">
             <div class="grid gap-2">
-                <Label for="student_id">Student ID</Label>
+                <Label for="student_id" class="text-sm font-black text-slate-800">
+                    Student ID
+                </Label>
+
                 <Input
                     id="student_id"
                     type="text"
@@ -49,12 +51,17 @@ defineOptions({
                     autocomplete="username"
                     name="student_id"
                     placeholder="Enter your Student ID"
+                    class="!h-12 !rounded-2xl !border-slate-200 !bg-white !px-4 !text-sm !font-semibold !text-slate-900 !shadow-sm placeholder:!font-medium placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20"
                 />
+
                 <InputError :message="errors.student_id" />
             </div>
 
             <div class="grid gap-2">
-                <Label for="name">Full Name</Label>
+                <Label for="name" class="text-sm font-black text-slate-800">
+                    Full Name
+                </Label>
+
                 <Input
                     id="name"
                     type="text"
@@ -63,18 +70,23 @@ defineOptions({
                     autocomplete="name"
                     name="name"
                     placeholder="Enter your full name"
+                    class="!h-12 !rounded-2xl !border-slate-200 !bg-white !px-4 !text-sm !font-semibold !text-slate-900 !shadow-sm placeholder:!font-medium placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20"
                 />
+
                 <InputError :message="errors.name" />
             </div>
 
             <div class="grid gap-2">
-                <Label for="course_id">Course</Label>
+                <Label for="course_id" class="text-sm font-black text-slate-800">
+                    Course
+                </Label>
+
                 <select
                     id="course_id"
                     name="course_id"
                     required
                     :tabindex="3"
-                    class="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-9 w-full rounded-md border px-3 py-1 text-sm shadow-sm transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                    class="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                     <option value="">Select your course</option>
                     <option
@@ -85,11 +97,15 @@ defineOptions({
                         {{ course.code }} - {{ course.name }}
                     </option>
                 </select>
+
                 <InputError :message="errors.course_id" />
             </div>
 
             <div class="grid gap-2">
-                <Label for="password">Password</Label>
+                <Label for="password" class="text-sm font-black text-slate-800">
+                    Password
+                </Label>
+
                 <PasswordInput
                     id="password"
                     required
@@ -97,12 +113,17 @@ defineOptions({
                     autocomplete="new-password"
                     name="password"
                     placeholder="Password"
+                    class="!h-12 !rounded-2xl !border-slate-200 !bg-white !px-4 !text-sm !font-semibold !text-slate-900 !shadow-sm placeholder:!font-medium placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20"
                 />
+
                 <InputError :message="errors.password" />
             </div>
 
             <div class="grid gap-2">
-                <Label for="password_confirmation">Confirm password</Label>
+                <Label for="password_confirmation" class="text-sm font-black text-slate-800">
+                    Confirm Password
+                </Label>
+
                 <PasswordInput
                     id="password_confirmation"
                     required
@@ -110,13 +131,15 @@ defineOptions({
                     autocomplete="new-password"
                     name="password_confirmation"
                     placeholder="Confirm password"
+                    class="!h-12 !rounded-2xl !border-slate-200 !bg-white !px-4 !text-sm !font-semibold !text-slate-900 !shadow-sm placeholder:!font-medium placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20"
                 />
+
                 <InputError :message="errors.password_confirmation" />
             </div>
 
             <Button
                 type="submit"
-                class="mt-2 w-full"
+                class="mt-2 h-12 w-full rounded-2xl bg-blue-700 text-sm font-black text-white shadow-xl shadow-blue-700/25 transition hover:-translate-y-0.5 hover:bg-blue-800 hover:shadow-2xl disabled:translate-y-0 disabled:opacity-70"
                 tabindex="6"
                 :disabled="processing"
                 data-test="register-user-button"
@@ -126,14 +149,15 @@ defineOptions({
             </Button>
         </div>
 
-        <div class="text-center text-sm text-muted-foreground">
+        <div class="text-center text-sm font-medium text-slate-500">
             Already have an account?
-            <TextLink
+            <Link
                 :href="login()"
-                class="underline underline-offset-4"
+                class="font-black text-blue-700 underline-offset-4 transition hover:text-blue-900 hover:underline"
                 :tabindex="7"
-                >Log in</TextLink
             >
+                Log in
+            </Link>
         </div>
     </Form>
 </template>
