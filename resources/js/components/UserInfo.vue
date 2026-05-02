@@ -15,24 +15,30 @@ const props = withDefaults(defineProps<Props>(), {
 
 const { getInitials } = useInitials();
 
-// Compute whether we should show the avatar image
 const showAvatar = computed(
     () => props.user.avatar && props.user.avatar !== '',
 );
 </script>
 
 <template>
-    <Avatar class="h-8 w-8 overflow-hidden rounded-lg">
+    <Avatar class="h-10 w-10 overflow-hidden rounded-2xl border border-blue-100 bg-blue-50 shadow-sm">
         <AvatarImage v-if="showAvatar" :src="user.avatar!" :alt="user.name" />
-        <AvatarFallback class="rounded-lg text-black dark:text-white">
+
+        <AvatarFallback class="rounded-2xl bg-blue-50 text-sm font-black text-blue-700">
             {{ getInitials(user.name) }}
         </AvatarFallback>
     </Avatar>
 
-    <div class="grid flex-1 text-left text-sm leading-tight">
-        <span class="truncate font-medium">{{ user.name }}</span>
-        <span v-if="showEmail" class="truncate text-xs text-muted-foreground">{{
-            user.email
-        }}</span>
+    <div class="grid min-w-0 flex-1 text-left leading-tight">
+        <span class="truncate text-sm font-black text-slate-900">
+            {{ user.name }}
+        </span>
+
+        <span
+            v-if="showEmail"
+            class="mt-0.5 truncate text-xs font-medium text-slate-500"
+        >
+            {{ user.email }}
+        </span>
     </div>
 </template>

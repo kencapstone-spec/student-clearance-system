@@ -95,7 +95,7 @@ const mainNavItems = computed<NavItem[]>(() => {
 
 <template>
     <Sidebar collapsible="icon" variant="inset">
-        <SidebarHeader>
+        <SidebarHeader class="border-b border-slate-100 px-3 py-4">
             <SidebarMenu>
                 <SidebarMenuItem>
                     <SidebarMenuButton size="lg" as-child>
@@ -107,11 +107,11 @@ const mainNavItems = computed<NavItem[]>(() => {
             </SidebarMenu>
         </SidebarHeader>
 
-        <SidebarContent>
+        <SidebarContent class="px-1 py-3">
             <NavMain :items="mainNavItems" />
         </SidebarContent>
 
-        <SidebarFooter>
+        <SidebarFooter class="border-t border-slate-100 px-3 py-4">
             <NavUser />
         </SidebarFooter>
     </Sidebar>

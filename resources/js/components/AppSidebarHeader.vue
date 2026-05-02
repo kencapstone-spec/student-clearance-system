@@ -62,28 +62,33 @@ const markAllNotificationsAsRead = () => {
 
 <template>
     <header
-        class="flex h-16 shrink-0 items-center gap-2 border-b border-sidebar-border/70 px-6 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 md:px-4"
+        class="sticky top-0 z-20 flex h-16 shrink-0 items-center gap-3 border-b border-slate-200 bg-white/90 px-6 text-slate-900 shadow-sm shadow-slate-200/70 backdrop-blur-xl transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 md:px-4"
     >
-        <div class="flex items-center gap-2">
-            <SidebarTrigger class="-ml-1" />
+        <div class="flex min-w-0 items-center gap-3">
+            <SidebarTrigger
+                class="-ml-1 rounded-xl text-slate-600 transition hover:bg-blue-50 hover:text-blue-700"
+            />
+
+            <div class="hidden h-6 w-px bg-slate-200 sm:block"></div>
+
             <template v-if="breadcrumbs && breadcrumbs.length > 0">
                 <Breadcrumbs :breadcrumbs="breadcrumbs" />
             </template>
         </div>
 
-        <div class="ml-auto flex items-center">
+        <div class="ml-auto flex items-center gap-2">
             <DropdownMenu>
                 <DropdownMenuTrigger :as-child="true">
                     <Button
                         variant="ghost"
                         size="icon"
-                        class="relative h-9 w-9 cursor-pointer"
+                        class="relative h-10 w-10 cursor-pointer rounded-2xl border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700 hover:shadow-md"
                     >
-                        <Bell class="size-5 opacity-80" />
+                        <Bell class="size-5" />
 
                         <span
                             v-if="notifications.unread_count > 0"
-                            class="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1 text-xs font-bold text-white"
+                            class="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1 text-xs font-black text-white shadow-sm"
                         >
                             {{
                                 notifications.unread_count > 99
@@ -96,15 +101,18 @@ const markAllNotificationsAsRead = () => {
                     </Button>
                 </DropdownMenuTrigger>
 
-                <DropdownMenuContent align="end" class="w-80 p-0">
+                <DropdownMenuContent
+                    align="end"
+                    class="w-86 overflow-hidden rounded-2xl border border-slate-200 bg-white p-0 shadow-2xl shadow-slate-300/70"
+                >
                     <div
-                        class="flex items-center justify-between border-b px-4 py-3"
+                        class="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-4 py-3"
                     >
                         <div>
-                            <p class="text-sm font-semibold">
+                            <p class="text-sm font-black text-slate-900">
                                 Notifications
                             </p>
-                            <p class="text-xs text-muted-foreground">
+                            <p class="text-xs font-medium text-slate-500">
                                 {{ notifications.unread_count }} unread
                             </p>
                         </div>
@@ -112,7 +120,7 @@ const markAllNotificationsAsRead = () => {
                         <button
                             v-if="notifications.unread_count > 0"
                             type="button"
-                            class="text-xs font-medium text-blue-600 hover:underline"
+                            class="rounded-full px-3 py-1 text-xs font-bold text-blue-700 transition hover:bg-blue-50 hover:text-blue-900"
                             @click="markAllNotificationsAsRead"
                         >
                             Mark all as read
@@ -121,7 +129,7 @@ const markAllNotificationsAsRead = () => {
 
                     <div
                         v-if="notifications.items.length === 0"
-                        class="px-4 py-6 text-center text-sm text-muted-foreground"
+                        class="px-4 py-8 text-center text-sm font-medium text-slate-500"
                     >
                         No notifications yet.
                     </div>
@@ -131,35 +139,35 @@ const markAllNotificationsAsRead = () => {
                             v-for="notification in notifications.items"
                             :key="notification.id"
                             :href="`/notifications/${notification.id}/open`"
-                            class="block border-b px-4 py-3 text-left last:border-b-0 hover:bg-accent"
+                            class="block border-b border-slate-100 px-4 py-3 text-left transition last:border-b-0 hover:bg-blue-50/60"
                             :class="
                                 notification.read_at
-                                    ? 'opacity-70'
-                                    : 'bg-accent/40'
+                                    ? 'bg-white opacity-75'
+                                    : 'bg-blue-50/40'
                             "
                         >
                             <div class="flex items-start gap-3">
                                 <span
                                     v-if="!notification.read_at"
-                                    class="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-blue-600"
+                                    class="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full bg-blue-600 shadow-sm"
                                 ></span>
                                 <span
                                     v-else
-                                    class="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-transparent"
+                                    class="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full bg-slate-200"
                                 ></span>
 
                                 <div class="min-w-0 flex-1">
-                                    <p class="text-sm font-medium">
+                                    <p class="text-sm font-bold text-slate-900">
                                         {{ notification.title }}
                                     </p>
                                     <p
-                                        class="mt-1 line-clamp-2 text-xs text-muted-foreground"
+                                        class="mt-1 line-clamp-2 text-xs leading-5 text-slate-500"
                                     >
                                         {{ notification.message }}
                                     </p>
                                     <p
                                         v-if="notification.created_at_human"
-                                        class="mt-1 text-xs text-muted-foreground"
+                                        class="mt-1 text-xs font-medium text-slate-400"
                                     >
                                         {{ notification.created_at_human }}
                                     </p>
