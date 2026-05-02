@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import { computed, ref } from 'vue';
 
 type Office = {
     id: number;
@@ -83,11 +83,13 @@ const submitAssignments = () => {
 
     if (form.office_ids.length === 0) {
         errorMessage.value = 'Select at least one regular office for this course module.';
+
         return;
     }
 
     if (removedOffices.value.length > 0) {
         showRemoveConfirmModal.value = true;
+
         return;
     }
 

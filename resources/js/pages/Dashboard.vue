@@ -404,6 +404,7 @@ const toggleOfficeSelection = (officeId: number) => {
         selectedOfficeIds.value = selectedOfficeIds.value.filter(
             (id) => id !== officeId,
         );
+
         return;
     }
 

@@ -52,6 +52,7 @@ const printReceipt = () => {
 
     if (!receiptElement) {
         window.print();
+
         return;
     }
 
@@ -59,6 +60,7 @@ const printReceipt = () => {
 
     if (!printWindow) {
         window.print();
+
         return;
     }
 

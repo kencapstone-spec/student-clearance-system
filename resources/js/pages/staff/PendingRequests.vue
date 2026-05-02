@@ -5,11 +5,9 @@ import {
     CheckCircle2,
     ClipboardCheck,
     Clock3,
-    FileSearch,
     Filter,
     Inbox,
     ShieldCheck,
-    UserCheck,
     XCircle,
 } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
