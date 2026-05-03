@@ -12,6 +12,9 @@ import {
 import { store } from '@/routes/two-factor/login';
 import type { TwoFactorConfigContent } from '@/types';
 
+const showRecoveryInput = ref<boolean>(false);
+const code = ref<string>('');
+
 const authConfigContent = computed<TwoFactorConfigContent>(() => {
     if (showRecoveryInput.value) {
         return {
@@ -37,15 +40,11 @@ watchEffect(() => {
     });
 });
 
-const showRecoveryInput = ref<boolean>(false);
-
 const toggleRecoveryMode = (clearErrors: () => void): void => {
     showRecoveryInput.value = !showRecoveryInput.value;
     clearErrors();
     code.value = '';
 };
-
-const code = ref<string>('');
 </script>
 
 <template>
@@ -61,6 +60,7 @@ const code = ref<string>('');
                 #default="{ errors, processing, clearErrors }"
             >
                 <input type="hidden" name="code" :value="code" />
+
                 <div
                     class="flex flex-col items-center justify-center space-y-3 text-center"
                 >
@@ -81,11 +81,14 @@ const code = ref<string>('');
                             </InputOTPGroup>
                         </InputOTP>
                     </div>
+
                     <InputError :message="errors.code" />
                 </div>
-                <Button type="submit" class="w-full" :disabled="processing"
-                    >Continue</Button
-                >
+
+                <Button type="submit" class="w-full" :disabled="processing">
+                    Continue
+                </Button>
+
                 <div class="text-center text-sm text-muted-foreground">
                     <span>or you can </span>
                     <button
@@ -113,10 +116,12 @@ const code = ref<string>('');
                     :autofocus="showRecoveryInput"
                     required
                 />
+
                 <InputError :message="errors.recovery_code" />
-                <Button type="submit" class="w-full" :disabled="processing"
-                    >Continue</Button
-                >
+
+                <Button type="submit" class="w-full" :disabled="processing">
+                    Continue
+                </Button>
 
                 <div class="text-center text-sm text-muted-foreground">
                     <span>or you can </span>
