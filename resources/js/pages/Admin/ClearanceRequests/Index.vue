@@ -305,6 +305,7 @@ const formatDateTime = (value: string | null) => {
         hour: 'numeric',
         minute: '2-digit',
         hour12: true,
+        timeZone: 'Asia/Manila',
     }).format(date);
 };
 </script>
@@ -323,7 +324,7 @@ const formatDateTime = (value: string | null) => {
                 <div class="grid gap-8 p-6 lg:grid-cols-[1fr_300px] lg:p-8">
                     <div>
                         <div
-                            class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-blue-700"
+                            class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-xs font-black tracking-[0.18em] text-blue-700 uppercase"
                         >
                             <ShieldCheck class="size-4" />
                             Admin / OSAS Director Panel
@@ -368,7 +369,7 @@ const formatDateTime = (value: string | null) => {
                         </div>
 
                         <div
-                            class="mt-5 rounded-2xl border border-blue-100 bg-blue-50/80 p-4 text-sm font-medium leading-6 text-blue-900"
+                            class="mt-5 rounded-2xl border border-blue-100 bg-blue-50/80 p-4 text-sm leading-6 font-medium text-blue-900"
                         >
                             Click View to inspect the full office approval
                             breakdown, approver, timestamp, remarks, and final
@@ -387,7 +388,7 @@ const formatDateTime = (value: string | null) => {
                             </div>
 
                             <p
-                                class="text-center text-sm font-black uppercase tracking-[0.18em] text-blue-700"
+                                class="text-center text-sm font-black tracking-[0.18em] text-blue-700 uppercase"
                             >
                                 Monitoring Hub
                             </p>
@@ -410,7 +411,7 @@ const formatDateTime = (value: string | null) => {
 
                         <div>
                             <p
-                                class="text-sm font-black uppercase tracking-wide text-blue-700"
+                                class="text-sm font-black tracking-wide text-blue-700 uppercase"
                             >
                                 Total Requests
                             </p>
@@ -434,7 +435,7 @@ const formatDateTime = (value: string | null) => {
 
                         <div>
                             <p
-                                class="text-sm font-black uppercase tracking-wide text-orange-600"
+                                class="text-sm font-black tracking-wide text-orange-600 uppercase"
                             >
                                 Pending
                             </p>
@@ -458,7 +459,7 @@ const formatDateTime = (value: string | null) => {
 
                         <div>
                             <p
-                                class="text-sm font-black uppercase tracking-wide text-green-700"
+                                class="text-sm font-black tracking-wide text-green-700 uppercase"
                             >
                                 Cleared
                             </p>
@@ -482,7 +483,7 @@ const formatDateTime = (value: string | null) => {
 
                         <div>
                             <p
-                                class="text-sm font-black uppercase tracking-wide text-red-600"
+                                class="text-sm font-black tracking-wide text-red-600 uppercase"
                             >
                                 Needs Attention
                             </p>
@@ -506,7 +507,7 @@ const formatDateTime = (value: string | null) => {
 
                         <div>
                             <p
-                                class="text-sm font-black uppercase tracking-wide text-purple-700"
+                                class="text-sm font-black tracking-wide text-purple-700 uppercase"
                             >
                                 Ready for Final
                             </p>
@@ -528,7 +529,7 @@ const formatDateTime = (value: string | null) => {
                 >
                     <div>
                         <p
-                            class="text-xs font-black uppercase tracking-[0.18em] text-slate-400"
+                            class="text-xs font-black tracking-[0.18em] text-slate-400 uppercase"
                         >
                             Clearance Request Registry
                         </p>
@@ -599,13 +600,13 @@ const formatDateTime = (value: string | null) => {
                         <div class="flex flex-col gap-2 sm:flex-row">
                             <div class="relative">
                                 <Search
-                                    class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400"
+                                    class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-slate-400"
                                 />
 
                                 <input
                                     v-model="searchQuery"
                                     type="text"
-                                    class="w-full rounded-2xl border border-slate-200 bg-white py-2.5 pl-10 pr-4 text-sm font-medium text-slate-900 shadow-sm outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 sm:w-64"
+                                    class="w-full rounded-2xl border border-slate-200 bg-white py-2.5 pr-4 pl-10 text-sm font-medium text-slate-900 shadow-sm outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 sm:w-64"
                                     placeholder="Search name, ID, or course"
                                 />
                             </div>
@@ -662,55 +663,55 @@ const formatDateTime = (value: string | null) => {
                         <thead class="bg-slate-50 text-slate-500">
                             <tr>
                                 <th
-                                    class="px-6 py-4 text-xs font-black uppercase tracking-wide"
+                                    class="px-6 py-4 text-xs font-black tracking-wide uppercase"
                                 >
                                     Student
                                 </th>
 
                                 <th
-                                    class="px-6 py-4 text-xs font-black uppercase tracking-wide"
+                                    class="px-6 py-4 text-xs font-black tracking-wide uppercase"
                                 >
                                     Student ID
                                 </th>
 
                                 <th
-                                    class="px-6 py-4 text-xs font-black uppercase tracking-wide"
+                                    class="px-6 py-4 text-xs font-black tracking-wide uppercase"
                                 >
                                     Course
                                 </th>
 
                                 <th
-                                    class="px-6 py-4 text-xs font-black uppercase tracking-wide"
+                                    class="px-6 py-4 text-xs font-black tracking-wide uppercase"
                                 >
                                     Semester
                                 </th>
 
                                 <th
-                                    class="px-6 py-4 text-xs font-black uppercase tracking-wide"
+                                    class="px-6 py-4 text-xs font-black tracking-wide uppercase"
                                 >
                                     School Year
                                 </th>
 
                                 <th
-                                    class="px-6 py-4 text-xs font-black uppercase tracking-wide"
+                                    class="px-6 py-4 text-xs font-black tracking-wide uppercase"
                                 >
                                     Office Progress
                                 </th>
 
                                 <th
-                                    class="px-6 py-4 text-xs font-black uppercase tracking-wide"
+                                    class="px-6 py-4 text-xs font-black tracking-wide uppercase"
                                 >
                                     Status
                                 </th>
 
                                 <th
-                                    class="px-6 py-4 text-xs font-black uppercase tracking-wide"
+                                    class="px-6 py-4 text-xs font-black tracking-wide uppercase"
                                 >
                                     Cleared At
                                 </th>
 
                                 <th
-                                    class="px-6 py-4 text-right text-xs font-black uppercase tracking-wide"
+                                    class="px-6 py-4 text-right text-xs font-black tracking-wide uppercase"
                                 >
                                     Actions
                                 </th>
@@ -867,7 +868,7 @@ const formatDateTime = (value: string | null) => {
             >
                 <div>
                     <p
-                        class="text-xs font-black uppercase tracking-[0.18em] text-blue-700"
+                        class="text-xs font-black tracking-[0.18em] text-blue-700 uppercase"
                     >
                         Clearance Request Details
                     </p>
@@ -895,7 +896,9 @@ const formatDateTime = (value: string | null) => {
 
             <div class="max-h-[75vh] overflow-y-auto p-6">
                 <section class="grid gap-4 md:grid-cols-3">
-                    <div class="rounded-3xl border border-slate-200 bg-slate-50 p-5">
+                    <div
+                        class="rounded-3xl border border-slate-200 bg-slate-50 p-5"
+                    >
                         <p class="font-black text-blue-700">Request Info</p>
 
                         <p class="mt-3 text-sm text-slate-600">
@@ -920,10 +923,10 @@ const formatDateTime = (value: string | null) => {
                         </p>
                     </div>
 
-                    <div class="rounded-3xl border border-slate-200 bg-slate-50 p-5">
-                        <p class="font-black text-green-700">
-                            Overall Status
-                        </p>
+                    <div
+                        class="rounded-3xl border border-slate-200 bg-slate-50 p-5"
+                    >
+                        <p class="font-black text-green-700">Overall Status</p>
 
                         <div class="mt-3">
                             <span
@@ -944,7 +947,9 @@ const formatDateTime = (value: string | null) => {
                         </p>
                     </div>
 
-                    <div class="rounded-3xl border border-slate-200 bg-slate-50 p-5">
+                    <div
+                        class="rounded-3xl border border-slate-200 bg-slate-50 p-5"
+                    >
                         <p class="font-black text-purple-700">
                             Office Progress
                         </p>
@@ -987,37 +992,37 @@ const formatDateTime = (value: string | null) => {
                             <thead class="bg-slate-50 text-slate-500">
                                 <tr>
                                     <th
-                                        class="px-6 py-4 text-xs font-black uppercase tracking-wide"
+                                        class="px-6 py-4 text-xs font-black tracking-wide uppercase"
                                     >
                                         Office
                                     </th>
 
                                     <th
-                                        class="px-6 py-4 text-xs font-black uppercase tracking-wide"
+                                        class="px-6 py-4 text-xs font-black tracking-wide uppercase"
                                     >
                                         Type
                                     </th>
 
                                     <th
-                                        class="px-6 py-4 text-xs font-black uppercase tracking-wide"
+                                        class="px-6 py-4 text-xs font-black tracking-wide uppercase"
                                     >
                                         Status
                                     </th>
 
                                     <th
-                                        class="px-6 py-4 text-xs font-black uppercase tracking-wide"
+                                        class="px-6 py-4 text-xs font-black tracking-wide uppercase"
                                     >
                                         Approver
                                     </th>
 
                                     <th
-                                        class="px-6 py-4 text-xs font-black uppercase tracking-wide"
+                                        class="px-6 py-4 text-xs font-black tracking-wide uppercase"
                                     >
                                         Acted At
                                     </th>
 
                                     <th
-                                        class="px-6 py-4 text-xs font-black uppercase tracking-wide"
+                                        class="px-6 py-4 text-xs font-black tracking-wide uppercase"
                                     >
                                         Remarks
                                     </th>
