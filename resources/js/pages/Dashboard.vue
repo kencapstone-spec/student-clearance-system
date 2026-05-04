@@ -475,34 +475,34 @@ const submitClearanceRequest = () => {
     <Head title="Student Dashboard" />
 
     <div
-        class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/40 p-4 text-slate-900 md:p-6"
+        class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/40 p-3 text-slate-900 sm:p-4 md:p-6"
     >
-        <div class="mx-auto flex max-w-7xl flex-col gap-6">
+        <div class="mx-auto flex max-w-7xl flex-col gap-4 md:gap-6">
             <!-- Welcome Banner -->
             <!-- Welcome Banner -->
             <section
-                class="overflow-hidden rounded-[2rem] border shadow-xl shadow-slate-200/70"
+                class="overflow-hidden rounded-3xl border shadow-xl shadow-slate-200/70 md:rounded-[2rem]"
                 :class="courseTheme.bannerClass"
             >
-                <div class="grid gap-6 p-6 md:grid-cols-[1fr_320px] md:p-8">
-                    <div class="flex flex-col justify-center gap-5">
+                <div class="grid gap-4 p-4 md:grid-cols-[1fr_320px] md:gap-6 md:p-8">
+                    <div class="flex flex-col justify-center gap-4 md:gap-5">
                         <div>
                             <p
-                                class="text-sm font-black tracking-[0.16em] uppercase"
+                                class="text-xs font-black tracking-[0.14em] uppercase md:text-sm md:tracking-[0.16em]"
                                 :class="courseTheme.accentTextClass"
                             >
                                 Student Clearance System
                             </p>
 
                             <h1
-                                class="mt-3 text-4xl font-black tracking-tight"
+                                class="mt-2 text-3xl font-black tracking-tight md:mt-3 md:text-4xl"
                                 :class="courseTheme.headingTextClass"
                             >
                                 Welcome, {{ student.name }}!
                             </h1>
 
                             <p
-                                class="mt-3 max-w-2xl text-base leading-7"
+                                class="mt-2 max-w-2xl text-sm leading-6 md:mt-3 md:text-base md:leading-7"
                                 :class="courseTheme.softTextClass"
                             >
                                 Track your clearance progress, review office
@@ -510,7 +510,7 @@ const submitClearanceRequest = () => {
                                 requests when needed.
                             </p>
 
-                            <div class="mt-4 flex flex-wrap items-center gap-2">
+                            <div class="mt-3 flex flex-wrap items-center gap-2 md:mt-4">
                                 <span
                                     class="inline-flex rounded-full bg-white/85 px-3 py-1 text-xs font-black shadow-sm"
                                     :class="courseTheme.accentTextClass"
@@ -529,13 +529,13 @@ const submitClearanceRequest = () => {
                         </div>
 
                         <div
-                            class="rounded-[1.5rem] border border-white/70 bg-white/90 p-5 shadow-lg shadow-slate-200/70 backdrop-blur md:max-w-2xl"
+                            class="rounded-2xl border border-white/70 bg-white/90 p-4 shadow-lg shadow-slate-200/70 backdrop-blur md:max-w-2xl md:rounded-[1.5rem] md:p-5"
                         >
                             <div
-                                class="mb-3 flex items-center justify-between gap-3"
+                                class="mb-2 flex items-center justify-between gap-3 md:mb-3"
                             >
                                 <span
-                                    class="text-lg font-black"
+                                    class="text-base font-black md:text-lg"
                                     :class="courseTheme.accentTextClass"
                                 >
                                     {{ progressPercentage }}% Completed
@@ -549,7 +549,7 @@ const submitClearanceRequest = () => {
                             </div>
 
                             <div
-                                class="h-3 overflow-hidden rounded-full bg-slate-100"
+                                class="h-2.5 overflow-hidden rounded-full bg-slate-100 md:h-3"
                             >
                                 <div
                                     class="h-full rounded-full transition-all duration-500"
@@ -558,7 +558,7 @@ const submitClearanceRequest = () => {
                                 ></div>
                             </div>
 
-                            <p class="mt-3 text-sm leading-6 text-slate-600">
+                            <p class="mt-2 text-xs leading-5 text-slate-600 md:mt-3 md:text-sm md:leading-6">
                                 {{ progressMessage }}
                             </p>
 
@@ -592,7 +592,7 @@ const submitClearanceRequest = () => {
 
                             <div
                                 v-else
-                                class="mt-4 rounded-2xl border p-4"
+                                class="mt-4 hidden rounded-2xl border p-4 md:block"
                                 :class="courseTheme.statusBoxClass"
                             >
                                 <p class="text-sm font-black">
@@ -634,31 +634,31 @@ const submitClearanceRequest = () => {
 
             <!-- Summary Cards -->
             <!-- Summary Cards -->
-            <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <section class="grid grid-cols-2 gap-3 md:gap-4 xl:grid-cols-4">
                 <div
-                    class="rounded-[1.5rem] border border-slate-200 bg-white/95 p-6 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl"
+                    class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-[1.5rem] md:p-6"
                 >
-                    <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-3 md:gap-4">
                         <div
-                            class="flex h-14 w-14 items-center justify-center rounded-2xl text-2xl shadow-sm"
+                            class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-xl shadow-sm md:h-14 md:w-14 md:rounded-2xl md:text-2xl"
                             :class="courseTheme.iconBgClass"
                         >
                             👥
                         </div>
                         <div>
                             <p
-                                class="text-sm font-black tracking-wide uppercase"
+                                class="text-[0.65rem] font-black leading-tight tracking-wide uppercase md:text-sm"
                                 :class="courseTheme.accentTextClass"
                             >
                                 Total Cleared
                             </p>
                             <p
-                                class="mt-1 text-3xl font-black"
+                                class="mt-1 text-2xl font-black md:text-3xl"
                                 :class="courseTheme.headingTextClass"
                             >
                                 {{ approvedCount }} / {{ offices.length }}
                             </p>
-                            <p class="text-sm font-medium text-slate-500">
+                            <p class="text-xs font-medium text-slate-500 md:text-sm">
                                 Departments
                             </p>
                         </div>
@@ -666,27 +666,27 @@ const submitClearanceRequest = () => {
                 </div>
 
                 <div
-                    class="rounded-[1.5rem] border border-slate-200 bg-white/95 p-6 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl"
+                    class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-[1.5rem] md:p-6"
                 >
-                    <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-3 md:gap-4">
                         <div
-                            class="flex h-14 w-14 items-center justify-center rounded-2xl bg-orange-100 text-2xl shadow-sm"
+                            class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-orange-100 text-xl shadow-sm md:h-14 md:w-14 md:rounded-2xl md:text-2xl"
                         >
                             ⏰
                         </div>
                         <div>
                             <p
-                                class="text-sm font-black tracking-wide text-orange-600 uppercase"
+                                class="text-[0.65rem] font-black leading-tight tracking-wide text-orange-600 uppercase md:text-sm"
                             >
                                 Pending Requests
                             </p>
                             <p
-                                class="mt-1 text-3xl font-black"
+                                class="mt-1 text-2xl font-black md:text-3xl"
                                 :class="courseTheme.headingTextClass"
                             >
                                 {{ pendingCount }}
                             </p>
-                            <p class="text-sm font-medium text-slate-500">
+                            <p class="text-xs font-medium text-slate-500 md:text-sm">
                                 Departments
                             </p>
                         </div>
@@ -694,27 +694,27 @@ const submitClearanceRequest = () => {
                 </div>
 
                 <div
-                    class="rounded-[1.5rem] border border-slate-200 bg-white/95 p-6 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl"
+                    class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-[1.5rem] md:p-6"
                 >
-                    <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-3 md:gap-4">
                         <div
-                            class="flex h-14 w-14 items-center justify-center rounded-2xl bg-green-100 text-2xl shadow-sm"
+                            class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-green-100 text-xl shadow-sm md:h-14 md:w-14 md:rounded-2xl md:text-2xl"
                         >
                             ✅
                         </div>
                         <div>
                             <p
-                                class="text-sm font-black tracking-wide text-green-700 uppercase"
+                                class="text-[0.65rem] font-black leading-tight tracking-wide text-green-700 uppercase md:text-sm"
                             >
                                 Approved
                             </p>
                             <p
-                                class="mt-1 text-3xl font-black"
+                                class="mt-1 text-2xl font-black md:text-3xl"
                                 :class="courseTheme.headingTextClass"
                             >
                                 {{ approvedCount }}
                             </p>
-                            <p class="text-sm font-medium text-slate-500">
+                            <p class="text-xs font-medium text-slate-500 md:text-sm">
                                 Departments
                             </p>
                         </div>
@@ -722,27 +722,27 @@ const submitClearanceRequest = () => {
                 </div>
 
                 <div
-                    class="rounded-[1.5rem] border border-slate-200 bg-white/95 p-6 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl"
+                    class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-[1.5rem] md:p-6"
                 >
-                    <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-3 md:gap-4">
                         <div
-                            class="flex h-14 w-14 items-center justify-center rounded-2xl bg-red-100 text-2xl shadow-sm"
+                            class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-red-100 text-xl shadow-sm md:h-14 md:w-14 md:rounded-2xl md:text-2xl"
                         >
                             ❌
                         </div>
                         <div>
                             <p
-                                class="text-sm font-black tracking-wide text-red-600 uppercase"
+                                class="text-[0.65rem] font-black leading-tight tracking-wide text-red-600 uppercase md:text-sm"
                             >
                                 Not Cleared
                             </p>
                             <p
-                                class="mt-1 text-3xl font-black"
+                                class="mt-1 text-2xl font-black md:text-3xl"
                                 :class="courseTheme.headingTextClass"
                             >
                                 {{ notClearedCount }}
                             </p>
-                            <p class="text-sm font-medium text-slate-500">
+                            <p class="text-xs font-medium text-slate-500 md:text-sm">
                                 Departments
                             </p>
                         </div>
@@ -752,15 +752,15 @@ const submitClearanceRequest = () => {
 
             <!-- Main Content -->
             <!-- Main Content -->
-            <section class="grid gap-6 xl:grid-cols-2">
+            <section class="order-4 grid gap-4 xl:order-3 xl:grid-cols-2 xl:gap-6">
                 <!-- Recent Activity -->
                 <div
-                    class="rounded-[1.5rem] border border-slate-200 bg-white/95 p-6 shadow-sm shadow-slate-200/70"
+                    class="order-2 rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/70 md:rounded-[1.5rem] md:p-6 xl:order-1"
                 >
-                    <div class="mb-5 flex items-center justify-between">
+                    <div class="mb-3 flex items-center justify-between md:mb-5">
                         <div>
                             <p
-                                class="text-xs font-black tracking-[0.18em] text-slate-400 uppercase"
+                                class="hidden text-xs font-black tracking-[0.18em] text-slate-400 uppercase md:block"
                             >
                                 Latest Updates
                             </p>
@@ -784,7 +784,7 @@ const submitClearanceRequest = () => {
 
                     <div
                         v-if="!clearanceRequest"
-                        class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center"
+                        class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4 text-center md:p-8"
                     >
                         <p class="font-bold text-slate-700">
                             No recent activity yet.
@@ -798,7 +798,7 @@ const submitClearanceRequest = () => {
                         <div
                             v-for="office in officeStatuses.slice(0, 5)"
                             :key="office.id"
-                            class="flex items-center justify-between gap-4 rounded-2xl border border-slate-100 bg-slate-50/70 px-4 py-3 text-sm transition hover:border-slate-200 hover:bg-white hover:shadow-sm"
+                            class="flex items-center justify-between gap-3 rounded-xl border border-slate-100 bg-slate-50/70 px-3 py-2.5 text-sm transition hover:border-slate-200 hover:bg-white hover:shadow-sm md:rounded-2xl md:px-4 md:py-3"
                         >
                             <div>
                                 <p
@@ -826,12 +826,12 @@ const submitClearanceRequest = () => {
 
                 <!-- My Clearance Status -->
                 <div
-                    class="rounded-[1.5rem] border border-slate-200 bg-white/95 p-6 shadow-sm shadow-slate-200/70"
+                    class="order-1 rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/70 md:rounded-[1.5rem] md:p-6 xl:order-2"
                 >
-                    <div class="mb-5 flex items-center justify-between">
+                    <div class="mb-3 flex items-center justify-between md:mb-5">
                         <div>
                             <p
-                                class="text-xs font-black tracking-[0.18em] text-slate-400 uppercase"
+                                class="hidden text-xs font-black tracking-[0.18em] text-slate-400 uppercase md:block"
                             >
                                 Office Breakdown
                             </p>
@@ -853,11 +853,11 @@ const submitClearanceRequest = () => {
                         </button>
                     </div>
 
-                    <div class="max-h-96 space-y-3 overflow-y-auto pr-2">
+                    <div class="max-h-[22rem] space-y-2 overflow-y-auto pr-1 md:max-h-96 md:space-y-3 md:pr-2">
                         <div
                             v-for="office in officeStatuses"
                             :key="office.id"
-                            class="flex items-start justify-between gap-4 rounded-2xl border border-slate-100 bg-slate-50/70 px-4 py-3 text-sm transition hover:border-slate-200 hover:bg-white hover:shadow-sm"
+                            class="flex items-center justify-between gap-3 rounded-xl border border-slate-100 bg-slate-50/70 px-3 py-2.5 text-sm transition hover:border-slate-200 hover:bg-white hover:shadow-sm md:rounded-2xl md:px-4 md:py-3"
                         >
                             <div>
                                 <span
@@ -875,7 +875,7 @@ const submitClearanceRequest = () => {
                                 </p>
                             </div>
 
-                            <div class="flex flex-col items-end gap-2">
+                            <div class="flex shrink-0 flex-col items-end gap-2">
                                 <span
                                     class="rounded-full bg-white px-3 py-1 text-xs font-black shadow-sm"
                                     :class="statusClass(office.status)"
@@ -901,7 +901,7 @@ const submitClearanceRequest = () => {
 
                         <button
                             type="button"
-                            class="mt-4 w-full rounded-2xl px-4 py-3 font-black text-white shadow-md transition hover:-translate-y-0.5 hover:shadow-lg"
+                            class="mt-3 w-full rounded-xl px-4 py-2.5 text-sm font-black text-white shadow-md transition hover:-translate-y-0.5 hover:shadow-lg md:mt-4 md:rounded-2xl md:py-3 md:text-base"
                             :class="[
                                 courseTheme.primaryButtonClass,
                                 courseTheme.primaryButtonHoverClass,
@@ -926,11 +926,11 @@ const submitClearanceRequest = () => {
             <!-- Submit Request -->
             <!-- Submit Request -->
             <section
-                class="flex flex-col gap-4 rounded-[1.5rem] border border-slate-200 bg-white/95 p-6 shadow-sm shadow-slate-200/70 md:flex-row md:items-center md:justify-between"
+                class="order-3 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/70 md:flex-row md:items-center md:justify-between md:rounded-[1.5rem] md:p-6 xl:order-4"
             >
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-3 md:gap-4">
                     <div
-                        class="flex h-14 w-14 items-center justify-center rounded-2xl text-2xl shadow-sm"
+                        class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-xl shadow-sm md:h-14 md:w-14 md:rounded-2xl md:text-2xl"
                         :class="courseTheme.iconBgClass"
                     >
                         📄
@@ -938,19 +938,19 @@ const submitClearanceRequest = () => {
 
                     <div>
                         <p
-                            class="text-xs font-black tracking-[0.18em] text-slate-400 uppercase"
+                            class="hidden text-xs font-black tracking-[0.18em] text-slate-400 uppercase md:block"
                         >
                             Clearance Request
                         </p>
 
                         <h2
-                            class="mt-1 text-xl font-black"
+                            class="mt-1 text-lg font-black md:text-xl"
                             :class="courseTheme.headingTextClass"
                         >
                             Submit New Clearance Request
                         </h2>
 
-                        <p class="text-sm font-medium text-slate-500">
+                        <p class="text-xs font-medium text-slate-500 md:text-sm">
                             Need to request clearance from all required offices?
                         </p>
                     </div>
@@ -958,7 +958,7 @@ const submitClearanceRequest = () => {
 
                 <button
                     type="button"
-                    class="rounded-2xl px-6 py-3 font-black text-white shadow-md transition hover:-translate-y-0.5 hover:shadow-lg disabled:translate-y-0 disabled:shadow-none"
+                    class="w-full rounded-2xl px-5 py-3 text-sm font-black text-white shadow-md transition hover:-translate-y-0.5 hover:shadow-lg disabled:translate-y-0 disabled:shadow-none md:w-auto md:px-6 md:text-base"
                     :class="
                         requestableOffices.length === 0
                             ? 'cursor-not-allowed bg-slate-400'
