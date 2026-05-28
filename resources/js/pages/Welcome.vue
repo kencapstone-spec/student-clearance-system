@@ -31,11 +31,9 @@ withDefaults(
 <template>
     <Head title="Student Clearance System" />
 
-    <div class="min-h-screen overflow-hidden bg-slate-50 text-slate-950">
+    <div class="min-h-screen overflow-x-hidden bg-slate-50 text-slate-950">
         <!-- Hero Background -->
-        <section
-            class="relative overflow-hidden bg-slate-950 text-white"
-        >
+        <section class="relative overflow-hidden bg-slate-950 text-white">
             <div class="pointer-events-none absolute inset-0">
                 <div
                     class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(37,99,235,0.35),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(14,165,233,0.22),transparent_34%)]"
@@ -58,44 +56,53 @@ withDefaults(
             <header
                 class="relative z-20 border-b border-white/10 bg-slate-950/75 backdrop-blur-xl"
             >
-                <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 sm:py-4">
-    <div class="flex items-center gap-2 sm:gap-3">
-        <div class="grid size-9 shrink-0 place-items-center rounded-xl bg-blue-600 text-xs font-black text-white shadow-lg shadow-blue-600/30 sm:size-11 sm:rounded-2xl sm:text-sm">
-            TPC
-        </div>
+                <div
+                    class="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6 sm:py-4"
+                >
+                    <div class="flex min-w-0 items-center gap-2 sm:gap-3">
+                        <div
+                            class="grid size-9 shrink-0 place-items-center rounded-xl bg-blue-600 text-xs font-black text-white shadow-lg shadow-blue-600/30 sm:size-11 sm:rounded-2xl sm:text-sm"
+                        >
+                            TPC
+                        </div>
 
-        <div class="hidden sm:block">
-            <p class="text-[11px] font-black uppercase tracking-[0.22em] text-blue-300">
-                Talibon Polytechnic College
-            </p>
-            <h1 class="text-base font-black tracking-tight text-white">
-                Student Clearance System
-            </h1>
-        </div>
-    </div>
+                        <div class="hidden min-w-0 sm:block">
+                            <p
+                                class="text-[11px] font-black uppercase tracking-[0.22em] text-blue-300"
+                            >
+                                Talibon Polytechnic College
+                            </p>
 
-                    <nav class="flex items-center gap-3">
+                            <h1
+                                class="truncate text-base font-black tracking-tight text-white"
+                            >
+                                Student Clearance System
+                            </h1>
+                        </div>
+                    </div>
+
+                    <nav class="flex shrink-0 items-center gap-2 sm:gap-3">
                         <Link
                             v-if="$page.props.auth.user"
                             :href="dashboard()"
-                            class="inline-flex items-center gap-2 rounded-2xl bg-blue-600 px-4 py-2.5 text-sm font-black text-white shadow-lg shadow-blue-600/25 transition hover:-translate-y-0.5 hover:bg-blue-500"
+                            class="inline-flex items-center gap-2 rounded-2xl bg-blue-600 px-3.5 py-2.5 text-sm font-black text-white shadow-lg shadow-blue-600/25 transition hover:-translate-y-0.5 hover:bg-blue-500 sm:px-4"
                         >
                             <LayoutDashboard class="size-4" />
                             Dashboard
                         </Link>
 
                         <template v-else>
-<Link
-    :href="login()"
-    class="inline-flex items-center justify-center whitespace-nowrap rounded-2xl border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-medium text-white/80 transition hover:-translate-y-0.5 hover:border-blue-300/40 hover:bg-white/10 hover:text-white"
->
-    Log in
-</Link>
+                            <Link
+                                :href="login()"
+                                class="inline-flex items-center justify-center whitespace-nowrap rounded-2xl border border-white/15 bg-white/5 px-3.5 py-2.5 text-sm font-medium text-white/80 transition hover:-translate-y-0.5 hover:border-blue-300/40 hover:bg-white/10 hover:text-white sm:px-4"
+                            >
+                                Log in
+                            </Link>
 
                             <Link
                                 v-if="canRegister"
                                 :href="register()"
-                                class="rounded-2xl bg-blue-600 px-4 py-2.5 text-sm font-black text-white shadow-lg shadow-blue-600/25 transition hover:-translate-y-0.5 hover:bg-blue-500"
+                                class="inline-flex items-center justify-center whitespace-nowrap rounded-2xl bg-blue-600 px-3.5 py-2.5 text-sm font-black text-white shadow-lg shadow-blue-600/25 transition hover:-translate-y-0.5 hover:bg-blue-500 sm:px-4"
                             >
                                 Register
                             </Link>
@@ -106,35 +113,40 @@ withDefaults(
 
             <!-- Hero -->
             <div
-                class="relative z-10 mx-auto grid min-h-[calc(100vh-80px)] max-w-7xl gap-12 px-6 py-16 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:py-20"
+                class="relative z-10 mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 sm:py-14 lg:min-h-[calc(100vh-80px)] lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-12 lg:py-20"
             >
                 <div>
                     <div
-                        class="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-300/25 bg-blue-400/10 px-4 py-2 text-sm font-black text-blue-100 shadow-sm"
+                        class="mb-5 inline-flex max-w-full items-center gap-2 rounded-full border border-blue-300/25 bg-blue-400/10 px-3 py-2 text-xs font-black text-blue-100 shadow-sm sm:mb-6 sm:px-4 sm:text-sm"
                     >
-                        <Sparkles class="size-4 text-blue-300" />
-                        Web-based clearance with role-based approval
+                        <Sparkles class="size-4 shrink-0 text-blue-300" />
+
+                        <span>
+                            Web-based clearance with role-based approval
+                        </span>
                     </div>
 
                     <h2
-                        class="max-w-4xl text-5xl font-black leading-[1.05] tracking-tight text-white md:text-7xl"
+                        class="max-w-4xl text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl md:text-7xl"
                     >
                         A faster, cleaner, and more reliable way to process
                         student clearance.
                     </h2>
 
-                    <p class="mt-6 max-w-2xl text-lg leading-8 text-slate-300">
+                    <p
+                        class="mt-5 max-w-2xl text-base leading-7 text-slate-300 sm:mt-6 sm:text-lg sm:leading-8"
+                    >
                         Submit clearance requests online, route approvals to the
                         correct offices, monitor progress, and generate
                         QR-verified clearance receipts from one controlled
                         system.
                     </p>
 
-                    <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+                    <div class="mt-7 flex flex-col gap-3 sm:mt-8 sm:flex-row">
                         <Link
                             v-if="$page.props.auth.user"
                             :href="dashboard()"
-                            class="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-600 px-7 py-4 text-sm font-black text-white shadow-xl shadow-blue-600/30 transition hover:-translate-y-1 hover:bg-blue-500 hover:shadow-2xl"
+                            class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-blue-600 px-6 py-3.5 text-sm font-black text-white shadow-xl shadow-blue-600/30 transition hover:-translate-y-1 hover:bg-blue-500 hover:shadow-2xl sm:w-auto sm:px-7 sm:py-4"
                         >
                             Go to Dashboard
                             <ArrowRight class="size-4" />
@@ -143,7 +155,7 @@ withDefaults(
                         <template v-else>
                             <Link
                                 :href="login()"
-                                class="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-600 px-7 py-4 text-sm font-black text-white shadow-xl shadow-blue-600/30 transition hover:-translate-y-1 hover:bg-blue-500 hover:shadow-2xl"
+                                class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-blue-600 px-6 py-3.5 text-sm font-black text-white shadow-xl shadow-blue-600/30 transition hover:-translate-y-1 hover:bg-blue-500 hover:shadow-2xl sm:w-auto sm:px-7 sm:py-4"
                             >
                                 Log in to Continue
                                 <ArrowRight class="size-4" />
@@ -152,45 +164,58 @@ withDefaults(
                             <Link
                                 v-if="canRegister"
                                 :href="register()"
-                                class="inline-flex items-center justify-center rounded-2xl border border-white/15 bg-white/5 px-7 py-4 text-sm font-black text-white/85 transition hover:-translate-y-1 hover:border-blue-300/40 hover:bg-white/10 hover:text-white"
+                                class="inline-flex w-full items-center justify-center rounded-2xl border border-white/15 bg-white/5 px-6 py-3.5 text-sm font-black text-white/85 transition hover:-translate-y-1 hover:border-blue-300/40 hover:bg-white/10 hover:text-white sm:w-auto sm:px-7 sm:py-4"
                             >
                                 Register as Student
                             </Link>
                         </template>
-
                     </div>
-                    <span class="mt-10 block text-xs font-black uppercase tracking-[0.2em] text-white/35">
-    Roles
-</span>
 
-<div class="mt-10 grid grid-cols-2 gap-2">
-    <div class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-bold text-white/70">
-        <span class="text-white">Student</span> — Submit & track
-    </div>
+                    <span
+                        class="mt-8 block text-xs font-black uppercase tracking-[0.2em] text-white/35 sm:mt-10"
+                    >
+                        Roles
+                    </span>
 
-    <div class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-bold text-white/70">
-        <span class="text-white">Office Staff</span> — Review requests
-    </div>
+                    <div class="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                        <div
+                            class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-bold text-white/70"
+                        >
+                            <span class="text-white">Student</span> — Submit &
+                            track
+                        </div>
 
-    <div class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-bold text-white/70">
-        <span class="text-white">Admin</span> — Monitor & report
-    </div>
+                        <div
+                            class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-bold text-white/70"
+                        >
+                            <span class="text-white">Office Staff</span> —
+                            Review requests
+                        </div>
 
-    <div class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-bold text-white/70">
-        <span class="text-white">President</span> — Final approval
-    </div>
-</div>
+                        <div
+                            class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-bold text-white/70"
+                        >
+                            <span class="text-white">Admin</span> — Monitor &
+                            report
+                        </div>
+
+                        <div
+                            class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-bold text-white/70"
+                        >
+                            <span class="text-white">President</span> — Final
+                            approval
+                        </div>
+                    </div>
                 </div>
 
-
                 <!-- Workflow Card -->
-                <div class="relative">
+                <div class="relative mt-2 lg:mt-0">
                     <div
                         class="absolute -inset-6 rounded-[3rem] bg-blue-500/20 blur-3xl"
                     ></div>
 
                     <div
-                        class="relative rounded-[2rem] border border-white/10 bg-white/[0.06] p-6 shadow-2xl shadow-black/30 backdrop-blur-xl"
+                        class="relative rounded-[2rem] border border-white/10 bg-white/[0.06] p-4 shadow-2xl shadow-black/30 backdrop-blur-xl sm:p-6"
                     >
                         <div class="flex items-start justify-between gap-4">
                             <div>
@@ -200,24 +225,26 @@ withDefaults(
                                     Core Workflow
                                 </p>
 
-                                <h3 class="mt-2 text-3xl font-black text-white">
+                                <h3
+                                    class="mt-2 text-2xl font-black text-white sm:text-3xl"
+                                >
                                     Clearance Process
                                 </h3>
                             </div>
 
                             <div
-                                class="grid size-14 place-items-center rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-600/30"
+                                class="grid size-12 shrink-0 place-items-center rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-600/30 sm:size-14"
                             >
-                                <ClipboardCheck class="size-7" />
+                                <ClipboardCheck class="size-6 sm:size-7" />
                             </div>
                         </div>
 
-                        <div class="mt-7 space-y-3">
+                        <div class="mt-6 space-y-3 sm:mt-7">
                             <div
-                                class="flex items-start gap-4 rounded-2xl border border-white/10 bg-white/[0.05] p-4 transition hover:-translate-y-0.5 hover:border-blue-300/30 hover:bg-white/[0.08]"
+                                class="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.05] p-3 transition hover:-translate-y-0.5 hover:border-blue-300/30 hover:bg-white/[0.08] sm:gap-4 sm:p-4"
                             >
                                 <div
-                                    class="grid size-11 shrink-0 place-items-center rounded-2xl bg-blue-500/15 text-blue-300"
+                                    class="grid size-10 shrink-0 place-items-center rounded-2xl bg-blue-500/15 text-blue-300 sm:size-11"
                                 >
                                     <FileCheck2 class="size-5" />
                                 </div>
@@ -227,22 +254,26 @@ withDefaults(
                                         Student Request
                                     </p>
 
-                                    <p class="mt-1 text-sm leading-6 text-slate-400">
+                                    <p
+                                        class="mt-1 text-sm leading-6 text-slate-400"
+                                    >
                                         Students submit clearance requests and
                                         follow course-assigned offices.
                                     </p>
                                 </div>
 
-                                <span class="text-xs font-black text-white/20">
+                                <span
+                                    class="hidden text-xs font-black text-white/20 sm:block"
+                                >
                                     01
                                 </span>
                             </div>
 
                             <div
-                                class="flex items-start gap-4 rounded-2xl border border-white/10 bg-white/[0.05] p-4 transition hover:-translate-y-0.5 hover:border-green-300/30 hover:bg-white/[0.08]"
+                                class="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.05] p-3 transition hover:-translate-y-0.5 hover:border-green-300/30 hover:bg-white/[0.08] sm:gap-4 sm:p-4"
                             >
                                 <div
-                                    class="grid size-11 shrink-0 place-items-center rounded-2xl bg-green-500/15 text-green-300"
+                                    class="grid size-10 shrink-0 place-items-center rounded-2xl bg-green-500/15 text-green-300 sm:size-11"
                                 >
                                     <Users class="size-5" />
                                 </div>
@@ -252,22 +283,26 @@ withDefaults(
                                         Office Approval
                                     </p>
 
-                                    <p class="mt-1 text-sm leading-6 text-slate-400">
+                                    <p
+                                        class="mt-1 text-sm leading-6 text-slate-400"
+                                    >
                                         Office staff review only the requests
                                         assigned to their office.
                                     </p>
                                 </div>
 
-                                <span class="text-xs font-black text-white/20">
+                                <span
+                                    class="hidden text-xs font-black text-white/20 sm:block"
+                                >
                                     02
                                 </span>
                             </div>
 
                             <div
-                                class="flex items-start gap-4 rounded-2xl border border-white/10 bg-white/[0.05] p-4 transition hover:-translate-y-0.5 hover:border-purple-300/30 hover:bg-white/[0.08]"
+                                class="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.05] p-3 transition hover:-translate-y-0.5 hover:border-purple-300/30 hover:bg-white/[0.08] sm:gap-4 sm:p-4"
                             >
                                 <div
-                                    class="grid size-11 shrink-0 place-items-center rounded-2xl bg-purple-500/15 text-purple-300"
+                                    class="grid size-10 shrink-0 place-items-center rounded-2xl bg-purple-500/15 text-purple-300 sm:size-11"
                                 >
                                     <ShieldCheck class="size-5" />
                                 </div>
@@ -277,22 +312,26 @@ withDefaults(
                                         Final Approval
                                     </p>
 
-                                    <p class="mt-1 text-sm leading-6 text-slate-400">
+                                    <p
+                                        class="mt-1 text-sm leading-6 text-slate-400"
+                                    >
                                         The President gives final clearance
                                         approval after all offices clear.
                                     </p>
                                 </div>
 
-                                <span class="text-xs font-black text-white/20">
+                                <span
+                                    class="hidden text-xs font-black text-white/20 sm:block"
+                                >
                                     03
                                 </span>
                             </div>
 
                             <div
-                                class="flex items-start gap-4 rounded-2xl border border-white/10 bg-white/[0.05] p-4 transition hover:-translate-y-0.5 hover:border-orange-300/30 hover:bg-white/[0.08]"
+                                class="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.05] p-3 transition hover:-translate-y-0.5 hover:border-orange-300/30 hover:bg-white/[0.08] sm:gap-4 sm:p-4"
                             >
                                 <div
-                                    class="grid size-11 shrink-0 place-items-center rounded-2xl bg-orange-500/15 text-orange-300"
+                                    class="grid size-10 shrink-0 place-items-center rounded-2xl bg-orange-500/15 text-orange-300 sm:size-11"
                                 >
                                     <QrCode class="size-5" />
                                 </div>
@@ -302,13 +341,17 @@ withDefaults(
                                         Receipt Verification
                                     </p>
 
-                                    <p class="mt-1 text-sm leading-6 text-slate-400">
+                                    <p
+                                        class="mt-1 text-sm leading-6 text-slate-400"
+                                    >
                                         Cleared students print QR-verified
                                         clearance receipts.
                                     </p>
                                 </div>
 
-                                <span class="text-xs font-black text-white/20">
+                                <span
+                                    class="hidden text-xs font-black text-white/20 sm:block"
+                                >
                                     04
                                 </span>
                             </div>
@@ -320,7 +363,7 @@ withDefaults(
             <!-- Stats Strip -->
             <div class="relative z-10 border-y border-white/10 bg-white/[0.04]">
                 <div
-                    class="mx-auto grid max-w-7xl gap-4 px-6 py-8 sm:grid-cols-2 lg:grid-cols-4"
+                    class="mx-auto grid max-w-7xl gap-4 px-4 py-6 sm:grid-cols-2 sm:px-6 sm:py-8 lg:grid-cols-4"
                 >
                     <div
                         class="rounded-3xl border border-white/10 bg-white/[0.04] p-5"
@@ -363,7 +406,7 @@ withDefaults(
 
         <!-- Features -->
         <main class="relative z-10 bg-slate-50">
-            <section class="mx-auto max-w-7xl px-6 py-20">
+            <section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:py-20">
                 <div class="max-w-3xl">
                     <p
                         class="text-xs font-black uppercase tracking-[0.22em] text-blue-700"
@@ -372,13 +415,15 @@ withDefaults(
                     </p>
 
                     <h2
-                        class="mt-4 text-4xl font-black tracking-tight text-blue-950 md:text-5xl"
+                        class="mt-4 text-3xl font-black tracking-tight text-blue-950 sm:text-4xl md:text-5xl"
                     >
                         Everything the clearance process needs — without
                         unnecessary clutter.
                     </h2>
 
-                    <p class="mt-4 text-lg leading-8 text-slate-600">
+                    <p
+                        class="mt-4 text-base leading-7 text-slate-600 sm:text-lg sm:leading-8"
+                    >
                         The system is designed around the actual clearance
                         workflow: request submission, office approval, final
                         approval, reporting, receipt printing, and QR
@@ -388,7 +433,7 @@ withDefaults(
 
                 <div class="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
                     <div
-                        class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl"
+                        class="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl sm:p-6"
                     >
                         <div
                             class="grid size-14 place-items-center rounded-2xl bg-blue-50 text-blue-700"
@@ -407,7 +452,7 @@ withDefaults(
                     </div>
 
                     <div
-                        class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl"
+                        class="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl sm:p-6"
                     >
                         <div
                             class="grid size-14 place-items-center rounded-2xl bg-green-50 text-green-700"
@@ -426,7 +471,7 @@ withDefaults(
                     </div>
 
                     <div
-                        class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl"
+                        class="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl sm:p-6"
                     >
                         <div
                             class="grid size-14 place-items-center rounded-2xl bg-orange-50 text-orange-700"
@@ -445,7 +490,7 @@ withDefaults(
                     </div>
 
                     <div
-                        class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl"
+                        class="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl sm:p-6"
                     >
                         <div
                             class="grid size-14 place-items-center rounded-2xl bg-purple-50 text-purple-700"
@@ -464,7 +509,7 @@ withDefaults(
                     </div>
 
                     <div
-                        class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl"
+                        class="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl sm:p-6"
                     >
                         <div
                             class="grid size-14 place-items-center rounded-2xl bg-cyan-50 text-cyan-700"
@@ -483,7 +528,7 @@ withDefaults(
                     </div>
 
                     <div
-                        class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl"
+                        class="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl sm:p-6"
                     >
                         <div
                             class="grid size-14 place-items-center rounded-2xl bg-rose-50 text-rose-700"
@@ -505,7 +550,7 @@ withDefaults(
 
             <!-- How It Works -->
             <section class="border-y border-slate-200 bg-white">
-                <div class="mx-auto max-w-7xl px-6 py-20">
+                <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:py-20">
                     <div class="max-w-3xl">
                         <p
                             class="text-xs font-black uppercase tracking-[0.22em] text-blue-700"
@@ -514,17 +559,15 @@ withDefaults(
                         </p>
 
                         <h2
-                            class="mt-4 text-4xl font-black tracking-tight text-blue-950 md:text-5xl"
+                            class="mt-4 text-3xl font-black tracking-tight text-blue-950 sm:text-4xl md:text-5xl"
                         >
                             From request to receipt in four clear steps.
                         </h2>
                     </div>
 
-                    <div
-                        class="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4"
-                    >
+                    <div class="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
                         <div
-                            class="rounded-[2rem] border border-slate-200 bg-slate-50 p-6 shadow-sm"
+                            class="rounded-[2rem] border border-slate-200 bg-slate-50 p-5 shadow-sm sm:p-6"
                         >
                             <div
                                 class="grid size-14 place-items-center rounded-full bg-blue-700 text-white"
@@ -545,7 +588,7 @@ withDefaults(
                         </div>
 
                         <div
-                            class="rounded-[2rem] border border-slate-200 bg-slate-50 p-6 shadow-sm"
+                            class="rounded-[2rem] border border-slate-200 bg-slate-50 p-5 shadow-sm sm:p-6"
                         >
                             <div
                                 class="grid size-14 place-items-center rounded-full bg-blue-700 text-white"
@@ -566,7 +609,7 @@ withDefaults(
                         </div>
 
                         <div
-                            class="rounded-[2rem] border border-slate-200 bg-slate-50 p-6 shadow-sm"
+                            class="rounded-[2rem] border border-slate-200 bg-slate-50 p-5 shadow-sm sm:p-6"
                         >
                             <div
                                 class="grid size-14 place-items-center rounded-full bg-blue-700 text-white"
@@ -587,7 +630,7 @@ withDefaults(
                         </div>
 
                         <div
-                            class="rounded-[2rem] border border-slate-200 bg-slate-50 p-6 shadow-sm"
+                            class="rounded-[2rem] border border-slate-200 bg-slate-50 p-5 shadow-sm sm:p-6"
                         >
                             <div
                                 class="grid size-14 place-items-center rounded-full bg-blue-700 text-white"
@@ -612,7 +655,7 @@ withDefaults(
 
             <!-- Roles -->
             <section class="bg-slate-950 text-white">
-                <div class="mx-auto max-w-7xl px-6 py-20">
+                <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:py-20">
                     <div class="max-w-3xl">
                         <p
                             class="text-xs font-black uppercase tracking-[0.22em] text-blue-300"
@@ -621,22 +664,22 @@ withDefaults(
                         </p>
 
                         <h2
-                            class="mt-4 text-4xl font-black tracking-tight md:text-5xl"
+                            class="mt-4 text-3xl font-black tracking-tight sm:text-4xl md:text-5xl"
                         >
                             Built for everyone involved in the clearance process.
                         </h2>
 
-                        <p class="mt-4 text-lg leading-8 text-slate-400">
+                        <p
+                            class="mt-4 text-base leading-7 text-slate-400 sm:text-lg sm:leading-8"
+                        >
                             Each user role has a focused dashboard so the system
                             stays clear, controlled, and easy to defend.
                         </p>
                     </div>
 
-                    <div
-                        class="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4"
-                    >
+                    <div class="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
                         <div
-                            class="rounded-[2rem] border border-white/10 bg-white/[0.05] p-6 transition hover:-translate-y-1 hover:border-blue-300/30 hover:bg-white/[0.08]"
+                            class="rounded-[2rem] border border-white/10 bg-white/[0.05] p-5 transition hover:-translate-y-1 hover:border-blue-300/30 hover:bg-white/[0.08] sm:p-6"
                         >
                             <GraduationCap class="size-10 text-blue-300" />
 
@@ -649,7 +692,7 @@ withDefaults(
                         </div>
 
                         <div
-                            class="rounded-[2rem] border border-white/10 bg-white/[0.05] p-6 transition hover:-translate-y-1 hover:border-green-300/30 hover:bg-white/[0.08]"
+                            class="rounded-[2rem] border border-white/10 bg-white/[0.05] p-5 transition hover:-translate-y-1 hover:border-green-300/30 hover:bg-white/[0.08] sm:p-6"
                         >
                             <Users class="size-10 text-green-300" />
 
@@ -664,7 +707,7 @@ withDefaults(
                         </div>
 
                         <div
-                            class="rounded-[2rem] border border-white/10 bg-white/[0.05] p-6 transition hover:-translate-y-1 hover:border-orange-300/30 hover:bg-white/[0.08]"
+                            class="rounded-[2rem] border border-white/10 bg-white/[0.05] p-5 transition hover:-translate-y-1 hover:border-orange-300/30 hover:bg-white/[0.08] sm:p-6"
                         >
                             <BarChart3 class="size-10 text-orange-300" />
 
@@ -677,7 +720,7 @@ withDefaults(
                         </div>
 
                         <div
-                            class="rounded-[2rem] border border-white/10 bg-white/[0.05] p-6 transition hover:-translate-y-1 hover:border-purple-300/30 hover:bg-white/[0.08]"
+                            class="rounded-[2rem] border border-white/10 bg-white/[0.05] p-5 transition hover:-translate-y-1 hover:border-purple-300/30 hover:bg-white/[0.08] sm:p-6"
                         >
                             <ShieldCheck class="size-10 text-purple-300" />
 
@@ -695,7 +738,7 @@ withDefaults(
             <!-- Footer -->
             <footer class="border-t border-slate-200 bg-white">
                 <div
-                    class="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-8 text-sm text-slate-500 md:flex-row md:items-center md:justify-between"
+                    class="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-8 text-sm text-slate-500 sm:px-6 md:flex-row md:items-center md:justify-between"
                 >
                     <p>
                         © 2026 Talibon Polytechnic College — Student Clearance
