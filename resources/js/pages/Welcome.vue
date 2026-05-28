@@ -58,30 +58,21 @@ withDefaults(
             <header
                 class="relative z-20 border-b border-white/10 bg-slate-950/75 backdrop-blur-xl"
             >
-                <div
-                    class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4"
-                >
-                    <div class="flex items-center gap-3">
-                        <div
-                            class="grid size-11 place-items-center rounded-2xl bg-blue-600 text-sm font-black text-white shadow-lg shadow-blue-600/30"
-                        >
-                            TPC
-                        </div>
+                <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 sm:py-4">
+    <div class="flex items-center gap-2 sm:gap-3">
+        <div class="grid size-9 shrink-0 place-items-center rounded-xl bg-blue-600 text-xs font-black text-white shadow-lg shadow-blue-600/30 sm:size-11 sm:rounded-2xl sm:text-sm">
+            TPC
+        </div>
 
-                        <div>
-                            <p
-                                class="text-[11px] font-black uppercase tracking-[0.22em] text-blue-300"
-                            >
-                                Talibon Polytechnic College
-                            </p>
-
-                            <h1
-                                class="text-base font-black tracking-tight text-white"
-                            >
-                                Student Clearance System
-                            </h1>
-                        </div>
-                    </div>
+        <div class="hidden sm:block">
+            <p class="text-[11px] font-black uppercase tracking-[0.22em] text-blue-300">
+                Talibon Polytechnic College
+            </p>
+            <h1 class="text-base font-black tracking-tight text-white">
+                Student Clearance System
+            </h1>
+        </div>
+    </div>
 
                     <nav class="flex items-center gap-3">
                         <Link
@@ -94,12 +85,12 @@ withDefaults(
                         </Link>
 
                         <template v-else>
-                            <Link
-                                :href="login()"
-                                class="rounded-2xl border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-black text-white/80 transition hover:-translate-y-0.5 hover:border-blue-300/40 hover:bg-white/10 hover:text-white"
-                            >
-                                Log in
-                            </Link>
+<Link
+    :href="login()"
+    class="inline-flex items-center justify-center whitespace-nowrap rounded-2xl border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-medium text-white/80 transition hover:-translate-y-0.5 hover:border-blue-300/40 hover:bg-white/10 hover:text-white"
+>
+    Log in
+</Link>
 
                             <Link
                                 v-if="canRegister"
@@ -166,44 +157,31 @@ withDefaults(
                                 Register as Student
                             </Link>
                         </template>
+
                     </div>
+                    <span class="mt-10 block text-xs font-black uppercase tracking-[0.2em] text-white/35">
+    Roles
+</span>
 
-                    <div class="mt-10 flex flex-wrap items-center gap-3">
-                        <span
-                            class="text-xs font-black uppercase tracking-[0.2em] text-white/35"
-                        >
-                            Roles
-                        </span>
+<div class="mt-10 grid grid-cols-2 gap-2">
+    <div class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-bold text-white/70">
+        <span class="text-white">Student</span> — Submit & track
+    </div>
 
-                        <div
-                            class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-bold text-white/70"
-                        >
-                            <span class="text-white">Student</span> — Submit &
-                            track
-                        </div>
+    <div class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-bold text-white/70">
+        <span class="text-white">Office Staff</span> — Review requests
+    </div>
 
-                        <div
-                            class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-bold text-white/70"
-                        >
-                            <span class="text-white">Office Staff</span> —
-                            Review requests
-                        </div>
+    <div class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-bold text-white/70">
+        <span class="text-white">Admin</span> — Monitor & report
+    </div>
 
-                        <div
-                            class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-bold text-white/70"
-                        >
-                            <span class="text-white">Admin</span> — Monitor &
-                            report
-                        </div>
-
-                        <div
-                            class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-bold text-white/70"
-                        >
-                            <span class="text-white">President</span> — Final
-                            approval
-                        </div>
-                    </div>
+    <div class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-bold text-white/70">
+        <span class="text-white">President</span> — Final approval
+    </div>
+</div>
                 </div>
+
 
                 <!-- Workflow Card -->
                 <div class="relative">
