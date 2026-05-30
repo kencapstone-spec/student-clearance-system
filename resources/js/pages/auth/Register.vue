@@ -51,7 +51,7 @@ defineOptions({
                     autocomplete="username"
                     name="student_id"
                     placeholder="Example: 2024-001"
-                    pattern="[0-9-]{8,}"
+                    pattern="[0-9\-]{8,}"
                     title="Student ID must be at least 8 characters and can contain numbers and hyphens only."
                     class="!h-12 !rounded-2xl !border-slate-200 !bg-white !px-4 !text-sm !font-semibold !text-slate-900 !shadow-sm placeholder:!font-medium placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20"
                 />
