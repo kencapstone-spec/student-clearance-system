@@ -11,6 +11,7 @@ import {
     RotateCcw,
     Save,
     ShieldCheck,
+    UserRoundCog,
     X,
 } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
@@ -38,6 +39,7 @@ defineProps<{
 const selectedCourse = ref<Course | null>(null);
 const showEditModal = ref(false);
 const showRemoveConfirmModal = ref(false);
+const showAdminMobileMoreMenu = ref(false);
 const successMessage = ref('');
 const errorMessage = ref('');
 
@@ -68,6 +70,7 @@ const openEditModal = (course: Course) => {
     form.clearErrors();
     errorMessage.value = '';
     successMessage.value = '';
+    showAdminMobileMoreMenu.value = false;
     showRemoveConfirmModal.value = false;
     showEditModal.value = true;
 };
@@ -131,23 +134,33 @@ const saveAssignments = () => {
         },
     });
 };
+
+const toggleAdminMobileMoreMenu = () => {
+    showAdminMobileMoreMenu.value = !showAdminMobileMoreMenu.value;
+};
+
+const closeAdminMobileMoreMenu = () => {
+    showAdminMobileMoreMenu.value = false;
+};
 </script>
 
 <template>
     <Head title="Course Modules" />
 
     <div
-        class="min-h-screen bg-linear-to-br from-slate-50 via-white to-blue-50/40 p-4 text-slate-900 md:p-6"
+        class="min-h-screen bg-linear-to-br from-slate-50 via-white to-blue-50/40 p-3 pb-28 text-slate-900 sm:p-4 sm:pb-28 md:p-6 md:pb-6"
     >
-        <div class="mx-auto flex max-w-7xl flex-col gap-6">
+        <div class="mx-auto flex max-w-7xl flex-col gap-4 md:gap-6">
             <!-- Hero -->
             <section
-                class="overflow-hidden rounded-4xl border border-slate-200 bg-white/95 shadow-xl shadow-slate-200/70"
+                class="overflow-hidden rounded-3xl border border-slate-200 bg-white/95 shadow-xl shadow-slate-200/70 md:rounded-4xl"
             >
-                <div class="grid gap-8 p-6 lg:grid-cols-[1fr_300px] lg:p-8">
+                <div
+                    class="grid gap-6 p-4 sm:p-6 lg:grid-cols-[1fr_300px] lg:p-8"
+                >
                     <div>
                         <div
-                            class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-blue-700"
+                            class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-3 py-2 text-[0.65rem] font-black tracking-[0.14em] text-blue-700 uppercase sm:px-4 sm:text-xs sm:tracking-[0.18em]"
                         >
                             <ShieldCheck class="size-4" />
                             Admin / OSAS Director Panel
@@ -158,13 +171,13 @@ const saveAssignments = () => {
                         >
                             <div>
                                 <h1
-                                    class="text-4xl font-black tracking-tight text-blue-950"
+                                    class="text-3xl font-black tracking-tight text-blue-950 sm:text-4xl"
                                 >
                                     Course Modules
                                 </h1>
 
                                 <p
-                                    class="mt-3 max-w-3xl text-base leading-7 text-slate-600"
+                                    class="mt-3 max-w-3xl text-sm leading-6 text-slate-600 sm:text-base sm:leading-7"
                                 >
                                     View and configure the clearance offices
                                     assigned to each course module. These
@@ -175,7 +188,7 @@ const saveAssignments = () => {
 
                             <Link
                                 href="/admin/dashboard"
-                                class="inline-flex w-fit items-center gap-2 whitespace-nowrap rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-black text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700 hover:shadow-md"
+                                class="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-black whitespace-nowrap text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700 hover:shadow-md sm:w-auto"
                             >
                                 <LayoutDashboard class="size-4" />
                                 Back to Dashboard
@@ -183,7 +196,7 @@ const saveAssignments = () => {
                         </div>
 
                         <div
-                            class="mt-5 rounded-2xl border border-amber-200 bg-amber-50/90 p-4 text-sm font-medium leading-6 text-amber-900"
+                            class="mt-5 rounded-2xl border border-amber-200 bg-amber-50/90 p-4 text-sm leading-6 font-medium text-amber-900"
                         >
                             Changes made here apply only to future or newly
                             created clearance requests. Existing clearance
@@ -210,7 +223,7 @@ const saveAssignments = () => {
                             </div>
 
                             <p
-                                class="text-center text-sm font-black uppercase tracking-[0.18em] text-blue-700"
+                                class="text-center text-sm font-black tracking-[0.18em] text-blue-700 uppercase"
                             >
                                 Module Center
                             </p>
@@ -220,23 +233,23 @@ const saveAssignments = () => {
             </section>
 
             <!-- Course Cards -->
-            <section class="grid gap-5 xl:grid-cols-2">
+            <section class="grid gap-4 xl:grid-cols-2 xl:gap-5">
                 <div
                     v-for="course in courses"
                     :key="course.id"
-                    class="overflow-hidden rounded-4xl border border-slate-200 bg-white/95 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl"
+                    class="overflow-hidden rounded-3xl border border-slate-200 bg-white/95 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-4xl"
                 >
-                    <div class="border-b border-slate-200 p-6">
+                    <div class="border-b border-slate-200 p-4 sm:p-6">
                         <div class="flex items-start justify-between gap-4">
-                            <div>
+                            <div class="min-w-0">
                                 <p
-                                    class="text-xs font-black uppercase tracking-[0.18em] text-blue-700"
+                                    class="text-xs font-black tracking-[0.18em] text-blue-700 uppercase"
                                 >
                                     {{ course.code }} Module
                                 </p>
 
                                 <h2
-                                    class="mt-2 text-2xl font-black leading-tight text-blue-950"
+                                    class="mt-2 text-xl font-black leading-tight text-blue-950 sm:text-2xl"
                                 >
                                     {{ course.name }}
                                 </h2>
@@ -252,7 +265,7 @@ const saveAssignments = () => {
                         <div class="mt-5 flex justify-end">
                             <button
                                 type="button"
-                                class="inline-flex items-center gap-2 rounded-2xl bg-blue-700 px-4 py-2.5 text-sm font-black text-white shadow-md shadow-blue-700/20 transition hover:-translate-y-0.5 hover:bg-blue-800 hover:shadow-lg"
+                                class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl bg-blue-700 px-4 py-3 text-sm font-black text-white shadow-md shadow-blue-700/20 transition hover:-translate-y-0.5 hover:bg-blue-800 hover:shadow-lg sm:w-auto"
                                 @click="openEditModal(course)"
                             >
                                 <Pencil class="size-4" />
@@ -261,16 +274,16 @@ const saveAssignments = () => {
                         </div>
                     </div>
 
-                    <div class="p-6">
+                    <div class="p-4 sm:p-6">
                         <div class="mb-4 flex items-center justify-between">
                             <div>
-                                <p
-                                    class="text-sm font-black text-blue-950"
-                                >
+                                <p class="text-sm font-black text-blue-950">
                                     Assigned Clearance Offices
                                 </p>
 
-                                <p class="mt-1 text-sm font-medium text-slate-500">
+                                <p
+                                    class="mt-1 text-sm font-medium text-slate-500"
+                                >
                                     Offices currently required for this course.
                                 </p>
                             </div>
@@ -299,21 +312,25 @@ const saveAssignments = () => {
                             <li
                                 v-for="office in course.offices"
                                 :key="office.id"
-                                class="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3 text-sm transition hover:border-blue-200 hover:bg-blue-50/70"
+                                class="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3 text-sm transition hover:border-blue-200 hover:bg-blue-50/70 sm:gap-4 sm:px-4"
                             >
-                                <div class="flex items-center gap-3">
+                                <div class="flex min-w-0 items-center gap-3">
                                     <div
                                         class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-white text-blue-700 shadow-sm"
                                     >
                                         <Building2 class="size-5" />
                                     </div>
 
-                                    <div>
-                                        <p class="font-black text-blue-950">
+                                    <div class="min-w-0">
+                                        <p
+                                            class="font-black text-blue-950"
+                                        >
                                             {{ office.name }}
                                         </p>
 
-                                        <p class="text-xs font-medium text-slate-500">
+                                        <p
+                                            class="text-xs font-medium text-slate-500"
+                                        >
                                             {{ office.group }}
                                         </p>
                                     </div>
@@ -321,7 +338,7 @@ const saveAssignments = () => {
 
                                 <span
                                     v-if="office.is_final_approver"
-                                    class="rounded-full border border-green-200 bg-green-50 px-3 py-1 text-xs font-black text-green-700"
+                                    class="shrink-0 rounded-full border border-green-200 bg-green-50 px-3 py-1 text-xs font-black text-green-700"
                                 >
                                     Final
                                 </span>
@@ -331,35 +348,35 @@ const saveAssignments = () => {
                 </div>
             </section>
         </div>
+    </div>
 
-        <!-- Edit Modal -->
+    <!-- Edit Modal -->
+    <div
+        v-if="showEditModal && selectedCourse"
+        class="fixed inset-0 z-40 flex items-end justify-center bg-slate-950/50 p-3 backdrop-blur-sm sm:items-center sm:p-4"
+        @click.self="closeEditModal()"
+    >
         <div
-            v-if="showEditModal && selectedCourse"
-            class="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/50 p-4 backdrop-blur-sm"
-            @click.self="closeEditModal()"
+            class="flex max-h-[92dvh] w-full max-w-3xl flex-col overflow-hidden rounded-t-4xl border border-slate-200 bg-white shadow-2xl shadow-slate-900/20 sm:max-h-[90vh] sm:rounded-4xl"
         >
-            <div
-                class="max-h-[90vh] w-full max-w-3xl overflow-hidden rounded-4xl border border-slate-200 bg-white shadow-2xl shadow-slate-900/20"
-            >
-                <div
-                    class="flex items-start justify-between gap-4 border-b border-slate-200 p-6"
-                >
-                    <div class="flex items-start gap-4">
+            <div class="shrink-0 border-b border-slate-200 p-4 sm:p-6">
+                <div class="flex items-start justify-between gap-4">
+                    <div class="flex min-w-0 items-start gap-3 sm:gap-4">
                         <div
-                            class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-blue-50 text-blue-700"
+                            class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-blue-50 text-blue-700 sm:h-12 sm:w-12"
                         >
                             <FileCog class="size-6" />
                         </div>
 
-                        <div>
+                        <div class="min-w-0">
                             <p
-                                class="text-xs font-black uppercase tracking-[0.18em] text-blue-700"
+                                class="text-xs font-black tracking-[0.18em] text-blue-700 uppercase"
                             >
                                 Edit Course Module
                             </p>
 
                             <h2
-                                class="mt-1 text-2xl font-black leading-tight text-blue-950"
+                                class="mt-1 text-lg font-black leading-tight text-blue-950 sm:text-2xl"
                             >
                                 {{ selectedCourse.code }} -
                                 {{ selectedCourse.name }}
@@ -375,117 +392,121 @@ const saveAssignments = () => {
 
                     <button
                         type="button"
-                        class="grid size-10 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:bg-slate-50 hover:text-slate-900"
+                        class="grid size-10 shrink-0 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:bg-slate-50 hover:text-slate-900"
                         @click="closeEditModal()"
                     >
                         <X class="size-5" />
                     </button>
                 </div>
+            </div>
 
-                <div class="max-h-[75vh] overflow-y-auto p-6">
-                    <div
-                        class="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm font-medium leading-6 text-amber-900"
+            <div class="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6">
+                <div
+                    class="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 font-medium text-amber-900"
+                >
+                    Removing an office from a course module will not delete
+                    the office and will not change old clearance records. It
+                    only affects future or newly created clearance requests
+                    for this course.
+                </div>
+
+                <div
+                    v-if="errorMessage || form.errors.office_ids"
+                    class="mt-4 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-black text-red-700"
+                >
+                    {{ errorMessage || form.errors.office_ids }}
+                </div>
+
+                <div
+                    class="mt-5 flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm"
+                >
+                    <span class="font-black text-slate-700">
+                        Selected Offices
+                    </span>
+
+                    <span
+                        class="rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-black text-blue-700"
                     >
-                        Removing an office from a course module will not delete
-                        the office and will not change old clearance records. It
-                        only affects future or newly created clearance requests
-                        for this course.
-                    </div>
+                        {{ selectedOfficeCount }} selected
+                    </span>
+                </div>
 
-                    <div
-                        v-if="errorMessage || form.errors.office_ids"
-                        class="mt-4 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-black text-red-700"
+                <div class="mt-4 grid gap-2 sm:grid-cols-2">
+                    <label
+                        v-for="office in offices"
+                        :key="office.id"
+                        class="flex min-h-16 cursor-pointer items-start gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm transition hover:border-blue-200 hover:bg-blue-50/60"
                     >
-                        {{ errorMessage || form.errors.office_ids }}
-                    </div>
+                        <input
+                            v-model="form.office_ids"
+                            type="checkbox"
+                            :value="office.id"
+                            class="mt-1 h-5 w-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                        />
 
-                    <div
-                        class="mt-5 flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm"
-                    >
-                        <span class="font-black text-slate-700">
-                            Selected Offices
-                        </span>
-
-                        <span
-                            class="rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-black text-blue-700"
-                        >
-                            {{ selectedOfficeCount }} selected
-                        </span>
-                    </div>
-
-                    <div class="mt-4 max-h-96 space-y-2 overflow-y-auto pr-1">
-                        <label
-                            v-for="office in offices"
-                            :key="office.id"
-                            class="flex cursor-pointer items-start gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm transition hover:border-blue-200 hover:bg-blue-50/60"
-                        >
-                            <input
-                                v-model="form.office_ids"
-                                type="checkbox"
-                                :value="office.id"
-                                class="mt-1 h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-                            />
-
-                            <span class="flex-1">
-                                <span class="block font-black text-blue-950">
-                                    {{ office.name }}
-                                </span>
-
-                                <span
-                                    class="mt-0.5 block text-xs font-medium text-slate-500"
-                                >
-                                    {{ office.group }}
-                                </span>
+                        <span class="min-w-0 flex-1">
+                            <span class="block font-black text-blue-950">
+                                {{ office.name }}
                             </span>
 
                             <span
-                                v-if="office.is_final_approver"
-                                class="rounded-full border border-green-200 bg-green-50 px-3 py-1 text-xs font-black text-green-700"
+                                class="mt-0.5 block text-xs font-medium text-slate-500"
                             >
-                                Final
+                                {{ office.group }}
                             </span>
-                        </label>
-                    </div>
+                        </span>
 
-                    <div
-                        class="mt-6 flex flex-col-reverse gap-3 border-t border-slate-200 pt-5 sm:flex-row sm:justify-end"
+                        <span
+                            v-if="office.is_final_approver"
+                            class="shrink-0 rounded-full border border-green-200 bg-green-50 px-3 py-1 text-xs font-black text-green-700"
+                        >
+                            Final
+                        </span>
+                    </label>
+                </div>
+            </div>
+
+            <div
+                class="shrink-0 border-t border-slate-200 bg-white p-4 sm:p-6"
+            >
+                <div class="grid grid-cols-2 gap-3 sm:flex sm:justify-end">
+                    <button
+                        type="button"
+                        class="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-black text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                        :disabled="form.processing"
+                        @click="closeEditModal()"
                     >
-                        <button
-                            type="button"
-                            class="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-black text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
-                            :disabled="form.processing"
-                            @click="closeEditModal()"
-                        >
-                            <RotateCcw class="size-4" />
-                            Cancel
-                        </button>
+                        <RotateCcw class="size-4" />
+                        Cancel
+                    </button>
 
-                        <button
-                            type="button"
-                            class="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-700 px-4 py-2.5 text-sm font-black text-white shadow-md shadow-blue-700/20 transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-blue-300"
-                            :disabled="form.processing"
-                            @click="submitAssignments"
-                        >
-                            <Save class="size-4" />
-                            {{
-                                form.processing
-                                    ? 'Saving...'
-                                    : 'Save Assignments'
-                            }}
-                        </button>
-                    </div>
+                    <button
+                        type="button"
+                        class="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-blue-700 px-4 py-3 text-sm font-black text-white shadow-md shadow-blue-700/20 transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-blue-300"
+                        :disabled="form.processing"
+                        @click="submitAssignments"
+                    >
+                        <Save class="size-4" />
+                        {{
+                            form.processing
+                                ? 'Saving...'
+                                : 'Save Assignments'
+                        }}
+                    </button>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Remove Confirmation Modal -->
+    <!-- Remove Confirmation Modal -->
+    <div
+        v-if="showRemoveConfirmModal && selectedCourse"
+        class="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/60 p-3 backdrop-blur-sm sm:items-center sm:p-4"
+    >
         <div
-            v-if="showRemoveConfirmModal && selectedCourse"
-            class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm"
+            class="flex max-h-[92dvh] w-full max-w-lg flex-col overflow-hidden rounded-t-4xl border border-slate-200 bg-white shadow-2xl shadow-slate-900/20 sm:max-h-[90vh] sm:rounded-4xl"
         >
-            <div
-                class="w-full max-w-lg rounded-4xl border border-slate-200 bg-white p-6 shadow-2xl shadow-slate-900/20"
-            >
+            <div class="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6">
                 <div class="flex items-start gap-4">
                     <div
                         class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-red-50 text-red-600"
@@ -520,19 +541,21 @@ const saveAssignments = () => {
                 </ul>
 
                 <div
-                    class="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm font-medium leading-6 text-amber-900"
+                    class="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 font-medium text-amber-900"
                 >
                     This will only update the course module assignment. It will
                     not delete existing clearance approvals, student history,
                     receipts, reports, or QR verification records.
                 </div>
+            </div>
 
-                <div
-                    class="mt-6 flex flex-col-reverse gap-3 border-t border-slate-200 pt-5 sm:flex-row sm:justify-end"
-                >
+            <div
+                class="shrink-0 border-t border-slate-200 bg-white p-4 sm:p-6"
+            >
+                <div class="grid grid-cols-2 gap-3 sm:flex sm:justify-end">
                     <button
                         type="button"
-                        class="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-black text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                        class="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-black text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
                         :disabled="form.processing"
                         @click="showRemoveConfirmModal = false"
                     >
@@ -542,17 +565,104 @@ const saveAssignments = () => {
 
                     <button
                         type="button"
-                        class="inline-flex items-center justify-center gap-2 rounded-2xl bg-red-600 px-4 py-2.5 text-sm font-black text-white shadow-md shadow-red-600/20 transition hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-red-300"
+                        class="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-red-600 px-4 py-3 text-sm font-black text-white shadow-md shadow-red-600/20 transition hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-red-300"
                         :disabled="form.processing"
                         @click="saveAssignments"
                     >
                         <CheckCircle2 class="size-4" />
                         {{
-                            form.processing ? 'Saving...' : 'Continue and Save'
+                            form.processing ? 'Saving...' : 'Continue Save'
                         }}
                     </button>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Admin Mobile More Sheet -->
+    <div
+        v-if="showAdminMobileMoreMenu"
+        class="fixed inset-x-3 bottom-24 z-40 rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl shadow-slate-900/20 md:hidden"
+    >
+        <div class="flex items-start justify-between gap-3">
+            <div>
+                <p class="text-sm font-black text-blue-950">Admin Tools</p>
+
+                <p class="mt-1 text-xs font-semibold text-slate-500">
+                    Reports and course module shortcuts.
+                </p>
+            </div>
+
+            <button
+                type="button"
+                class="grid size-10 place-items-center rounded-xl border border-slate-200 text-slate-500"
+                @click="closeAdminMobileMoreMenu"
+            >
+                <X class="size-5" />
+            </button>
+        </div>
+
+        <div class="mt-4 grid gap-2">
+            <Link
+                href="/admin/reports"
+                class="flex min-h-12 items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-black text-slate-700"
+            >
+                <span>Reports</span>
+                <span>→</span>
+            </Link>
+
+            <Link
+                href="/admin/course-modules"
+                class="flex min-h-12 items-center justify-between rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-black text-blue-700"
+            >
+                <span>Course Modules</span>
+                <span>Current</span>
+            </Link>
+        </div>
+    </div>
+
+    <!-- Admin Mobile Thumb Navigation -->
+    <nav
+        class="fixed inset-x-3 bottom-3 z-30 rounded-2xl border border-blue-200 bg-blue-950/95 p-2 shadow-2xl shadow-blue-950/25 backdrop-blur md:hidden"
+    >
+        <div class="grid grid-cols-4 gap-1">
+            <Link
+                href="/admin/dashboard"
+                class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
+            >
+                <LayoutDashboard class="size-4" />
+                <span>Home</span>
+            </Link>
+
+            <Link
+                href="/admin/users"
+                class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
+            >
+                <UserRoundCog class="size-4" />
+                <span>Users</span>
+            </Link>
+
+            <Link
+                href="/admin/clearance-requests"
+                class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
+            >
+                <ShieldCheck class="size-4" />
+                <span>Requests</span>
+            </Link>
+
+            <button
+                type="button"
+                class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
+                :class="
+                    showAdminMobileMoreMenu
+                        ? 'bg-white/15 ring-1 ring-blue-200/40'
+                        : ''
+                "
+                @click="toggleAdminMobileMoreMenu"
+            >
+                <span class="text-base leading-none">•••</span>
+                <span>More</span>
+            </button>
+        </div>
+    </nav>
 </template>

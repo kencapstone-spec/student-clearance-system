@@ -77,11 +77,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])
         ->name('notifications.mark-all-as-read');
 
-Route::get('/clearance-receipts/{clearanceRequest}', [ClearanceReceiptController::class, 'show'])
-    ->name('clearance-receipts.show');
+    Route::get('/clearance-receipts/{clearanceRequest}', [ClearanceReceiptController::class, 'show'])
+        ->name('clearance-receipts.show');
 
-Route::get('/clearance-receipts/{clearanceRequest}/download', [ClearanceReceiptController::class, 'download'])
-    ->name('clearance-receipts.download');
+    Route::get('/clearance-receipts/{clearanceRequest}/download', [ClearanceReceiptController::class, 'download'])
+        ->name('clearance-receipts.download');
 
     Route::middleware('role:student')->group(function () {
         Route::post('student/clearance-requests', [ClearanceRequestController::class, 'store'])
@@ -97,6 +97,9 @@ Route::get('/clearance-receipts/{clearanceRequest}/download', [ClearanceReceiptC
     Route::middleware('role:staff')->group(function () {
         Route::get('staff/pending-requests', [PendingRequestController::class, 'index'])
             ->name('staff.pending-requests.index');
+
+        Route::patch('staff/clearance-approvals/approve-all', [PendingRequestController::class, 'approveAll'])
+            ->name('staff.clearance-approvals.approve-all');
 
         Route::patch('staff/clearance-approvals/{approval}/approve', [PendingRequestController::class, 'approve'])
             ->name('staff.clearance-approvals.approve');

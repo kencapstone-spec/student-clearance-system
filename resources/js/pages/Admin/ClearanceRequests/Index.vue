@@ -81,6 +81,7 @@ const selectedCourse = ref('all');
 const searchQuery = ref('');
 const selectedRequest = ref<ClearanceRequest | null>(null);
 const showDetailsModal = ref(false);
+const showAdminMobileMoreMenu = ref(false);
 
 const setFilter = (filter: StatusFilter) => {
     activeFilter.value = filter;
@@ -93,6 +94,7 @@ const clearFilters = () => {
 };
 
 const openDetailsModal = (request: ClearanceRequest) => {
+    showAdminMobileMoreMenu.value = false;
     selectedRequest.value = request;
     showDetailsModal.value = true;
 };
@@ -100,6 +102,14 @@ const openDetailsModal = (request: ClearanceRequest) => {
 const closeDetailsModal = () => {
     selectedRequest.value = null;
     showDetailsModal.value = false;
+};
+
+const toggleAdminMobileMoreMenu = () => {
+    showAdminMobileMoreMenu.value = !showAdminMobileMoreMenu.value;
+};
+
+const closeAdminMobileMoreMenu = () => {
+    showAdminMobileMoreMenu.value = false;
 };
 
 const availableCourses = computed(() => {
@@ -314,17 +324,19 @@ const formatDateTime = (value: string | null) => {
     <Head title="Clearance Monitoring" />
 
     <div
-        class="min-h-screen bg-linear-to-br from-slate-50 via-white to-blue-50/40 p-4 text-slate-900 md:p-6"
+        class="min-h-screen bg-linear-to-br from-slate-50 via-white to-blue-50/40 p-3 pb-28 text-slate-900 sm:p-4 sm:pb-28 md:p-6 md:pb-6"
     >
-        <div class="mx-auto flex max-w-7xl flex-col gap-6">
+        <div class="mx-auto flex max-w-7xl flex-col gap-4 md:gap-6">
             <!-- Hero -->
             <section
-                class="overflow-hidden rounded-4xl border border-slate-200 bg-white/95 shadow-xl shadow-slate-200/70"
+                class="overflow-hidden rounded-3xl border border-slate-200 bg-white/95 shadow-xl shadow-slate-200/70 md:rounded-4xl"
             >
-                <div class="grid gap-8 p-6 lg:grid-cols-[1fr_300px] lg:p-8">
+                <div
+                    class="grid gap-6 p-4 sm:p-6 lg:grid-cols-[1fr_300px] lg:p-8"
+                >
                     <div>
                         <div
-                            class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-xs font-black tracking-[0.18em] text-blue-700 uppercase"
+                            class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-3 py-2 text-[0.65rem] font-black tracking-[0.14em] text-blue-700 uppercase sm:px-4 sm:text-xs sm:tracking-[0.18em]"
                         >
                             <ShieldCheck class="size-4" />
                             Admin / OSAS Director Panel
@@ -335,13 +347,13 @@ const formatDateTime = (value: string | null) => {
                         >
                             <div>
                                 <h1
-                                    class="text-4xl font-black tracking-tight text-blue-950"
+                                    class="text-3xl font-black tracking-tight text-blue-950 sm:text-4xl"
                                 >
                                     Clearance Monitoring
                                 </h1>
 
                                 <p
-                                    class="mt-3 max-w-3xl text-base leading-7 text-slate-600"
+                                    class="mt-3 max-w-3xl text-sm leading-6 text-slate-600 sm:text-base sm:leading-7"
                                 >
                                     Monitor student clearance requests, office
                                     approval progress, final approval readiness,
@@ -349,10 +361,12 @@ const formatDateTime = (value: string | null) => {
                                 </p>
                             </div>
 
-                            <div class="flex flex-wrap gap-3">
+                            <div
+                                class="flex flex-col gap-3 sm:flex-row sm:flex-wrap"
+                            >
                                 <Link
                                     href="/admin/users"
-                                    class="inline-flex items-center gap-2 rounded-2xl bg-blue-700 px-5 py-3 text-sm font-black text-white shadow-lg shadow-blue-700/20 transition hover:-translate-y-0.5 hover:bg-blue-800 hover:shadow-xl"
+                                    class="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-blue-700 px-5 py-3 text-sm font-black text-white shadow-lg shadow-blue-700/20 transition hover:-translate-y-0.5 hover:bg-blue-800 hover:shadow-xl sm:w-auto"
                                 >
                                     <UserRoundCog class="size-4" />
                                     Manage Users
@@ -360,7 +374,7 @@ const formatDateTime = (value: string | null) => {
 
                                 <Link
                                     href="/admin/dashboard"
-                                    class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-black text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700 hover:shadow-md"
+                                    class="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-black text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700 hover:shadow-md sm:w-auto"
                                 >
                                     <LayoutDashboard class="size-4" />
                                     Back to Dashboard
@@ -398,25 +412,29 @@ const formatDateTime = (value: string | null) => {
             </section>
 
             <!-- Summary Cards -->
-            <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+            <section
+                class="grid grid-cols-2 gap-3 md:grid-cols-2 md:gap-4 xl:grid-cols-5"
+            >
                 <div
-                    class="rounded-3xl border border-slate-200 bg-white/95 p-6 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl"
+                    class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-3xl md:p-6"
                 >
-                    <div class="flex items-center gap-4 xl:block">
+                    <div class="flex items-center gap-3 xl:block xl:gap-4">
                         <div
-                            class="grid h-14 w-14 place-items-center rounded-2xl bg-blue-50 text-blue-700 shadow-sm xl:mb-4"
+                            class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-blue-50 text-blue-700 shadow-sm md:h-14 md:w-14 xl:mb-4"
                         >
-                            <ClipboardCheck class="size-7" />
+                            <ClipboardCheck class="size-6 md:size-7" />
                         </div>
 
                         <div>
                             <p
-                                class="text-sm font-black tracking-wide text-blue-700 uppercase"
+                                class="text-[0.65rem] leading-tight font-black tracking-wide text-blue-700 uppercase sm:text-sm"
                             >
                                 Total Requests
                             </p>
 
-                            <p class="mt-1 text-4xl font-black text-blue-950">
+                            <p
+                                class="mt-1 text-2xl font-black text-blue-950 md:text-4xl"
+                            >
                                 {{ clearanceRequests.length }}
                             </p>
                         </div>
@@ -424,23 +442,25 @@ const formatDateTime = (value: string | null) => {
                 </div>
 
                 <div
-                    class="rounded-3xl border border-slate-200 bg-white/95 p-6 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl"
+                    class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-3xl md:p-6"
                 >
-                    <div class="flex items-center gap-4 xl:block">
+                    <div class="flex items-center gap-3 xl:block xl:gap-4">
                         <div
-                            class="grid h-14 w-14 place-items-center rounded-2xl bg-orange-50 text-orange-600 shadow-sm xl:mb-4"
+                            class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-orange-50 text-orange-600 shadow-sm md:h-14 md:w-14 xl:mb-4"
                         >
-                            <Clock3 class="size-7" />
+                            <Clock3 class="size-6 md:size-7" />
                         </div>
 
                         <div>
                             <p
-                                class="text-sm font-black tracking-wide text-orange-600 uppercase"
+                                class="text-[0.65rem] leading-tight font-black tracking-wide text-orange-600 uppercase sm:text-sm"
                             >
                                 Pending
                             </p>
 
-                            <p class="mt-1 text-4xl font-black text-blue-950">
+                            <p
+                                class="mt-1 text-2xl font-black text-blue-950 md:text-4xl"
+                            >
                                 {{ pendingCount }}
                             </p>
                         </div>
@@ -448,23 +468,25 @@ const formatDateTime = (value: string | null) => {
                 </div>
 
                 <div
-                    class="rounded-3xl border border-slate-200 bg-white/95 p-6 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl"
+                    class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-3xl md:p-6"
                 >
-                    <div class="flex items-center gap-4 xl:block">
+                    <div class="flex items-center gap-3 xl:block xl:gap-4">
                         <div
-                            class="grid h-14 w-14 place-items-center rounded-2xl bg-green-50 text-green-700 shadow-sm xl:mb-4"
+                            class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-green-50 text-green-700 shadow-sm md:h-14 md:w-14 xl:mb-4"
                         >
-                            <CheckCircle2 class="size-7" />
+                            <CheckCircle2 class="size-6 md:size-7" />
                         </div>
 
                         <div>
                             <p
-                                class="text-sm font-black tracking-wide text-green-700 uppercase"
+                                class="text-[0.65rem] leading-tight font-black tracking-wide text-green-700 uppercase sm:text-sm"
                             >
                                 Cleared
                             </p>
 
-                            <p class="mt-1 text-4xl font-black text-blue-950">
+                            <p
+                                class="mt-1 text-2xl font-black text-blue-950 md:text-4xl"
+                            >
                                 {{ clearedCount }}
                             </p>
                         </div>
@@ -472,23 +494,25 @@ const formatDateTime = (value: string | null) => {
                 </div>
 
                 <div
-                    class="rounded-3xl border border-slate-200 bg-white/95 p-6 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl"
+                    class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-3xl md:p-6"
                 >
-                    <div class="flex items-center gap-4 xl:block">
+                    <div class="flex items-center gap-3 xl:block xl:gap-4">
                         <div
-                            class="grid h-14 w-14 place-items-center rounded-2xl bg-red-50 text-red-600 shadow-sm xl:mb-4"
+                            class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-red-50 text-red-600 shadow-sm md:h-14 md:w-14 xl:mb-4"
                         >
-                            <AlertTriangle class="size-7" />
+                            <AlertTriangle class="size-6 md:size-7" />
                         </div>
 
                         <div>
                             <p
-                                class="text-sm font-black tracking-wide text-red-600 uppercase"
+                                class="text-[0.65rem] leading-tight font-black tracking-wide text-red-600 uppercase sm:text-sm"
                             >
                                 Needs Attention
                             </p>
 
-                            <p class="mt-1 text-4xl font-black text-blue-950">
+                            <p
+                                class="mt-1 text-2xl font-black text-blue-950 md:text-4xl"
+                            >
                                 {{ needsAttentionCount }}
                             </p>
                         </div>
@@ -496,23 +520,25 @@ const formatDateTime = (value: string | null) => {
                 </div>
 
                 <div
-                    class="rounded-3xl border border-slate-200 bg-white/95 p-6 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:col-span-2 xl:col-span-1"
+                    class="col-span-2 rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-3xl md:p-6 xl:col-span-1"
                 >
-                    <div class="flex items-center gap-4 xl:block">
+                    <div class="flex items-center gap-3 xl:block xl:gap-4">
                         <div
-                            class="grid h-14 w-14 place-items-center rounded-2xl bg-purple-50 text-purple-700 shadow-sm xl:mb-4"
+                            class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-purple-50 text-purple-700 shadow-sm md:h-14 md:w-14 xl:mb-4"
                         >
-                            <ShieldCheck class="size-7" />
+                            <ShieldCheck class="size-6 md:size-7" />
                         </div>
 
                         <div>
                             <p
-                                class="text-sm font-black tracking-wide text-purple-700 uppercase"
+                                class="text-[0.65rem] leading-tight font-black tracking-wide text-purple-700 uppercase sm:text-sm"
                             >
                                 Ready for Final
                             </p>
 
-                            <p class="mt-1 text-4xl font-black text-blue-950">
+                            <p
+                                class="mt-1 text-2xl font-black text-blue-950 md:text-4xl"
+                            >
                                 {{ readyForFinalApprovalCount }}
                             </p>
                         </div>
@@ -525,7 +551,7 @@ const formatDateTime = (value: string | null) => {
                 class="overflow-hidden rounded-3xl border border-slate-200 bg-white/95 shadow-sm shadow-slate-200/70"
             >
                 <div
-                    class="flex flex-col gap-5 border-b border-slate-200 bg-white px-6 py-5 xl:flex-row xl:items-start xl:justify-between"
+                    class="flex flex-col gap-5 border-b border-slate-200 bg-white px-4 py-5 sm:px-6 xl:flex-row xl:items-start xl:justify-between"
                 >
                     <div>
                         <p
@@ -545,10 +571,12 @@ const formatDateTime = (value: string | null) => {
                     </div>
 
                     <div class="flex flex-col gap-3 xl:items-end">
-                        <div class="flex flex-wrap gap-2">
+                        <div
+                            class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap"
+                        >
                             <button
                                 type="button"
-                                class="inline-flex cursor-pointer items-center gap-2 rounded-2xl border px-4 py-2.5 text-sm font-black transition"
+                                class="inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-2xl border px-4 py-2.5 text-sm font-black transition"
                                 :class="filterButtonClass('all')"
                                 @click="setFilter('all')"
                             >
@@ -558,7 +586,7 @@ const formatDateTime = (value: string | null) => {
 
                             <button
                                 type="button"
-                                class="inline-flex cursor-pointer items-center rounded-2xl border px-4 py-2.5 text-sm font-black transition"
+                                class="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-2xl border px-4 py-2.5 text-sm font-black transition"
                                 :class="filterButtonClass('pending')"
                                 @click="setFilter('pending')"
                             >
@@ -567,7 +595,7 @@ const formatDateTime = (value: string | null) => {
 
                             <button
                                 type="button"
-                                class="inline-flex cursor-pointer items-center rounded-2xl border px-4 py-2.5 text-sm font-black transition"
+                                class="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-2xl border px-4 py-2.5 text-sm font-black transition"
                                 :class="filterButtonClass('cleared')"
                                 @click="setFilter('cleared')"
                             >
@@ -576,7 +604,7 @@ const formatDateTime = (value: string | null) => {
 
                             <button
                                 type="button"
-                                class="inline-flex cursor-pointer items-center rounded-2xl border px-4 py-2.5 text-sm font-black transition"
+                                class="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-2xl border px-4 py-2.5 text-sm font-black transition"
                                 :class="filterButtonClass('needs_attention')"
                                 @click="setFilter('needs_attention')"
                             >
@@ -585,7 +613,7 @@ const formatDateTime = (value: string | null) => {
 
                             <button
                                 type="button"
-                                class="inline-flex cursor-pointer items-center rounded-2xl border px-4 py-2.5 text-sm font-black transition"
+                                class="col-span-2 inline-flex min-h-11 cursor-pointer items-center justify-center rounded-2xl border px-4 py-2.5 text-sm font-black transition sm:col-span-1"
                                 :class="
                                     filterButtonClass(
                                         'ready_for_final_approval',
@@ -598,7 +626,7 @@ const formatDateTime = (value: string | null) => {
                         </div>
 
                         <div class="flex flex-col gap-2 sm:flex-row">
-                            <div class="relative">
+                            <div class="relative w-full">
                                 <Search
                                     class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-slate-400"
                                 />
@@ -606,14 +634,14 @@ const formatDateTime = (value: string | null) => {
                                 <input
                                     v-model="searchQuery"
                                     type="text"
-                                    class="w-full rounded-2xl border border-slate-200 bg-white py-2.5 pr-4 pl-10 text-sm font-medium text-slate-900 shadow-sm outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 sm:w-64"
+                                    class="min-h-11 w-full rounded-2xl border border-slate-200 bg-white py-3 pr-4 pl-10 text-sm font-medium text-slate-900 shadow-sm outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 sm:w-64"
                                     placeholder="Search name, ID, or course"
                                 />
                             </div>
 
                             <select
                                 v-model="selectedCourse"
-                                class="rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-black text-slate-700 shadow-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
+                                class="min-h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-black text-slate-700 shadow-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 sm:w-auto"
                             >
                                 <option value="all">All Courses</option>
 
@@ -628,7 +656,7 @@ const formatDateTime = (value: string | null) => {
 
                             <button
                                 type="button"
-                                class="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-black text-slate-700 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                                class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-black text-slate-700 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700 sm:w-auto"
                                 @click="clearFilters"
                             >
                                 <RotateCcw class="size-4" />
@@ -640,7 +668,7 @@ const formatDateTime = (value: string | null) => {
 
                 <div
                     v-if="filteredRequests.length === 0"
-                    class="p-12 text-center"
+                    class="p-8 text-center sm:p-12"
                 >
                     <div
                         class="mx-auto grid h-16 w-16 place-items-center rounded-3xl bg-blue-50 text-blue-700"
@@ -658,197 +686,333 @@ const formatDateTime = (value: string | null) => {
                     </p>
                 </div>
 
-                <div v-else class="overflow-x-auto">
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-slate-50 text-slate-500">
-                            <tr>
-                                <th
-                                    class="px-6 py-4 text-xs font-black tracking-wide uppercase"
-                                >
-                                    Student
-                                </th>
+                <div v-else>
+                    <!-- Mobile Card List -->
+                    <div class="grid gap-3 p-4 lg:hidden">
+                        <article
+                            v-for="request in filteredRequests"
+                            :key="request.id"
+                            class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+                        >
+                            <div class="flex items-start justify-between gap-3">
+                                <div class="min-w-0">
+                                    <h3
+                                        class="truncate text-base font-black text-blue-950"
+                                    >
+                                        {{ request.user.name }}
+                                    </h3>
 
-                                <th
-                                    class="px-6 py-4 text-xs font-black tracking-wide uppercase"
-                                >
-                                    Student ID
-                                </th>
+                                    <p
+                                        class="mt-1 text-sm font-semibold text-slate-600"
+                                    >
+                                        {{ request.user.student_id }}
+                                    </p>
 
-                                <th
-                                    class="px-6 py-4 text-xs font-black tracking-wide uppercase"
-                                >
-                                    Course
-                                </th>
+                                    <p
+                                        class="mt-1 text-xs font-medium text-slate-500"
+                                    >
+                                        Request #{{ request.id }}
+                                    </p>
+                                </div>
 
-                                <th
-                                    class="px-6 py-4 text-xs font-black tracking-wide uppercase"
+                                <span
+                                    class="shrink-0 rounded-full bg-blue-50 px-3 py-1 text-xs font-black text-blue-700"
                                 >
-                                    Semester
-                                </th>
+                                    {{
+                                        request.user.course
+                                            ? request.user.course.code
+                                            : 'N/A'
+                                    }}
+                                </span>
+                            </div>
 
-                                <th
-                                    class="px-6 py-4 text-xs font-black tracking-wide uppercase"
+                            <div class="mt-3 flex flex-wrap gap-2">
+                                <span
+                                    class="rounded-full border px-3 py-1 text-xs font-black"
+                                    :class="displayStatusBadgeClass(request)"
                                 >
-                                    School Year
-                                </th>
+                                    {{ displayStatusLabel(request) }}
+                                </span>
 
-                                <th
-                                    class="px-6 py-4 text-xs font-black tracking-wide uppercase"
+                                <span
+                                    v-if="hasRejectedApproval(request)"
+                                    class="rounded-full border border-red-200 bg-red-50 px-3 py-1 text-xs font-black text-red-700"
                                 >
-                                    Office Progress
-                                </th>
+                                    Needs Attention
+                                </span>
+                            </div>
 
-                                <th
-                                    class="px-6 py-4 text-xs font-black tracking-wide uppercase"
-                                >
-                                    Status
-                                </th>
-
-                                <th
-                                    class="px-6 py-4 text-xs font-black tracking-wide uppercase"
-                                >
-                                    Cleared At
-                                </th>
-
-                                <th
-                                    class="px-6 py-4 text-right text-xs font-black tracking-wide uppercase"
-                                >
-                                    Actions
-                                </th>
-                            </tr>
-                        </thead>
-
-                        <tbody class="divide-y divide-slate-100">
-                            <tr
-                                v-for="request in filteredRequests"
-                                :key="request.id"
-                                class="transition hover:bg-blue-50/50"
+                            <div
+                                class="mt-4 rounded-xl border border-slate-100 bg-slate-50 p-3"
                             >
-                                <td class="px-6 py-4">
-                                    <div>
-                                        <p class="font-black text-blue-950">
-                                            {{ request.user.name }}
-                                        </p>
-
-                                        <p
-                                            class="mt-1 text-xs font-medium text-slate-500"
-                                        >
-                                            Request #{{ request.id }}
-                                        </p>
-                                    </div>
-                                </td>
-
-                                <td
-                                    class="px-6 py-4 font-semibold text-slate-700"
+                                <div
+                                    class="mb-1 flex justify-between text-xs font-black text-slate-500"
                                 >
-                                    {{ request.user.student_id }}
-                                </td>
-
-                                <td class="px-6 py-4">
-                                    <span
-                                        class="inline-flex rounded-full bg-blue-50 px-3 py-1 text-xs font-black text-blue-700"
-                                    >
-                                        {{
-                                            request.user.course
-                                                ? request.user.course.code
-                                                : 'N/A'
-                                        }}
+                                    <span>
+                                        {{ regularApprovedCount(request) }}
+                                        /
+                                        {{ regularApprovals(request).length }}
+                                        offices
                                     </span>
-                                </td>
 
-                                <td
-                                    class="px-6 py-4 font-semibold text-slate-700"
+                                    <span>
+                                        {{
+                                            regularProgressPercentage(request)
+                                        }}%
+                                    </span>
+                                </div>
+
+                                <div
+                                    class="h-2.5 overflow-hidden rounded-full bg-slate-100"
                                 >
-                                    {{ request.semester }}
-                                </td>
+                                    <div
+                                        class="h-full rounded-full bg-green-600"
+                                        :style="{
+                                            width: `${regularProgressPercentage(
+                                                request,
+                                            )}%`,
+                                        }"
+                                    ></div>
+                                </div>
+                            </div>
 
-                                <td
-                                    class="px-6 py-4 font-semibold text-slate-700"
+                            <div
+                                class="mt-3 grid grid-cols-2 gap-2 text-sm font-semibold text-slate-700"
+                            >
+                                <div
+                                    class="rounded-xl border border-slate-100 bg-slate-50 px-3 py-2"
                                 >
-                                    {{ request.school_year }}
-                                </td>
+                                    <p class="text-xs text-slate-500">
+                                        Semester
+                                    </p>
+                                    <p class="mt-1 font-black text-blue-950">
+                                        {{ request.semester }}
+                                    </p>
+                                </div>
 
-                                <td class="px-6 py-4">
-                                    <div class="min-w-36">
-                                        <div
-                                            class="mb-1 flex justify-between text-xs font-black text-slate-500"
-                                        >
-                                            <span>
-                                                {{
-                                                    regularApprovedCount(
-                                                        request,
-                                                    )
-                                                }}
-                                                /
-                                                {{
-                                                    regularApprovals(request)
-                                                        .length
-                                                }}
-                                            </span>
-
-                                            <span>
-                                                {{
-                                                    regularProgressPercentage(
-                                                        request,
-                                                    )
-                                                }}%
-                                            </span>
-                                        </div>
-
-                                        <div
-                                            class="h-2.5 overflow-hidden rounded-full bg-slate-100"
-                                        >
-                                            <div
-                                                class="h-full rounded-full bg-green-600"
-                                                :style="{
-                                                    width: `${regularProgressPercentage(
-                                                        request,
-                                                    )}%`,
-                                                }"
-                                            ></div>
-                                        </div>
-                                    </div>
-                                </td>
-
-                                <td class="px-6 py-4">
-                                    <div class="flex flex-col gap-1">
-                                        <span
-                                            class="w-fit rounded-full border px-3 py-1 text-xs font-black"
-                                            :class="
-                                                displayStatusBadgeClass(request)
-                                            "
-                                        >
-                                            {{ displayStatusLabel(request) }}
-                                        </span>
-
-                                        <span
-                                            v-if="hasRejectedApproval(request)"
-                                            class="w-fit rounded-full border border-red-200 bg-red-50 px-3 py-1 text-xs font-black text-red-700"
-                                        >
-                                            Needs Attention
-                                        </span>
-                                    </div>
-                                </td>
-
-                                <td
-                                    class="px-6 py-4 font-semibold text-slate-700"
+                                <div
+                                    class="rounded-xl border border-slate-100 bg-slate-50 px-3 py-2"
                                 >
-                                    {{ formatDateTime(request.cleared_at) }}
-                                </td>
+                                    <p class="text-xs text-slate-500">
+                                        School Year
+                                    </p>
+                                    <p class="mt-1 font-black text-blue-950">
+                                        {{ request.school_year }}
+                                    </p>
+                                </div>
+                            </div>
 
-                                <td class="px-6 py-4 text-right">
-                                    <button
-                                        type="button"
-                                        class="inline-flex items-center gap-2 rounded-2xl bg-blue-700 px-4 py-2.5 text-sm font-black text-white shadow-md shadow-blue-700/20 transition hover:-translate-y-0.5 hover:bg-blue-800 hover:shadow-lg"
-                                        @click="openDetailsModal(request)"
+                            <button
+                                type="button"
+                                class="mt-4 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl bg-blue-700 px-4 py-3 text-sm font-black text-white shadow-md shadow-blue-700/20 transition hover:bg-blue-800"
+                                @click="openDetailsModal(request)"
+                            >
+                                <Eye class="size-4" />
+                                View Details
+                            </button>
+                        </article>
+                    </div>
+
+                    <!-- Desktop Table -->
+                    <div class="hidden overflow-x-auto lg:block">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-slate-50 text-slate-500">
+                                <tr>
+                                    <th
+                                        class="px-6 py-4 text-xs font-black tracking-wide uppercase"
                                     >
-                                        <Eye class="size-4" />
-                                        View
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                                        Student
+                                    </th>
+
+                                    <th
+                                        class="px-6 py-4 text-xs font-black tracking-wide uppercase"
+                                    >
+                                        Student ID
+                                    </th>
+
+                                    <th
+                                        class="px-6 py-4 text-xs font-black tracking-wide uppercase"
+                                    >
+                                        Course
+                                    </th>
+
+                                    <th
+                                        class="px-6 py-4 text-xs font-black tracking-wide uppercase"
+                                    >
+                                        Semester
+                                    </th>
+
+                                    <th
+                                        class="px-6 py-4 text-xs font-black tracking-wide uppercase"
+                                    >
+                                        School Year
+                                    </th>
+
+                                    <th
+                                        class="px-6 py-4 text-xs font-black tracking-wide uppercase"
+                                    >
+                                        Office Progress
+                                    </th>
+
+                                    <th
+                                        class="px-6 py-4 text-xs font-black tracking-wide uppercase"
+                                    >
+                                        Status
+                                    </th>
+
+                                    <th
+                                        class="px-6 py-4 text-xs font-black tracking-wide uppercase"
+                                    >
+                                        Cleared At
+                                    </th>
+
+                                    <th
+                                        class="px-6 py-4 text-right text-xs font-black tracking-wide uppercase"
+                                    >
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+
+                            <tbody class="divide-y divide-slate-100">
+                                <tr
+                                    v-for="request in filteredRequests"
+                                    :key="request.id"
+                                    class="transition hover:bg-blue-50/50"
+                                >
+                                    <td class="px-6 py-4">
+                                        <div>
+                                            <p class="font-black text-blue-950">
+                                                {{ request.user.name }}
+                                            </p>
+
+                                            <p
+                                                class="mt-1 text-xs font-medium text-slate-500"
+                                            >
+                                                Request #{{ request.id }}
+                                            </p>
+                                        </div>
+                                    </td>
+
+                                    <td
+                                        class="px-6 py-4 font-semibold text-slate-700"
+                                    >
+                                        {{ request.user.student_id }}
+                                    </td>
+
+                                    <td class="px-6 py-4">
+                                        <span
+                                            class="inline-flex rounded-full bg-blue-50 px-3 py-1 text-xs font-black text-blue-700"
+                                        >
+                                            {{
+                                                request.user.course
+                                                    ? request.user.course.code
+                                                    : 'N/A'
+                                            }}
+                                        </span>
+                                    </td>
+
+                                    <td
+                                        class="px-6 py-4 font-semibold text-slate-700"
+                                    >
+                                        {{ request.semester }}
+                                    </td>
+
+                                    <td
+                                        class="px-6 py-4 font-semibold text-slate-700"
+                                    >
+                                        {{ request.school_year }}
+                                    </td>
+
+                                    <td class="px-6 py-4">
+                                        <div class="min-w-36">
+                                            <div
+                                                class="mb-1 flex justify-between text-xs font-black text-slate-500"
+                                            >
+                                                <span>
+                                                    {{
+                                                        regularApprovedCount(
+                                                            request,
+                                                        )
+                                                    }}
+                                                    /
+                                                    {{
+                                                        regularApprovals(
+                                                            request,
+                                                        ).length
+                                                    }}
+                                                </span>
+
+                                                <span>
+                                                    {{
+                                                        regularProgressPercentage(
+                                                            request,
+                                                        )
+                                                    }}%
+                                                </span>
+                                            </div>
+
+                                            <div
+                                                class="h-2.5 overflow-hidden rounded-full bg-slate-100"
+                                            >
+                                                <div
+                                                    class="h-full rounded-full bg-green-600"
+                                                    :style="{
+                                                        width: `${regularProgressPercentage(
+                                                            request,
+                                                        )}%`,
+                                                    }"
+                                                ></div>
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <td class="px-6 py-4">
+                                        <div class="flex flex-col gap-1">
+                                            <span
+                                                class="w-fit rounded-full border px-3 py-1 text-xs font-black"
+                                                :class="
+                                                    displayStatusBadgeClass(
+                                                        request,
+                                                    )
+                                                "
+                                            >
+                                                {{
+                                                    displayStatusLabel(request)
+                                                }}
+                                            </span>
+
+                                            <span
+                                                v-if="
+                                                    hasRejectedApproval(request)
+                                                "
+                                                class="w-fit rounded-full border border-red-200 bg-red-50 px-3 py-1 text-xs font-black text-red-700"
+                                            >
+                                                Needs Attention
+                                            </span>
+                                        </div>
+                                    </td>
+
+                                    <td
+                                        class="px-6 py-4 font-semibold text-slate-700"
+                                    >
+                                        {{ formatDateTime(request.cleared_at) }}
+                                    </td>
+
+                                    <td class="px-6 py-4 text-right">
+                                        <button
+                                            type="button"
+                                            class="inline-flex items-center gap-2 rounded-2xl bg-blue-700 px-4 py-2.5 text-sm font-black text-white shadow-md shadow-blue-700/20 transition hover:-translate-y-0.5 hover:bg-blue-800 hover:shadow-lg"
+                                            @click="openDetailsModal(request)"
+                                        >
+                                            <Eye class="size-4" />
+                                            View
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </section>
         </div>
@@ -857,47 +1021,51 @@ const formatDateTime = (value: string | null) => {
     <!-- Details Modal -->
     <div
         v-if="showDetailsModal && selectedRequest"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4 backdrop-blur-sm"
+        class="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/50 p-3 backdrop-blur-sm sm:items-center sm:p-4"
         @click.self="closeDetailsModal"
     >
         <div
-            class="max-h-[90vh] w-full max-w-6xl overflow-hidden rounded-4xl border border-slate-200 bg-white shadow-2xl shadow-slate-900/20"
+            class="flex max-h-[92dvh] w-full max-w-6xl flex-col overflow-hidden rounded-t-4xl border border-slate-200 bg-white shadow-2xl shadow-slate-900/20 sm:max-h-[90vh] sm:rounded-4xl"
         >
-            <div
-                class="flex items-start justify-between gap-4 border-b border-slate-200 bg-white p-6"
-            >
-                <div>
-                    <p
-                        class="text-xs font-black tracking-[0.18em] text-blue-700 uppercase"
+            <div class="shrink-0 border-b border-slate-200 bg-white p-4 sm:p-6">
+                <div class="flex items-start justify-between gap-4">
+                    <div class="min-w-0">
+                        <p
+                            class="text-xs font-black tracking-[0.18em] text-blue-700 uppercase"
+                        >
+                            Clearance Request Details
+                        </p>
+
+                        <h2
+                            class="mt-1 truncate text-xl font-black text-blue-950 sm:text-2xl"
+                        >
+                            {{ selectedRequest.user.name }}
+                        </h2>
+
+                        <p
+                            class="mt-1 text-sm font-medium text-slate-500"
+                        >
+                            Student ID: {{ selectedRequest.user.student_id }}
+                            <span v-if="selectedRequest.user.course">
+                                • {{ selectedRequest.user.course.code }}
+                            </span>
+                        </p>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="grid size-10 shrink-0 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:bg-slate-50 hover:text-slate-900"
+                        @click="closeDetailsModal"
                     >
-                        Clearance Request Details
-                    </p>
-
-                    <h2 class="mt-1 text-2xl font-black text-blue-950">
-                        {{ selectedRequest.user.name }}
-                    </h2>
-
-                    <p class="mt-1 text-sm font-medium text-slate-500">
-                        Student ID: {{ selectedRequest.user.student_id }}
-                        <span v-if="selectedRequest.user.course">
-                            • {{ selectedRequest.user.course.code }}
-                        </span>
-                    </p>
+                        <X class="size-5" />
+                    </button>
                 </div>
-
-                <button
-                    type="button"
-                    class="grid size-10 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:bg-slate-50 hover:text-slate-900"
-                    @click="closeDetailsModal"
-                >
-                    <X class="size-5" />
-                </button>
             </div>
 
-            <div class="max-h-[75vh] overflow-y-auto p-6">
-                <section class="grid gap-4 md:grid-cols-3">
+            <div class="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6">
+                <section class="grid gap-3 md:grid-cols-3 md:gap-4">
                     <div
-                        class="rounded-3xl border border-slate-200 bg-slate-50 p-5"
+                        class="rounded-2xl border border-slate-200 bg-slate-50 p-4 md:rounded-3xl md:p-5"
                     >
                         <p class="font-black text-blue-700">Request Info</p>
 
@@ -924,7 +1092,7 @@ const formatDateTime = (value: string | null) => {
                     </div>
 
                     <div
-                        class="rounded-3xl border border-slate-200 bg-slate-50 p-5"
+                        class="rounded-2xl border border-slate-200 bg-slate-50 p-4 md:rounded-3xl md:p-5"
                     >
                         <p class="font-black text-green-700">Overall Status</p>
 
@@ -948,7 +1116,7 @@ const formatDateTime = (value: string | null) => {
                     </div>
 
                     <div
-                        class="rounded-3xl border border-slate-200 bg-slate-50 p-5"
+                        class="rounded-2xl border border-slate-200 bg-slate-50 p-4 md:rounded-3xl md:p-5"
                     >
                         <p class="font-black text-purple-700">
                             Office Progress
@@ -976,7 +1144,7 @@ const formatDateTime = (value: string | null) => {
                 <section
                     class="mt-6 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm shadow-slate-200/70"
                 >
-                    <div class="border-b border-slate-200 p-5">
+                    <div class="border-b border-slate-200 p-4 sm:p-5">
                         <h3 class="text-lg font-black text-blue-950">
                             Office Approval Breakdown
                         </h3>
@@ -987,7 +1155,65 @@ const formatDateTime = (value: string | null) => {
                         </p>
                     </div>
 
-                    <div class="overflow-x-auto">
+                    <!-- Mobile Approval Cards -->
+                    <div class="grid gap-3 p-4 lg:hidden">
+                        <article
+                            v-for="approval in selectedRequest.approvals"
+                            :key="approval.id"
+                            class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+                        >
+                            <div class="flex items-start justify-between gap-3">
+                                <div class="min-w-0">
+                                    <h4
+                                        class="text-sm font-black text-blue-950"
+                                    >
+                                        {{ approval.office.name }}
+                                    </h4>
+
+                                    <p
+                                        class="mt-1 text-xs font-semibold text-slate-500"
+                                    >
+                                        {{ officeTypeLabel(approval.office) }}
+                                    </p>
+                                </div>
+
+                                <span
+                                    class="shrink-0 rounded-full border px-3 py-1 text-xs font-black"
+                                    :class="statusBadgeClass(approval.status)"
+                                >
+                                    {{ statusLabel(approval.status) }}
+                                </span>
+                            </div>
+
+                            <div
+                                class="mt-3 rounded-xl border border-slate-100 bg-slate-50 px-3 py-2 text-sm text-slate-700"
+                            >
+                                <p>
+                                    <span class="font-black">Approver:</span>
+                                    {{
+                                        approval.approver
+                                            ? approval.approver.name
+                                            : 'N/A'
+                                    }}
+                                </p>
+
+                                <p class="mt-1">
+                                    <span class="font-black">Acted At:</span>
+                                    {{ formatDateTime(approval.acted_at) }}
+                                </p>
+                            </div>
+
+                            <p
+                                class="mt-3 text-sm font-medium text-slate-700"
+                            >
+                                <span class="font-black">Remarks:</span>
+                                {{ approval.remarks ?? '-' }}
+                            </p>
+                        </article>
+                    </div>
+
+                    <!-- Desktop Approval Table -->
+                    <div class="hidden overflow-x-auto lg:block">
                         <table class="w-full text-left text-sm">
                             <thead class="bg-slate-50 text-slate-500">
                                 <tr>
@@ -1086,11 +1312,15 @@ const formatDateTime = (value: string | null) => {
                         </table>
                     </div>
                 </section>
+            </div>
 
-                <div class="mt-6 flex justify-end">
+            <div
+                class="shrink-0 border-t border-slate-200 bg-white p-4 sm:p-6"
+            >
+                <div class="flex justify-end">
                     <button
                         type="button"
-                        class="rounded-2xl bg-slate-700 px-5 py-3 text-sm font-black text-white shadow-md shadow-slate-700/20 transition hover:bg-slate-800"
+                        class="min-h-11 w-full rounded-2xl bg-slate-700 px-5 py-3 text-sm font-black text-white shadow-md shadow-slate-700/20 transition hover:bg-slate-800 sm:w-auto"
                         @click="closeDetailsModal"
                     >
                         Close
@@ -1099,4 +1329,91 @@ const formatDateTime = (value: string | null) => {
             </div>
         </div>
     </div>
+
+    <!-- Admin Mobile More Sheet -->
+    <div
+        v-if="showAdminMobileMoreMenu"
+        class="fixed inset-x-3 bottom-24 z-40 rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl shadow-slate-900/20 md:hidden"
+    >
+        <div class="flex items-start justify-between gap-3">
+            <div>
+                <p class="text-sm font-black text-blue-950">Admin Tools</p>
+
+                <p class="mt-1 text-xs font-semibold text-slate-500">
+                    Quick access to reports and course modules.
+                </p>
+            </div>
+
+            <button
+                type="button"
+                class="grid size-10 place-items-center rounded-xl border border-slate-200 text-slate-500"
+                @click="closeAdminMobileMoreMenu"
+            >
+                <X class="size-5" />
+            </button>
+        </div>
+
+        <div class="mt-4 grid gap-2">
+            <Link
+                href="/admin/reports"
+                class="flex min-h-12 items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-black text-slate-700"
+            >
+                <span>Reports</span>
+                <span>→</span>
+            </Link>
+
+            <Link
+                href="/admin/course-modules"
+                class="flex min-h-12 items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-black text-slate-700"
+            >
+                <span>Course Modules</span>
+                <span>→</span>
+            </Link>
+        </div>
+    </div>
+
+    <!-- Admin Mobile Thumb Navigation -->
+    <nav
+        class="fixed inset-x-3 bottom-3 z-30 rounded-2xl border border-blue-200 bg-blue-950/95 p-2 shadow-2xl shadow-blue-950/25 backdrop-blur md:hidden"
+    >
+        <div class="grid grid-cols-4 gap-1">
+            <Link
+                href="/admin/dashboard"
+                class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
+            >
+                <LayoutDashboard class="size-4" />
+                <span>Home</span>
+            </Link>
+
+            <Link
+                href="/admin/users"
+                class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
+            >
+                <UserRoundCog class="size-4" />
+                <span>Users</span>
+            </Link>
+
+            <Link
+                href="/admin/clearance-requests"
+                class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl bg-white/15 px-2 py-2 text-[0.65rem] font-black text-white ring-1 ring-blue-200/40 transition hover:bg-white/10"
+            >
+                <ShieldCheck class="size-4" />
+                <span>Requests</span>
+            </Link>
+
+            <button
+                type="button"
+                class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
+                :class="
+                    showAdminMobileMoreMenu
+                        ? 'bg-white/15 ring-1 ring-blue-200/40'
+                        : ''
+                "
+                @click="toggleAdminMobileMoreMenu"
+            >
+                <span class="text-base leading-none">•••</span>
+                <span>More</span>
+            </button>
+        </div>
+    </nav>
 </template>

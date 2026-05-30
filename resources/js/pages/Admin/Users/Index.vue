@@ -54,6 +54,7 @@ const props = defineProps<{
 const showCreateStaffModal = ref(false);
 const showEditUserModal = ref(false);
 const showStatusModal = ref(false);
+const showAdminMobileMoreMenu = ref(false);
 const selectedUser = ref<User | null>(null);
 const selectedStatusUser = ref<User | null>(null);
 const successMessage = ref('');
@@ -163,6 +164,7 @@ const openCreateStaffModal = () => {
     form.clearErrors();
     form.reset();
 
+    showAdminMobileMoreMenu.value = false;
     showCreateStaffModal.value = true;
 };
 
@@ -206,6 +208,7 @@ const openEditUserModal = (user: User) => {
     editForm.password = '';
     editForm.password_confirmation = '';
 
+    showAdminMobileMoreMenu.value = false;
     showEditUserModal.value = true;
 };
 
@@ -245,6 +248,7 @@ const openStatusModal = (user: User) => {
     successMessage.value = '';
     errorMessage.value = '';
     selectedStatusUser.value = user;
+    showAdminMobileMoreMenu.value = false;
     showStatusModal.value = true;
 };
 
@@ -285,6 +289,14 @@ const submitToggleUserActive = () => {
             },
         },
     );
+};
+
+const toggleAdminMobileMoreMenu = () => {
+    showAdminMobileMoreMenu.value = !showAdminMobileMoreMenu.value;
+};
+
+const closeAdminMobileMoreMenu = () => {
+    showAdminMobileMoreMenu.value = false;
 };
 
 const roleBadgeClass = (role: string) => {
@@ -336,17 +348,19 @@ const roleFilterButtonClass = (role: RoleFilter) => {
     <Head title="User Management" />
 
     <div
-        class="min-h-screen bg-linear-to-br from-slate-50 via-white to-blue-50/40 p-4 text-slate-900 md:p-6"
+        class="min-h-screen bg-linear-to-br from-slate-50 via-white to-blue-50/40 p-3 pb-28 text-slate-900 sm:p-4 sm:pb-28 md:p-6 md:pb-6"
     >
-        <div class="mx-auto flex max-w-7xl flex-col gap-6">
+        <div class="mx-auto flex max-w-7xl flex-col gap-4 md:gap-6">
             <!-- Hero -->
             <section
-                class="overflow-hidden rounded-4xl border border-slate-200 bg-white/95 shadow-xl shadow-slate-200/70"
+                class="overflow-hidden rounded-3xl border border-slate-200 bg-white/95 shadow-xl shadow-slate-200/70 md:rounded-4xl"
             >
-                <div class="grid gap-8 p-6 lg:grid-cols-[1fr_300px] lg:p-8">
+                <div
+                    class="grid gap-6 p-4 sm:p-6 lg:grid-cols-[1fr_300px] lg:p-8"
+                >
                     <div>
                         <div
-                            class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-blue-700"
+                            class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-3 py-2 text-[0.65rem] font-black tracking-[0.14em] text-blue-700 uppercase sm:px-4 sm:text-xs sm:tracking-[0.18em]"
                         >
                             <ShieldCheck class="size-4" />
                             Admin / OSAS Director Panel
@@ -357,13 +371,13 @@ const roleFilterButtonClass = (role: RoleFilter) => {
                         >
                             <div>
                                 <h1
-                                    class="text-4xl font-black tracking-tight text-blue-950"
+                                    class="text-3xl font-black tracking-tight text-blue-950 sm:text-4xl"
                                 >
                                     User Management
                                 </h1>
 
                                 <p
-                                    class="mt-3 max-w-3xl text-base leading-7 text-slate-600"
+                                    class="mt-3 max-w-3xl text-sm leading-6 text-slate-600 sm:text-base sm:leading-7"
                                 >
                                     View, create, update, activate, and
                                     deactivate student, staff, admin, and
@@ -372,10 +386,12 @@ const roleFilterButtonClass = (role: RoleFilter) => {
                                 </p>
                             </div>
 
-                            <div class="flex flex-wrap gap-3">
+                            <div
+                                class="flex flex-col gap-3 sm:flex-row sm:flex-wrap"
+                            >
                                 <button
                                     type="button"
-                                    class="inline-flex items-center gap-2 rounded-2xl bg-blue-700 px-5 py-3 text-sm font-black text-white shadow-lg shadow-blue-700/20 transition hover:-translate-y-0.5 hover:bg-blue-800 hover:shadow-xl"
+                                    class="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-blue-700 px-5 py-3 text-sm font-black text-white shadow-lg shadow-blue-700/20 transition hover:-translate-y-0.5 hover:bg-blue-800 hover:shadow-xl sm:w-auto"
                                     @click="openCreateStaffModal"
                                 >
                                     <Plus class="size-4" />
@@ -384,7 +400,7 @@ const roleFilterButtonClass = (role: RoleFilter) => {
 
                                 <Link
                                     href="/admin/dashboard"
-                                    class="inline-flex items-center gap-2 whitespace-nowrap rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-black text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700 hover:shadow-md"
+                                    class="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-black whitespace-nowrap text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700 hover:shadow-md sm:w-auto"
                                 >
                                     <LayoutDashboard class="size-4" />
                                     Back to Dashboard
@@ -393,7 +409,7 @@ const roleFilterButtonClass = (role: RoleFilter) => {
                         </div>
 
                         <div
-                            class="mt-5 rounded-2xl border border-blue-100 bg-blue-50/80 p-4 text-sm font-medium leading-6 text-blue-900"
+                            class="mt-5 rounded-2xl border border-blue-100 bg-blue-50/80 p-4 text-sm leading-6 font-medium text-blue-900"
                         >
                             Admin can create office staff accounts, update role
                             assignments, assign courses or offices, reset user
@@ -427,7 +443,7 @@ const roleFilterButtonClass = (role: RoleFilter) => {
                             </div>
 
                             <p
-                                class="text-center text-sm font-black uppercase tracking-[0.18em] text-blue-700"
+                                class="text-center text-sm font-black tracking-[0.18em] text-blue-700 uppercase"
                             >
                                 Account Center
                             </p>
@@ -437,25 +453,29 @@ const roleFilterButtonClass = (role: RoleFilter) => {
             </section>
 
             <!-- Summary Cards -->
-            <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+            <section
+                class="grid grid-cols-2 gap-3 md:grid-cols-2 md:gap-4 xl:grid-cols-5"
+            >
                 <div
-                    class="rounded-3xl border border-slate-200 bg-white/95 p-6 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl"
+                    class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-3xl md:p-6"
                 >
-                    <div class="flex items-center gap-4 xl:block">
+                    <div class="flex items-center gap-3 xl:block xl:gap-4">
                         <div
-                            class="grid h-14 w-14 place-items-center rounded-2xl bg-blue-50 text-blue-700 shadow-sm xl:mb-4"
+                            class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-blue-50 text-blue-700 shadow-sm md:h-14 md:w-14 xl:mb-4"
                         >
-                            <Users class="size-7" />
+                            <Users class="size-6 md:size-7" />
                         </div>
 
                         <div>
                             <p
-                                class="text-sm font-black uppercase tracking-wide text-blue-700"
+                                class="text-[0.65rem] leading-tight font-black tracking-wide text-blue-700 uppercase sm:text-sm"
                             >
                                 Total Users
                             </p>
 
-                            <p class="mt-1 text-4xl font-black text-blue-950">
+                            <p
+                                class="mt-1 text-2xl font-black text-blue-950 md:text-4xl"
+                            >
                                 {{ users.length }}
                             </p>
                         </div>
@@ -463,23 +483,25 @@ const roleFilterButtonClass = (role: RoleFilter) => {
                 </div>
 
                 <div
-                    class="rounded-3xl border border-slate-200 bg-white/95 p-6 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl"
+                    class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-3xl md:p-6"
                 >
-                    <div class="flex items-center gap-4 xl:block">
+                    <div class="flex items-center gap-3 xl:block xl:gap-4">
                         <div
-                            class="grid h-14 w-14 place-items-center rounded-2xl bg-blue-50 text-blue-700 shadow-sm xl:mb-4"
+                            class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-blue-50 text-blue-700 shadow-sm md:h-14 md:w-14 xl:mb-4"
                         >
-                            <GraduationCap class="size-7" />
+                            <GraduationCap class="size-6 md:size-7" />
                         </div>
 
                         <div>
                             <p
-                                class="text-sm font-black uppercase tracking-wide text-blue-700"
+                                class="text-[0.65rem] leading-tight font-black tracking-wide text-blue-700 uppercase sm:text-sm"
                             >
                                 Students
                             </p>
 
-                            <p class="mt-1 text-4xl font-black text-blue-950">
+                            <p
+                                class="mt-1 text-2xl font-black text-blue-950 md:text-4xl"
+                            >
                                 {{ studentCount }}
                             </p>
                         </div>
@@ -487,23 +509,25 @@ const roleFilterButtonClass = (role: RoleFilter) => {
                 </div>
 
                 <div
-                    class="rounded-3xl border border-slate-200 bg-white/95 p-6 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl"
+                    class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-3xl md:p-6"
                 >
-                    <div class="flex items-center gap-4 xl:block">
+                    <div class="flex items-center gap-3 xl:block xl:gap-4">
                         <div
-                            class="grid h-14 w-14 place-items-center rounded-2xl bg-green-50 text-green-700 shadow-sm xl:mb-4"
+                            class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-green-50 text-green-700 shadow-sm md:h-14 md:w-14 xl:mb-4"
                         >
-                            <UserCheck class="size-7" />
+                            <UserCheck class="size-6 md:size-7" />
                         </div>
 
                         <div>
                             <p
-                                class="text-sm font-black uppercase tracking-wide text-green-700"
+                                class="text-[0.65rem] leading-tight font-black tracking-wide text-green-700 uppercase sm:text-sm"
                             >
                                 Staff
                             </p>
 
-                            <p class="mt-1 text-4xl font-black text-blue-950">
+                            <p
+                                class="mt-1 text-2xl font-black text-blue-950 md:text-4xl"
+                            >
                                 {{ staffCount }}
                             </p>
                         </div>
@@ -511,23 +535,25 @@ const roleFilterButtonClass = (role: RoleFilter) => {
                 </div>
 
                 <div
-                    class="rounded-3xl border border-slate-200 bg-white/95 p-6 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl"
+                    class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-3xl md:p-6"
                 >
-                    <div class="flex items-center gap-4 xl:block">
+                    <div class="flex items-center gap-3 xl:block xl:gap-4">
                         <div
-                            class="grid h-14 w-14 place-items-center rounded-2xl bg-purple-50 text-purple-700 shadow-sm xl:mb-4"
+                            class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-purple-50 text-purple-700 shadow-sm md:h-14 md:w-14 xl:mb-4"
                         >
-                            <ShieldCheck class="size-7" />
+                            <ShieldCheck class="size-6 md:size-7" />
                         </div>
 
                         <div>
                             <p
-                                class="text-sm font-black uppercase tracking-wide text-purple-700"
+                                class="text-[0.65rem] leading-tight font-black tracking-wide text-purple-700 uppercase sm:text-sm"
                             >
                                 Admins
                             </p>
 
-                            <p class="mt-1 text-4xl font-black text-blue-950">
+                            <p
+                                class="mt-1 text-2xl font-black text-blue-950 md:text-4xl"
+                            >
                                 {{ adminCount }}
                             </p>
                         </div>
@@ -535,23 +561,25 @@ const roleFilterButtonClass = (role: RoleFilter) => {
                 </div>
 
                 <div
-                    class="rounded-3xl border border-slate-200 bg-white/95 p-6 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:col-span-2 xl:col-span-1"
+                    class="col-span-2 rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-3xl md:p-6 xl:col-span-1"
                 >
-                    <div class="flex items-center gap-4 xl:block">
+                    <div class="flex items-center gap-3 xl:block xl:gap-4">
                         <div
-                            class="grid h-14 w-14 place-items-center rounded-2xl bg-orange-50 text-orange-700 shadow-sm xl:mb-4"
+                            class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-orange-50 text-orange-700 shadow-sm md:h-14 md:w-14 xl:mb-4"
                         >
-                            <Crown class="size-7" />
+                            <Crown class="size-6 md:size-7" />
                         </div>
 
                         <div>
                             <p
-                                class="text-sm font-black uppercase tracking-wide text-orange-700"
+                                class="text-[0.65rem] leading-tight font-black tracking-wide text-orange-700 uppercase sm:text-sm"
                             >
                                 Presidents
                             </p>
 
-                            <p class="mt-1 text-4xl font-black text-blue-950">
+                            <p
+                                class="mt-1 text-2xl font-black text-blue-950 md:text-4xl"
+                            >
                                 {{ presidentCount }}
                             </p>
                         </div>
@@ -559,16 +587,16 @@ const roleFilterButtonClass = (role: RoleFilter) => {
                 </div>
             </section>
 
-            <!-- Users Table -->
+            <!-- Users Table / Mobile Cards -->
             <section
                 class="overflow-hidden rounded-3xl border border-slate-200 bg-white/95 shadow-sm shadow-slate-200/70"
             >
                 <div
-                    class="flex flex-col gap-5 border-b border-slate-200 bg-white px-6 py-5 xl:flex-row xl:items-start xl:justify-between"
+                    class="flex flex-col gap-5 border-b border-slate-200 bg-white px-4 py-5 sm:px-6 xl:flex-row xl:items-start xl:justify-between"
                 >
                     <div>
                         <p
-                            class="text-xs font-black uppercase tracking-[0.18em] text-slate-400"
+                            class="text-xs font-black tracking-[0.18em] text-slate-400 uppercase"
                         >
                             Account Registry
                         </p>
@@ -584,10 +612,12 @@ const roleFilterButtonClass = (role: RoleFilter) => {
                     </div>
 
                     <div class="flex flex-col gap-3 xl:items-end">
-                        <div class="flex flex-wrap gap-2">
+                        <div
+                            class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap"
+                        >
                             <button
                                 type="button"
-                                class="inline-flex cursor-pointer items-center rounded-2xl border px-4 py-2.5 text-sm font-black transition"
+                                class="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-2xl border px-4 py-2.5 text-sm font-black transition"
                                 :class="roleFilterButtonClass('all')"
                                 @click="setRoleFilter('all')"
                             >
@@ -596,7 +626,7 @@ const roleFilterButtonClass = (role: RoleFilter) => {
 
                             <button
                                 type="button"
-                                class="inline-flex cursor-pointer items-center rounded-2xl border px-4 py-2.5 text-sm font-black transition"
+                                class="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-2xl border px-4 py-2.5 text-sm font-black transition"
                                 :class="roleFilterButtonClass('student')"
                                 @click="setRoleFilter('student')"
                             >
@@ -605,7 +635,7 @@ const roleFilterButtonClass = (role: RoleFilter) => {
 
                             <button
                                 type="button"
-                                class="inline-flex cursor-pointer items-center rounded-2xl border px-4 py-2.5 text-sm font-black transition"
+                                class="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-2xl border px-4 py-2.5 text-sm font-black transition"
                                 :class="roleFilterButtonClass('staff')"
                                 @click="setRoleFilter('staff')"
                             >
@@ -614,7 +644,7 @@ const roleFilterButtonClass = (role: RoleFilter) => {
 
                             <button
                                 type="button"
-                                class="inline-flex cursor-pointer items-center rounded-2xl border px-4 py-2.5 text-sm font-black transition"
+                                class="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-2xl border px-4 py-2.5 text-sm font-black transition"
                                 :class="roleFilterButtonClass('admin')"
                                 @click="setRoleFilter('admin')"
                             >
@@ -623,7 +653,7 @@ const roleFilterButtonClass = (role: RoleFilter) => {
 
                             <button
                                 type="button"
-                                class="inline-flex cursor-pointer items-center rounded-2xl border px-4 py-2.5 text-sm font-black transition"
+                                class="col-span-2 inline-flex min-h-11 cursor-pointer items-center justify-center rounded-2xl border px-4 py-2.5 text-sm font-black transition sm:col-span-1"
                                 :class="roleFilterButtonClass('president')"
                                 @click="setRoleFilter('president')"
                             >
@@ -632,22 +662,22 @@ const roleFilterButtonClass = (role: RoleFilter) => {
                         </div>
 
                         <div class="flex flex-col gap-2 sm:flex-row">
-                            <div class="relative">
+                            <div class="relative w-full">
                                 <Search
-                                    class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400"
+                                    class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-slate-400"
                                 />
 
                                 <input
                                     v-model="userSearchQuery"
                                     type="text"
-                                    class="w-full rounded-2xl border border-slate-200 bg-white py-2.5 pl-10 pr-4 text-sm font-medium text-slate-900 shadow-sm outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 sm:w-80"
+                                    class="min-h-11 w-full rounded-2xl border border-slate-200 bg-white py-3 pr-4 pl-10 text-sm font-medium text-slate-900 shadow-sm outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 sm:w-80"
                                     placeholder="Search name, ID, role, course, office, or status"
                                 />
                             </div>
 
                             <button
                                 type="button"
-                                class="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-black text-slate-700 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                                class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-black text-slate-700 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700 sm:w-auto"
                                 @click="clearUserFilters"
                             >
                                 <RotateCcw class="size-4" />
@@ -657,7 +687,10 @@ const roleFilterButtonClass = (role: RoleFilter) => {
                     </div>
                 </div>
 
-                <div v-if="filteredUsers.length === 0" class="p-12 text-center">
+                <div
+                    v-if="filteredUsers.length === 0"
+                    class="p-8 text-center sm:p-12"
+                >
                     <div
                         class="mx-auto grid h-16 w-16 place-items-center rounded-3xl bg-blue-50 text-blue-700"
                     >
@@ -673,138 +706,244 @@ const roleFilterButtonClass = (role: RoleFilter) => {
                     </p>
                 </div>
 
-                <div v-else class="overflow-x-auto">
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-slate-50 text-slate-500">
-                            <tr>
-                                <th
-                                    class="px-6 py-4 text-xs font-black uppercase tracking-wide"
-                                >
-                                    Name
-                                </th>
-
-                                <th
-                                    class="px-6 py-4 text-xs font-black uppercase tracking-wide"
-                                >
-                                    Student/System ID
-                                </th>
-
-                                <th
-                                    class="px-6 py-4 text-xs font-black uppercase tracking-wide"
-                                >
-                                    Role
-                                </th>
-
-                                <th
-                                    class="px-6 py-4 text-xs font-black uppercase tracking-wide"
-                                >
-                                    Status
-                                </th>
-
-                                <th
-                                    class="px-6 py-4 text-xs font-black uppercase tracking-wide"
-                                >
-                                    Course
-                                </th>
-
-                                <th
-                                    class="px-6 py-4 text-xs font-black uppercase tracking-wide"
-                                >
-                                    Office
-                                </th>
-
-                                <th
-                                    class="px-6 py-4 text-right text-xs font-black uppercase tracking-wide"
-                                >
-                                    Actions
-                                </th>
-                            </tr>
-                        </thead>
-
-                        <tbody class="divide-y divide-slate-100">
-                            <tr
-                                v-for="user in filteredUsers"
-                                :key="user.id"
-                                class="transition hover:bg-blue-50/50"
-                                :class="!user.is_active ? 'bg-red-50/40' : ''"
-                            >
-                                <td class="px-6 py-4">
-                                    <p class="font-black text-blue-950">
+                <div v-else>
+                    <!-- Mobile Card List -->
+                    <div class="grid gap-3 p-4 lg:hidden">
+                        <article
+                            v-for="user in filteredUsers"
+                            :key="user.id"
+                            class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+                            :class="
+                                !user.is_active
+                                    ? 'border-red-200 bg-red-50/40'
+                                    : ''
+                            "
+                        >
+                            <div class="flex items-start justify-between gap-3">
+                                <div class="min-w-0">
+                                    <h3
+                                        class="truncate text-base font-black text-blue-950"
+                                    >
                                         {{ user.name }}
+                                    </h3>
+
+                                    <p
+                                        class="mt-1 text-sm font-semibold text-slate-600"
+                                    >
+                                        {{ user.student_id }}
                                     </p>
-                                </td>
+                                </div>
 
-                                <td
-                                    class="px-6 py-4 font-semibold text-slate-700"
+                                <span
+                                    class="shrink-0 rounded-full border px-3 py-1 text-xs font-black"
+                                    :class="activeStatusBadgeClass(user)"
                                 >
-                                    {{ user.student_id }}
-                                </td>
+                                    {{ activeStatusLabel(user) }}
+                                </span>
+                            </div>
 
-                                <td class="px-6 py-4">
-                                    <span
-                                        class="rounded-full border px-3 py-1 text-xs font-black"
-                                        :class="roleBadgeClass(user.role)"
-                                    >
-                                        {{ roleLabel(user.role) }}
-                                    </span>
-                                </td>
-
-                                <td class="px-6 py-4">
-                                    <span
-                                        class="rounded-full border px-3 py-1 text-xs font-black"
-                                        :class="activeStatusBadgeClass(user)"
-                                    >
-                                        {{ activeStatusLabel(user) }}
-                                    </span>
-                                </td>
-
-                                <td
-                                    class="px-6 py-4 font-semibold text-slate-700"
+                            <div class="mt-3 flex flex-wrap gap-2">
+                                <span
+                                    class="rounded-full border px-3 py-1 text-xs font-black"
+                                    :class="roleBadgeClass(user.role)"
                                 >
+                                    {{ roleLabel(user.role) }}
+                                </span>
+
+                                <span
+                                    class="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-black text-slate-600"
+                                >
+                                    Course:
                                     {{ user.course ? user.course.code : 'N/A' }}
-                                </td>
+                                </span>
+                            </div>
 
-                                <td
-                                    class="px-6 py-4 font-semibold text-slate-700"
+                            <div
+                                class="mt-3 rounded-xl border border-slate-100 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-700"
+                            >
+                                <span class="text-slate-500">Office:</span>
+                                {{ user.office ? user.office.name : 'N/A' }}
+                            </div>
+
+                            <div class="mt-4 grid grid-cols-2 gap-2">
+                                <button
+                                    type="button"
+                                    class="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-blue-700 px-4 py-3 text-sm font-black text-white shadow-md shadow-blue-700/20 transition hover:bg-blue-800"
+                                    @click="openEditUserModal(user)"
                                 >
-                                    {{ user.office ? user.office.name : 'N/A' }}
-                                </td>
+                                    <Pencil class="size-4" />
+                                    Edit
+                                </button>
 
-                                <td class="px-6 py-4 text-right">
-                                    <div
-                                        class="flex flex-wrap justify-end gap-2"
+                                <button
+                                    type="button"
+                                    class="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-black text-white shadow-md transition"
+                                    :class="
+                                        user.is_active
+                                            ? 'bg-red-600 shadow-red-600/20 hover:bg-red-700'
+                                            : 'bg-green-700 shadow-green-700/20 hover:bg-green-800'
+                                    "
+                                    @click="openStatusModal(user)"
+                                >
+                                    <Power class="size-4" />
+                                    {{
+                                        user.is_active
+                                            ? 'Deactivate'
+                                            : 'Activate'
+                                    }}
+                                </button>
+                            </div>
+                        </article>
+                    </div>
+
+                    <!-- Desktop Table -->
+                    <div class="hidden overflow-x-auto lg:block">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-slate-50 text-slate-500">
+                                <tr>
+                                    <th
+                                        class="px-6 py-4 text-xs font-black tracking-wide uppercase"
                                     >
-                                        <button
-                                            type="button"
-                                            class="inline-flex items-center gap-2 rounded-2xl bg-blue-700 px-4 py-2.5 text-sm font-black text-white shadow-md shadow-blue-700/20 transition hover:-translate-y-0.5 hover:bg-blue-800 hover:shadow-lg"
-                                            @click="openEditUserModal(user)"
-                                        >
-                                            <Pencil class="size-4" />
-                                            Edit
-                                        </button>
+                                        Name
+                                    </th>
 
-                                        <button
-                                            type="button"
-                                            class="inline-flex items-center gap-2 rounded-2xl px-4 py-2.5 text-sm font-black text-white shadow-md transition hover:-translate-y-0.5 hover:shadow-lg"
-                                            :class="
-                                                user.is_active
-                                                    ? 'bg-red-600 shadow-red-600/20 hover:bg-red-700'
-                                                    : 'bg-green-700 shadow-green-700/20 hover:bg-green-800'
-                                            "
-                                            @click="openStatusModal(user)"
+                                    <th
+                                        class="px-6 py-4 text-xs font-black tracking-wide uppercase"
+                                    >
+                                        Student/System ID
+                                    </th>
+
+                                    <th
+                                        class="px-6 py-4 text-xs font-black tracking-wide uppercase"
+                                    >
+                                        Role
+                                    </th>
+
+                                    <th
+                                        class="px-6 py-4 text-xs font-black tracking-wide uppercase"
+                                    >
+                                        Status
+                                    </th>
+
+                                    <th
+                                        class="px-6 py-4 text-xs font-black tracking-wide uppercase"
+                                    >
+                                        Course
+                                    </th>
+
+                                    <th
+                                        class="px-6 py-4 text-xs font-black tracking-wide uppercase"
+                                    >
+                                        Office
+                                    </th>
+
+                                    <th
+                                        class="px-6 py-4 text-right text-xs font-black tracking-wide uppercase"
+                                    >
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+
+                            <tbody class="divide-y divide-slate-100">
+                                <tr
+                                    v-for="user in filteredUsers"
+                                    :key="user.id"
+                                    class="transition hover:bg-blue-50/50"
+                                    :class="
+                                        !user.is_active ? 'bg-red-50/40' : ''
+                                    "
+                                >
+                                    <td class="px-6 py-4">
+                                        <p class="font-black text-blue-950">
+                                            {{ user.name }}
+                                        </p>
+                                    </td>
+
+                                    <td
+                                        class="px-6 py-4 font-semibold text-slate-700"
+                                    >
+                                        {{ user.student_id }}
+                                    </td>
+
+                                    <td class="px-6 py-4">
+                                        <span
+                                            class="rounded-full border px-3 py-1 text-xs font-black"
+                                            :class="roleBadgeClass(user.role)"
                                         >
-                                            <Power class="size-4" />
-                                            {{
-                                                user.is_active
-                                                    ? 'Deactivate'
-                                                    : 'Activate'
-                                            }}
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                                            {{ roleLabel(user.role) }}
+                                        </span>
+                                    </td>
+
+                                    <td class="px-6 py-4">
+                                        <span
+                                            class="rounded-full border px-3 py-1 text-xs font-black"
+                                            :class="
+                                                activeStatusBadgeClass(user)
+                                            "
+                                        >
+                                            {{ activeStatusLabel(user) }}
+                                        </span>
+                                    </td>
+
+                                    <td
+                                        class="px-6 py-4 font-semibold text-slate-700"
+                                    >
+                                        {{
+                                            user.course
+                                                ? user.course.code
+                                                : 'N/A'
+                                        }}
+                                    </td>
+
+                                    <td
+                                        class="px-6 py-4 font-semibold text-slate-700"
+                                    >
+                                        {{
+                                            user.office
+                                                ? user.office.name
+                                                : 'N/A'
+                                        }}
+                                    </td>
+
+                                    <td class="px-6 py-4 text-right">
+                                        <div
+                                            class="flex flex-wrap justify-end gap-2"
+                                        >
+                                            <button
+                                                type="button"
+                                                class="inline-flex items-center gap-2 rounded-2xl bg-blue-700 px-4 py-2.5 text-sm font-black text-white shadow-md shadow-blue-700/20 transition hover:-translate-y-0.5 hover:bg-blue-800 hover:shadow-lg"
+                                                @click="
+                                                    openEditUserModal(user)
+                                                "
+                                            >
+                                                <Pencil class="size-4" />
+                                                Edit
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                class="inline-flex items-center gap-2 rounded-2xl px-4 py-2.5 text-sm font-black text-white shadow-md transition hover:-translate-y-0.5 hover:shadow-lg"
+                                                :class="
+                                                    user.is_active
+                                                        ? 'bg-red-600 shadow-red-600/20 hover:bg-red-700'
+                                                        : 'bg-green-700 shadow-green-700/20 hover:bg-green-800'
+                                                "
+                                                @click="openStatusModal(user)"
+                                            >
+                                                <Power class="size-4" />
+                                                {{
+                                                    user.is_active
+                                                        ? 'Deactivate'
+                                                        : 'Activate'
+                                                }}
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </section>
         </div>
@@ -813,186 +952,196 @@ const roleFilterButtonClass = (role: RoleFilter) => {
     <!-- Create Staff Modal -->
     <div
         v-if="showCreateStaffModal"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4 backdrop-blur-sm"
+        class="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/50 p-3 backdrop-blur-sm sm:items-center sm:p-4"
         @click.self="closeCreateStaffModal"
     >
         <div
-            class="w-full max-w-2xl rounded-4xl border border-slate-200 bg-white p-6 shadow-2xl shadow-slate-900/20"
+            class="flex max-h-[92dvh] w-full max-w-2xl flex-col overflow-hidden rounded-t-4xl border border-slate-200 bg-white shadow-2xl shadow-slate-900/20 sm:max-h-[90vh] sm:rounded-4xl"
         >
-            <div class="flex items-start justify-between gap-4">
-                <div class="flex items-start gap-4">
-                    <div
-                        class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-blue-50 text-blue-700"
+            <div class="shrink-0 border-b border-slate-200 p-4 sm:p-6">
+                <div class="flex items-start justify-between gap-4">
+                    <div class="flex min-w-0 items-start gap-3 sm:gap-4">
+                        <div
+                            class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-blue-50 text-blue-700 sm:h-12 sm:w-12"
+                        >
+                            <Plus class="size-6" />
+                        </div>
+
+                        <div class="min-w-0">
+                            <h2
+                                class="text-lg font-black text-blue-950 sm:text-xl"
+                            >
+                                Create Staff Account
+                            </h2>
+
+                            <p class="mt-2 text-sm leading-6 text-slate-600">
+                                Add a new office staff account and assign it to
+                                one clearance office.
+                            </p>
+                        </div>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="grid size-10 shrink-0 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:bg-slate-50 hover:text-slate-900"
+                        @click="closeCreateStaffModal"
                     >
-                        <Plus class="size-6" />
-                    </div>
-
-                    <div>
-                        <h2 class="text-xl font-black text-blue-950">
-                            Create Staff Account
-                        </h2>
-
-                        <p class="mt-2 text-sm leading-6 text-slate-600">
-                            Add a new office staff account and assign it to one
-                            clearance office.
-                        </p>
-                    </div>
+                        <X class="size-5" />
+                    </button>
                 </div>
-
-                <button
-                    type="button"
-                    class="grid size-10 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:bg-slate-50 hover:text-slate-900"
-                    @click="closeCreateStaffModal"
-                >
-                    <X class="size-5" />
-                </button>
             </div>
 
             <form
-                class="mt-6 flex flex-col gap-5"
+                class="flex min-h-0 flex-1 flex-col"
                 @submit.prevent="submitCreateStaff"
             >
-                <div>
-                    <label
-                        for="name"
-                        class="text-sm font-black text-slate-700"
-                    >
-                        Full Name
-                    </label>
+                <div class="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6">
+                    <div class="flex flex-col gap-5">
+                        <div>
+                            <label
+                                for="name"
+                                class="text-sm font-black text-slate-700"
+                            >
+                                Full Name
+                            </label>
 
-                    <input
-                        id="name"
-                        v-model="form.name"
-                        type="text"
-                        class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 shadow-sm outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
-                        placeholder="Example: Library Staff"
-                    />
+                            <input
+                                id="name"
+                                v-model="form.name"
+                                type="text"
+                                class="mt-2 min-h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 shadow-sm outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
+                                placeholder="Example: Library Staff"
+                            />
 
-                    <p
-                        v-if="form.errors.name"
-                        class="mt-2 text-sm font-medium text-red-600"
-                    >
-                        {{ form.errors.name }}
-                    </p>
-                </div>
+                            <p
+                                v-if="form.errors.name"
+                                class="mt-2 text-sm font-medium text-red-600"
+                            >
+                                {{ form.errors.name }}
+                            </p>
+                        </div>
 
-                <div>
-                    <label
-                        for="student_id"
-                        class="text-sm font-black text-slate-700"
-                    >
-                        Staff/System ID
-                    </label>
+                        <div>
+                            <label
+                                for="student_id"
+                                class="text-sm font-black text-slate-700"
+                            >
+                                Staff/System ID
+                            </label>
 
-                    <input
-                        id="student_id"
-                        v-model="form.student_id"
-                        type="text"
-                        class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 shadow-sm outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
-                        placeholder="Example: LIB002"
-                    />
+                            <input
+                                id="student_id"
+                                v-model="form.student_id"
+                                type="text"
+                                class="mt-2 min-h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 shadow-sm outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
+                                placeholder="Example: LIB002"
+                            />
 
-                    <p
-                        v-if="form.errors.student_id"
-                        class="mt-2 text-sm font-medium text-red-600"
-                    >
-                        {{ form.errors.student_id }}
-                    </p>
-                </div>
+                            <p
+                                v-if="form.errors.student_id"
+                                class="mt-2 text-sm font-medium text-red-600"
+                            >
+                                {{ form.errors.student_id }}
+                            </p>
+                        </div>
 
-                <div>
-                    <label
-                        for="office_id"
-                        class="text-sm font-black text-slate-700"
-                    >
-                        Assigned Office
-                    </label>
+                        <div>
+                            <label
+                                for="office_id"
+                                class="text-sm font-black text-slate-700"
+                            >
+                                Assigned Office
+                            </label>
 
-                    <select
-                        id="office_id"
-                        v-model="form.office_id"
-                        class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-black text-slate-700 shadow-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
-                    >
-                        <option value="">Select an office</option>
+                            <select
+                                id="office_id"
+                                v-model="form.office_id"
+                                class="mt-2 min-h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-black text-slate-700 shadow-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
+                            >
+                                <option value="">Select an office</option>
 
-                        <option
-                            v-for="office in offices"
-                            :key="office.id"
-                            :value="office.id"
-                        >
-                            {{ office.name }}
-                        </option>
-                    </select>
+                                <option
+                                    v-for="office in offices"
+                                    :key="office.id"
+                                    :value="office.id"
+                                >
+                                    {{ office.name }}
+                                </option>
+                            </select>
 
-                    <p
-                        v-if="form.errors.office_id"
-                        class="mt-2 text-sm font-medium text-red-600"
-                    >
-                        {{ form.errors.office_id }}
-                    </p>
-                </div>
+                            <p
+                                v-if="form.errors.office_id"
+                                class="mt-2 text-sm font-medium text-red-600"
+                            >
+                                {{ form.errors.office_id }}
+                            </p>
+                        </div>
 
-                <div class="grid gap-5 md:grid-cols-2">
-                    <div>
-                        <label
-                            for="password"
-                            class="text-sm font-black text-slate-700"
-                        >
-                            Password
-                        </label>
+                        <div class="grid gap-5 md:grid-cols-2">
+                            <div>
+                                <label
+                                    for="password"
+                                    class="text-sm font-black text-slate-700"
+                                >
+                                    Password
+                                </label>
 
-                        <input
-                            id="password"
-                            v-model="form.password"
-                            type="password"
-                            class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 shadow-sm outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
-                            placeholder="Minimum 8 characters"
-                        />
+                                <input
+                                    id="password"
+                                    v-model="form.password"
+                                    type="password"
+                                    class="mt-2 min-h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 shadow-sm outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
+                                    placeholder="Minimum 8 characters"
+                                />
 
-                        <p
-                            v-if="form.errors.password"
-                            class="mt-2 text-sm font-medium text-red-600"
-                        >
-                            {{ form.errors.password }}
-                        </p>
-                    </div>
+                                <p
+                                    v-if="form.errors.password"
+                                    class="mt-2 text-sm font-medium text-red-600"
+                                >
+                                    {{ form.errors.password }}
+                                </p>
+                            </div>
 
-                    <div>
-                        <label
-                            for="password_confirmation"
-                            class="text-sm font-black text-slate-700"
-                        >
-                            Confirm Password
-                        </label>
+                            <div>
+                                <label
+                                    for="password_confirmation"
+                                    class="text-sm font-black text-slate-700"
+                                >
+                                    Confirm Password
+                                </label>
 
-                        <input
-                            id="password_confirmation"
-                            v-model="form.password_confirmation"
-                            type="password"
-                            class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 shadow-sm outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
-                            placeholder="Re-enter password"
-                        />
+                                <input
+                                    id="password_confirmation"
+                                    v-model="form.password_confirmation"
+                                    type="password"
+                                    class="mt-2 min-h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 shadow-sm outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
+                                    placeholder="Re-enter password"
+                                />
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <div
-                    class="flex justify-end gap-3 border-t border-slate-200 pt-5"
+                    class="shrink-0 border-t border-slate-200 bg-white p-4 sm:p-6"
                 >
-                    <button
-                        type="button"
-                        class="rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-black text-slate-700 transition hover:bg-slate-50"
-                        @click="closeCreateStaffModal"
-                    >
-                        Cancel
-                    </button>
+                    <div class="grid grid-cols-2 gap-3 sm:flex sm:justify-end">
+                        <button
+                            type="button"
+                            class="min-h-11 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-black text-slate-700 transition hover:bg-slate-50"
+                            @click="closeCreateStaffModal"
+                        >
+                            Cancel
+                        </button>
 
-                    <button
-                        type="submit"
-                        :disabled="form.processing"
-                        class="rounded-2xl bg-blue-700 px-4 py-2.5 text-sm font-black text-white shadow-md shadow-blue-700/20 transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                        Create Staff Account
-                    </button>
+                        <button
+                            type="submit"
+                            :disabled="form.processing"
+                            class="min-h-11 rounded-2xl bg-blue-700 px-4 py-3 text-sm font-black text-white shadow-md shadow-blue-700/20 transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                            Create Staff
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -1001,232 +1150,238 @@ const roleFilterButtonClass = (role: RoleFilter) => {
     <!-- Edit User Modal -->
     <div
         v-if="showEditUserModal && selectedUser"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4 backdrop-blur-sm"
+        class="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/50 p-3 backdrop-blur-sm sm:items-center sm:p-4"
         @click.self="closeEditUserModal"
     >
         <div
-            class="max-h-[90vh] w-full max-w-2xl overflow-hidden rounded-4xl border border-slate-200 bg-white shadow-2xl shadow-slate-900/20"
+            class="flex max-h-[92dvh] w-full max-w-2xl flex-col overflow-hidden rounded-t-4xl border border-slate-200 bg-white shadow-2xl shadow-slate-900/20 sm:max-h-[90vh] sm:rounded-4xl"
         >
-            <div
-                class="flex items-start justify-between gap-4 border-b border-slate-200 p-6"
-            >
-                <div class="flex items-start gap-4">
-                    <div
-                        class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-blue-50 text-blue-700"
+            <div class="shrink-0 border-b border-slate-200 p-4 sm:p-6">
+                <div class="flex items-start justify-between gap-4">
+                    <div class="flex min-w-0 items-start gap-3 sm:gap-4">
+                        <div
+                            class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-blue-50 text-blue-700 sm:h-12 sm:w-12"
+                        >
+                            <Pencil class="size-6" />
+                        </div>
+
+                        <div class="min-w-0">
+                            <h2
+                                class="text-lg font-black text-blue-950 sm:text-xl"
+                            >
+                                Edit User Account
+                            </h2>
+
+                            <p class="mt-2 text-sm leading-6 text-slate-600">
+                                Update the selected user's name, role, course,
+                                assigned office, or password.
+                            </p>
+                        </div>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="grid size-10 shrink-0 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:bg-slate-50 hover:text-slate-900"
+                        @click="closeEditUserModal"
                     >
-                        <Pencil class="size-6" />
-                    </div>
-
-                    <div>
-                        <h2 class="text-xl font-black text-blue-950">
-                            Edit User Account
-                        </h2>
-
-                        <p class="mt-2 text-sm leading-6 text-slate-600">
-                            Update the selected user's name, role, course,
-                            assigned office, or password.
-                        </p>
-                    </div>
+                        <X class="size-5" />
+                    </button>
                 </div>
-
-                <button
-                    type="button"
-                    class="grid size-10 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:bg-slate-50 hover:text-slate-900"
-                    @click="closeEditUserModal"
-                >
-                    <X class="size-5" />
-                </button>
             </div>
 
-            <div class="max-h-[75vh] overflow-y-auto p-6">
-                <div
-                    class="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700"
-                >
-                    <p>
-                        <span class="font-black">System ID:</span>
-                        {{ selectedUser.student_id }}
-                    </p>
-
-                    <p class="mt-1">
-                        <span class="font-black">Account Status:</span>
-                        {{ activeStatusLabel(selectedUser) }}
-                    </p>
-                </div>
-
-                <form
-                    class="mt-6 flex flex-col gap-5"
-                    @submit.prevent="submitEditUser"
-                >
-                    <div>
-                        <label
-                            for="edit_name"
-                            class="text-sm font-black text-slate-700"
-                        >
-                            Full Name
-                        </label>
-
-                        <input
-                            id="edit_name"
-                            v-model="editForm.name"
-                            type="text"
-                            class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 shadow-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
-                        />
-
-                        <p
-                            v-if="editForm.errors.name"
-                            class="mt-2 text-sm font-medium text-red-600"
-                        >
-                            {{ editForm.errors.name }}
-                        </p>
-                    </div>
-
-                    <div>
-                        <label
-                            for="edit_role"
-                            class="text-sm font-black text-slate-700"
-                        >
-                            Role
-                        </label>
-
-                        <select
-                            id="edit_role"
-                            v-model="editForm.role"
-                            class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-black text-slate-700 shadow-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
-                        >
-                            <option value="student">Student</option>
-                            <option value="staff">Staff / Approver</option>
-                            <option value="admin">Admin / OSAS</option>
-                            <option value="president">President</option>
-                        </select>
-
-                        <p
-                            v-if="editForm.errors.role"
-                            class="mt-2 text-sm font-medium text-red-600"
-                        >
-                            {{ editForm.errors.role }}
-                        </p>
-                    </div>
-
-                    <div v-if="editForm.role === 'student'">
-                        <label
-                            for="edit_course_id"
-                            class="text-sm font-black text-slate-700"
-                        >
-                            Course
-                        </label>
-
-                        <select
-                            id="edit_course_id"
-                            v-model="editForm.course_id"
-                            class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-black text-slate-700 shadow-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
-                        >
-                            <option value="">Select a course</option>
-
-                            <option
-                                v-for="course in courses"
-                                :key="course.id"
-                                :value="course.id"
-                            >
-                                {{ course.code }} - {{ course.name }}
-                            </option>
-                        </select>
-
-                        <p
-                            v-if="editForm.errors.course_id"
-                            class="mt-2 text-sm font-medium text-red-600"
-                        >
-                            {{ editForm.errors.course_id }}
-                        </p>
-                    </div>
-
-                    <div v-else>
-                        <label
-                            for="edit_office_id"
-                            class="text-sm font-black text-slate-700"
-                        >
-                            Assigned Office
-                        </label>
-
-                        <select
-                            id="edit_office_id"
-                            v-model="editForm.office_id"
-                            class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-black text-slate-700 shadow-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
-                        >
-                            <option value="">Select an office</option>
-
-                            <option
-                                v-for="office in offices"
-                                :key="office.id"
-                                :value="office.id"
-                            >
-                                {{ office.name }}
-                            </option>
-                        </select>
-
-                        <p
-                            v-if="editForm.errors.office_id"
-                            class="mt-2 text-sm font-medium text-red-600"
-                        >
-                            {{ editForm.errors.office_id }}
-                        </p>
-                    </div>
-
+            <form
+                class="flex min-h-0 flex-1 flex-col"
+                @submit.prevent="submitEditUser"
+            >
+                <div class="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6">
                     <div
-                        class="rounded-2xl border border-blue-100 bg-blue-50 p-4 text-sm font-medium leading-6 text-blue-800"
+                        class="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700"
                     >
-                        Leave the password fields blank if you do not want to
-                        change this user's password.
+                        <p>
+                            <span class="font-black">System ID:</span>
+                            {{ selectedUser.student_id }}
+                        </p>
+
+                        <p class="mt-1">
+                            <span class="font-black">Account Status:</span>
+                            {{ activeStatusLabel(selectedUser) }}
+                        </p>
                     </div>
 
-                    <div class="grid gap-5 md:grid-cols-2">
+                    <div class="mt-6 flex flex-col gap-5">
                         <div>
                             <label
-                                for="edit_password"
+                                for="edit_name"
                                 class="text-sm font-black text-slate-700"
                             >
-                                New Password
+                                Full Name
                             </label>
 
                             <input
-                                id="edit_password"
-                                v-model="editForm.password"
-                                type="password"
-                                class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 shadow-sm outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
-                                placeholder="Leave blank to keep current password"
+                                id="edit_name"
+                                v-model="editForm.name"
+                                type="text"
+                                class="mt-2 min-h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 shadow-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
                             />
 
                             <p
-                                v-if="editForm.errors.password"
+                                v-if="editForm.errors.name"
                                 class="mt-2 text-sm font-medium text-red-600"
                             >
-                                {{ editForm.errors.password }}
+                                {{ editForm.errors.name }}
                             </p>
                         </div>
 
                         <div>
                             <label
-                                for="edit_password_confirmation"
+                                for="edit_role"
                                 class="text-sm font-black text-slate-700"
                             >
-                                Confirm New Password
+                                Role
                             </label>
 
-                            <input
-                                id="edit_password_confirmation"
-                                v-model="editForm.password_confirmation"
-                                type="password"
-                                class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 shadow-sm outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
-                                placeholder="Re-enter new password"
-                            />
+                            <select
+                                id="edit_role"
+                                v-model="editForm.role"
+                                class="mt-2 min-h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-black text-slate-700 shadow-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
+                            >
+                                <option value="student">Student</option>
+                                <option value="staff">Staff / Approver</option>
+                                <option value="admin">Admin / OSAS</option>
+                                <option value="president">President</option>
+                            </select>
+
+                            <p
+                                v-if="editForm.errors.role"
+                                class="mt-2 text-sm font-medium text-red-600"
+                            >
+                                {{ editForm.errors.role }}
+                            </p>
+                        </div>
+
+                        <div v-if="editForm.role === 'student'">
+                            <label
+                                for="edit_course_id"
+                                class="text-sm font-black text-slate-700"
+                            >
+                                Course
+                            </label>
+
+                            <select
+                                id="edit_course_id"
+                                v-model="editForm.course_id"
+                                class="mt-2 min-h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-black text-slate-700 shadow-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
+                            >
+                                <option value="">Select a course</option>
+
+                                <option
+                                    v-for="course in courses"
+                                    :key="course.id"
+                                    :value="course.id"
+                                >
+                                    {{ course.code }} - {{ course.name }}
+                                </option>
+                            </select>
+
+                            <p
+                                v-if="editForm.errors.course_id"
+                                class="mt-2 text-sm font-medium text-red-600"
+                            >
+                                {{ editForm.errors.course_id }}
+                            </p>
+                        </div>
+
+                        <div v-else>
+                            <label
+                                for="edit_office_id"
+                                class="text-sm font-black text-slate-700"
+                            >
+                                Assigned Office
+                            </label>
+
+                            <select
+                                id="edit_office_id"
+                                v-model="editForm.office_id"
+                                class="mt-2 min-h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-black text-slate-700 shadow-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
+                            >
+                                <option value="">Select an office</option>
+
+                                <option
+                                    v-for="office in offices"
+                                    :key="office.id"
+                                    :value="office.id"
+                                >
+                                    {{ office.name }}
+                                </option>
+                            </select>
+
+                            <p
+                                v-if="editForm.errors.office_id"
+                                class="mt-2 text-sm font-medium text-red-600"
+                            >
+                                {{ editForm.errors.office_id }}
+                            </p>
+                        </div>
+
+                        <div
+                            class="rounded-2xl border border-blue-100 bg-blue-50 p-4 text-sm leading-6 font-medium text-blue-800"
+                        >
+                            Leave the password fields blank if you do not want
+                            to change this user's password.
+                        </div>
+
+                        <div class="grid gap-5 md:grid-cols-2">
+                            <div>
+                                <label
+                                    for="edit_password"
+                                    class="text-sm font-black text-slate-700"
+                                >
+                                    New Password
+                                </label>
+
+                                <input
+                                    id="edit_password"
+                                    v-model="editForm.password"
+                                    type="password"
+                                    class="mt-2 min-h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 shadow-sm outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
+                                    placeholder="Leave blank to keep current password"
+                                />
+
+                                <p
+                                    v-if="editForm.errors.password"
+                                    class="mt-2 text-sm font-medium text-red-600"
+                                >
+                                    {{ editForm.errors.password }}
+                                </p>
+                            </div>
+
+                            <div>
+                                <label
+                                    for="edit_password_confirmation"
+                                    class="text-sm font-black text-slate-700"
+                                >
+                                    Confirm New Password
+                                </label>
+
+                                <input
+                                    id="edit_password_confirmation"
+                                    v-model="editForm.password_confirmation"
+                                    type="password"
+                                    class="mt-2 min-h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 shadow-sm outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
+                                    placeholder="Re-enter new password"
+                                />
+                            </div>
                         </div>
                     </div>
+                </div>
 
-                    <div
-                        class="flex justify-end gap-3 border-t border-slate-200 pt-5"
-                    >
+                <div
+                    class="shrink-0 border-t border-slate-200 bg-white p-4 sm:p-6"
+                >
+                    <div class="grid grid-cols-2 gap-3 sm:flex sm:justify-end">
                         <button
                             type="button"
-                            class="rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-black text-slate-700 transition hover:bg-slate-50"
+                            class="min-h-11 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-black text-slate-700 transition hover:bg-slate-50"
                             @click="closeEditUserModal"
                         >
                             Cancel
@@ -1235,133 +1390,226 @@ const roleFilterButtonClass = (role: RoleFilter) => {
                         <button
                             type="submit"
                             :disabled="editForm.processing"
-                            class="rounded-2xl bg-blue-700 px-4 py-2.5 text-sm font-black text-white shadow-md shadow-blue-700/20 transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-50"
+                            class="min-h-11 rounded-2xl bg-blue-700 px-4 py-3 text-sm font-black text-white shadow-md shadow-blue-700/20 transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-50"
                         >
                             Save Changes
                         </button>
                     </div>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
     </div>
 
     <!-- Activate / Deactivate Modal -->
     <div
         v-if="showStatusModal && selectedStatusUser"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4 backdrop-blur-sm"
+        class="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/50 p-3 backdrop-blur-sm sm:items-center sm:p-4"
         @click.self="closeStatusModal"
     >
         <div
-            class="w-full max-w-lg rounded-4xl border border-slate-200 bg-white p-6 shadow-2xl shadow-slate-900/20"
+            class="flex max-h-[92dvh] w-full max-w-lg flex-col overflow-hidden rounded-t-4xl border border-slate-200 bg-white shadow-2xl shadow-slate-900/20 sm:max-h-[90vh] sm:rounded-4xl"
         >
-            <div class="flex items-start justify-between gap-4">
-                <div class="flex items-start gap-4">
-                    <div
-                        class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl"
-                        :class="
-                            selectedStatusUser.is_active
-                                ? 'bg-red-50 text-red-600'
-                                : 'bg-green-50 text-green-700'
-                        "
+            <div class="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6">
+                <div class="flex items-start justify-between gap-4">
+                    <div class="flex min-w-0 items-start gap-3 sm:gap-4">
+                        <div
+                            class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl sm:h-12 sm:w-12"
+                            :class="
+                                selectedStatusUser.is_active
+                                    ? 'bg-red-50 text-red-600'
+                                    : 'bg-green-50 text-green-700'
+                            "
+                        >
+                            <AlertTriangle
+                                v-if="selectedStatusUser.is_active"
+                                class="size-6"
+                            />
+
+                            <CheckCircle2 v-else class="size-6" />
+                        </div>
+
+                        <div class="min-w-0">
+                            <h2
+                                class="text-lg font-black text-blue-950 sm:text-xl"
+                            >
+                                {{
+                                    selectedStatusUser.is_active
+                                        ? 'Deactivate User Account'
+                                        : 'Activate User Account'
+                                }}
+                            </h2>
+
+                            <p class="mt-2 text-sm leading-6 text-slate-600">
+                                {{
+                                    selectedStatusUser.is_active
+                                        ? 'This user will no longer be able to access the system, but their records will remain saved.'
+                                        : 'This user will be able to access the system again.'
+                                }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="grid size-10 shrink-0 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:bg-slate-50 hover:text-slate-900"
+                        @click="closeStatusModal"
                     >
-                        <AlertTriangle
-                            v-if="selectedStatusUser.is_active"
-                            class="size-6"
-                        />
-
-                        <CheckCircle2 v-else class="size-6" />
-                    </div>
-
-                    <div>
-                        <h2 class="text-xl font-black text-blue-950">
-                            {{
-                                selectedStatusUser.is_active
-                                    ? 'Deactivate User Account'
-                                    : 'Activate User Account'
-                            }}
-                        </h2>
-
-                        <p class="mt-2 text-sm leading-6 text-slate-600">
-                            {{
-                                selectedStatusUser.is_active
-                                    ? 'This user will no longer be able to access the system, but their records will remain saved.'
-                                    : 'This user will be able to access the system again.'
-                            }}
-                        </p>
-                    </div>
+                        <X class="size-5" />
+                    </button>
                 </div>
 
-                <button
-                    type="button"
-                    class="grid size-10 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:bg-slate-50 hover:text-slate-900"
-                    @click="closeStatusModal"
+                <div
+                    class="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700"
                 >
-                    <X class="size-5" />
-                </button>
-            </div>
+                    <p>
+                        <span class="font-black">Name:</span>
+                        {{ selectedStatusUser.name }}
+                    </p>
 
-            <div
-                class="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700"
-            >
-                <p>
-                    <span class="font-black">Name:</span>
-                    {{ selectedStatusUser.name }}
-                </p>
+                    <p class="mt-1">
+                        <span class="font-black">System ID:</span>
+                        {{ selectedStatusUser.student_id }}
+                    </p>
 
-                <p class="mt-1">
-                    <span class="font-black">System ID:</span>
-                    {{ selectedStatusUser.student_id }}
-                </p>
+                    <p class="mt-1">
+                        <span class="font-black">Current Status:</span>
+                        {{ activeStatusLabel(selectedStatusUser) }}
+                    </p>
+                </div>
 
-                <p class="mt-1">
-                    <span class="font-black">Current Status:</span>
-                    {{ activeStatusLabel(selectedStatusUser) }}
-                </p>
-            </div>
-
-            <div
-                class="mt-5 rounded-2xl border p-4 text-sm font-medium leading-6"
-                :class="
-                    selectedStatusUser.is_active
-                        ? 'border-red-200 bg-red-50 text-red-800'
-                        : 'border-green-200 bg-green-50 text-green-800'
-                "
-            >
-                {{
-                    selectedStatusUser.is_active
-                        ? 'Are you sure you want to deactivate this account?'
-                        : 'Are you sure you want to activate this account?'
-                }}
-            </div>
-
-            <div
-                class="mt-6 flex justify-end gap-3 border-t border-slate-200 pt-5"
-            >
-                <button
-                    type="button"
-                    class="rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-black text-slate-700 transition hover:bg-slate-50"
-                    @click="closeStatusModal"
-                >
-                    Cancel
-                </button>
-
-                <button
-                    type="button"
-                    class="rounded-2xl px-4 py-2.5 text-sm font-black text-white shadow-md transition"
+                <div
+                    class="mt-5 rounded-2xl border p-4 text-sm leading-6 font-medium"
                     :class="
                         selectedStatusUser.is_active
-                            ? 'bg-red-600 shadow-red-600/20 hover:bg-red-700'
-                            : 'bg-green-700 shadow-green-700/20 hover:bg-green-800'
+                            ? 'border-red-200 bg-red-50 text-red-800'
+                            : 'border-green-200 bg-green-50 text-green-800'
                     "
-                    @click="submitToggleUserActive"
                 >
                     {{
                         selectedStatusUser.is_active
-                            ? 'Deactivate Account'
-                            : 'Activate Account'
+                            ? 'Are you sure you want to deactivate this account?'
+                            : 'Are you sure you want to activate this account?'
                     }}
-                </button>
+                </div>
+            </div>
+
+            <div
+                class="shrink-0 border-t border-slate-200 bg-white p-4 sm:p-6"
+            >
+                <div class="grid grid-cols-2 gap-3 sm:flex sm:justify-end">
+                    <button
+                        type="button"
+                        class="min-h-11 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-black text-slate-700 transition hover:bg-slate-50"
+                        @click="closeStatusModal"
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        type="button"
+                        class="min-h-11 rounded-2xl px-4 py-3 text-sm font-black text-white shadow-md transition"
+                        :class="
+                            selectedStatusUser.is_active
+                                ? 'bg-red-600 shadow-red-600/20 hover:bg-red-700'
+                                : 'bg-green-700 shadow-green-700/20 hover:bg-green-800'
+                        "
+                        @click="submitToggleUserActive"
+                    >
+                        {{
+                            selectedStatusUser.is_active
+                                ? 'Deactivate'
+                                : 'Activate'
+                        }}
+                    </button>
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- Admin Mobile More Sheet -->
+    <div
+        v-if="showAdminMobileMoreMenu"
+        class="fixed inset-x-3 bottom-24 z-40 rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl shadow-slate-900/20 md:hidden"
+    >
+        <div class="flex items-start justify-between gap-3">
+            <div>
+                <p class="text-sm font-black text-blue-950">Admin Tools</p>
+
+                <p class="mt-1 text-xs font-semibold text-slate-500">
+                    Quick access to reports and course modules.
+                </p>
+            </div>
+
+            <button
+                type="button"
+                class="grid size-10 place-items-center rounded-xl border border-slate-200 text-slate-500"
+                @click="closeAdminMobileMoreMenu"
+            >
+                <X class="size-5" />
+            </button>
+        </div>
+
+        <div class="mt-4 grid gap-2">
+            <Link
+                href="/admin/reports"
+                class="flex min-h-12 items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-black text-slate-700"
+            >
+                <span>Reports</span>
+                <span>→</span>
+            </Link>
+
+            <Link
+                href="/admin/course-modules"
+                class="flex min-h-12 items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-black text-slate-700"
+            >
+                <span>Course Modules</span>
+                <span>→</span>
+            </Link>
+        </div>
+    </div>
+
+    <!-- Admin Mobile Thumb Navigation -->
+    <nav
+        class="fixed inset-x-3 bottom-3 z-30 rounded-2xl border border-blue-200 bg-blue-950/95 p-2 shadow-2xl shadow-blue-950/25 backdrop-blur md:hidden"
+    >
+        <div class="grid grid-cols-4 gap-1">
+            <Link
+                href="/admin/dashboard"
+                class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
+            >
+                <LayoutDashboard class="size-4" />
+                <span>Home</span>
+            </Link>
+
+            <Link
+                href="/admin/users"
+                class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl bg-white/15 px-2 py-2 text-[0.65rem] font-black text-white ring-1 ring-blue-200/40 transition hover:bg-white/10"
+            >
+                <Users class="size-4" />
+                <span>Users</span>
+            </Link>
+
+            <Link
+                href="/admin/clearance-requests"
+                class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
+            >
+                <ShieldCheck class="size-4" />
+                <span>Requests</span>
+            </Link>
+
+            <button
+                type="button"
+                class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
+                :class="
+                    showAdminMobileMoreMenu
+                        ? 'bg-white/15 ring-1 ring-blue-200/40'
+                        : ''
+                "
+                @click="toggleAdminMobileMoreMenu"
+            >
+                <span class="text-base leading-none">•••</span>
+                <span>More</span>
+            </button>
+        </div>
+    </nav>
 </template>

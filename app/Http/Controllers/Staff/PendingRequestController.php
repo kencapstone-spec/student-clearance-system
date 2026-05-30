@@ -67,6 +67,54 @@ class PendingRequestController extends Controller
         return back()->with('success', 'Clearance request approved successfully.');
     }
 
+    public function approveAll(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+
+        if (! $user->office_id) {
+            abort(403, 'No office assigned.');
+        }
+
+        $pendingApprovals = ClearanceApproval::query()
+            ->where('office_id', $user->office_id)
+            ->where('status', 'pending')
+            ->with([
+                'clearanceRequest.user',
+                'clearanceRequest.approvals.office',
+                'office',
+            ])
+            ->get();
+
+        if ($pendingApprovals->isEmpty()) {
+            return back()->with('error', 'There are no pending clearance requests to approve.');
+        }
+
+        foreach ($pendingApprovals as $approval) {
+            $approval->update([
+                'status' => 'approved',
+                'approved_by' => $user->id,
+                'remarks' => null,
+                'acted_at' => now(),
+            ]);
+
+            $approval->load(['clearanceRequest.user', 'office']);
+
+            NotificationService::send(
+                $approval->clearanceRequest->user,
+                'Clearance request approved',
+                "Your {$approval->office->name} clearance request has been approved.",
+                '/dashboard'
+            );
+
+            $this->notifyPresidentIfReadyForFinalApproval($approval);
+        }
+
+        return back()->with(
+            'success',
+            $pendingApprovals->count() . ' pending clearance request(s) approved successfully.'
+        );
+    }
+
     public function reject(Request $request, ClearanceApproval $approval): RedirectResponse
     {
         $user = $request->user();

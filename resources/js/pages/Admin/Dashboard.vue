@@ -7,12 +7,15 @@ import {
     ClipboardCheck,
     FileText,
     GraduationCap,
+    LayoutDashboard,
     Settings,
     ShieldCheck,
     UserRoundCog,
     Users,
+    X,
     XCircle,
 } from 'lucide-vue-next';
+import { ref } from 'vue';
 
 type Stats = {
     students: number;
@@ -49,38 +52,69 @@ defineProps<{
     stats: Stats;
     recentRequests: ClearanceRequest[];
 }>();
+
+const showAdminMobileMoreMenu = ref(false);
+
+const toggleAdminMobileMoreMenu = () => {
+    showAdminMobileMoreMenu.value = !showAdminMobileMoreMenu.value;
+};
+
+const closeAdminMobileMoreMenu = () => {
+    showAdminMobileMoreMenu.value = false;
+};
 </script>
 
 <template>
     <Head title="Admin Dashboard" />
 
-    <div class="min-h-screen bg-linear-to-br from-slate-50 via-white to-blue-50/40 p-4 text-slate-900 md:p-6">
-        <div class="mx-auto flex max-w-7xl flex-col gap-6">
+    <div
+        class="min-h-screen bg-linear-to-br from-slate-50 via-white to-blue-50/40 p-3 pb-28 text-slate-900 sm:p-4 sm:pb-28 md:p-6 md:pb-6"
+    >
+        <div class="mx-auto flex max-w-7xl flex-col gap-4 md:gap-6">
             <!-- Hero -->
-            <section class="overflow-hidden rounded-4xl border border-slate-200 bg-white/95 shadow-xl shadow-slate-200/70">
-                <div class="grid gap-8 p-6 lg:grid-cols-[1fr_320px] lg:p-8">
+            <section
+                class="overflow-hidden rounded-3xl border border-slate-200 bg-white/95 shadow-xl shadow-slate-200/70 md:rounded-4xl"
+            >
+                <div
+                    class="grid gap-6 p-4 sm:p-6 lg:grid-cols-[1fr_320px] lg:p-8"
+                >
                     <div>
-                        <div class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-blue-700">
+                        <div
+                            class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-3 py-2 text-[0.65rem] font-black tracking-[0.14em] text-blue-700 uppercase sm:px-4 sm:text-xs sm:tracking-[0.18em]"
+                        >
                             <ShieldCheck class="size-4" />
                             Admin / OSAS Director Panel
                         </div>
 
-                        <h1 class="mt-5 text-4xl font-black tracking-tight text-blue-950">
+                        <h1
+                            class="mt-5 text-3xl font-black tracking-tight text-blue-950 sm:text-4xl"
+                        >
                             Admin Dashboard
                         </h1>
 
-                        <p class="mt-3 max-w-3xl text-base leading-7 text-slate-600">
-                            Monitor student clearance activity, approval progress, course modules, offices, reports, and system users from one control center.
+                        <p
+                            class="mt-3 max-w-3xl text-sm leading-6 text-slate-600 sm:text-base sm:leading-7"
+                        >
+                            Monitor student clearance activity, approval
+                            progress, course modules, offices, reports, and
+                            system users from one control center.
                         </p>
 
-                        <div class="mt-5 rounded-2xl border border-blue-100 bg-blue-50/80 p-4 text-sm font-medium leading-6 text-blue-900">
-                            You are logged in as the system administrator. Use this panel to manage users, monitor clearance progress, review reports, and maintain course-office module assignments.
+                        <div
+                            class="mt-5 rounded-2xl border border-blue-100 bg-blue-50/80 p-4 text-sm leading-6 font-medium text-blue-900"
+                        >
+                            You are logged in as the system administrator. Use
+                            this panel to manage users, monitor clearance
+                            progress, review reports, and maintain
+                            course-office module assignments.
                         </div>
 
-                        <div class="mt-6 flex flex-wrap gap-3">
+                        <div
+                            class="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:flex xl:flex-wrap"
+                        >
                             <Link
                                 href="/admin/users"
-                                class="inline-flex items-center gap-2 rounded-2xl bg-blue-700 px-5 py-3 text-sm font-black text-white shadow-lg shadow-blue-700/20 transition hover:-translate-y-0.5 hover:bg-blue-800 hover:shadow-xl"
+                                class="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-blue-700 px-5 py-3 text-sm font-black text-white shadow-lg shadow-blue-700/20 transition hover:-translate-y-0.5 hover:bg-blue-800 hover:shadow-xl"
                             >
                                 <Users class="size-4" />
                                 Manage Users
@@ -88,7 +122,7 @@ defineProps<{
 
                             <Link
                                 href="/admin/clearance-requests"
-                                class="inline-flex items-center gap-2 rounded-2xl bg-green-700 px-5 py-3 text-sm font-black text-white shadow-lg shadow-green-700/20 transition hover:-translate-y-0.5 hover:bg-green-800 hover:shadow-xl"
+                                class="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-green-700 px-5 py-3 text-sm font-black text-white shadow-lg shadow-green-700/20 transition hover:-translate-y-0.5 hover:bg-green-800 hover:shadow-xl"
                             >
                                 <ClipboardCheck class="size-4" />
                                 Monitor Clearances
@@ -96,7 +130,7 @@ defineProps<{
 
                             <Link
                                 href="/admin/reports"
-                                class="inline-flex items-center gap-2 rounded-2xl bg-purple-700 px-5 py-3 text-sm font-black text-white shadow-lg shadow-purple-700/20 transition hover:-translate-y-0.5 hover:bg-purple-800 hover:shadow-xl"
+                                class="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-purple-700 px-5 py-3 text-sm font-black text-white shadow-lg shadow-purple-700/20 transition hover:-translate-y-0.5 hover:bg-purple-800 hover:shadow-xl"
                             >
                                 <FileText class="size-4" />
                                 View Reports
@@ -104,7 +138,7 @@ defineProps<{
 
                             <Link
                                 href="/admin/course-modules"
-                                class="inline-flex items-center gap-2 rounded-2xl bg-indigo-700 px-5 py-3 text-sm font-black text-white shadow-lg shadow-indigo-700/20 transition hover:-translate-y-0.5 hover:bg-indigo-800 hover:shadow-xl"
+                                class="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-indigo-700 px-5 py-3 text-sm font-black text-white shadow-lg shadow-indigo-700/20 transition hover:-translate-y-0.5 hover:bg-indigo-800 hover:shadow-xl"
                             >
                                 <Settings class="size-4" />
                                 Course Modules
@@ -113,15 +147,25 @@ defineProps<{
                     </div>
 
                     <div class="hidden items-center justify-center lg:flex">
-                        <div class="relative flex h-64 w-64 items-center justify-center">
-                            <div class="absolute inset-0 rounded-full bg-blue-100 blur-2xl"></div>
+                        <div
+                            class="relative flex h-64 w-64 items-center justify-center"
+                        >
+                            <div
+                                class="absolute inset-0 rounded-full bg-blue-100 blur-2xl"
+                            ></div>
 
-                            <div class="relative grid h-52 w-52 place-items-center rounded-4xl border border-blue-100 bg-linear-to-br from-white to-blue-50 shadow-2xl shadow-slate-300/70">
-                                <div class="grid h-20 w-20 place-items-center rounded-3xl bg-blue-700 text-white shadow-xl shadow-blue-700/25">
+                            <div
+                                class="relative grid h-52 w-52 place-items-center rounded-4xl border border-blue-100 bg-linear-to-br from-white to-blue-50 shadow-2xl shadow-slate-300/70"
+                            >
+                                <div
+                                    class="grid h-20 w-20 place-items-center rounded-3xl bg-blue-700 text-white shadow-xl shadow-blue-700/25"
+                                >
                                     <BarChart3 class="size-10" />
                                 </div>
 
-                                <p class="text-center text-sm font-black uppercase tracking-[0.18em] text-blue-700">
+                                <p
+                                    class="text-center text-sm font-black tracking-[0.18em] text-blue-700 uppercase"
+                                >
                                     System Overview
                                 </p>
                             </div>
@@ -131,81 +175,131 @@ defineProps<{
             </section>
 
             <!-- User and Structure Stats -->
-            <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                <div class="rounded-3xl border border-slate-200 bg-white/95 p-6 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl">
-                    <div class="flex items-center gap-4">
-                        <div class="grid h-14 w-14 place-items-center rounded-2xl bg-blue-50 text-blue-700 shadow-sm">
-                            <GraduationCap class="size-7" />
+            <section
+                class="grid grid-cols-2 gap-3 md:grid-cols-2 md:gap-4 xl:grid-cols-4"
+            >
+                <div
+                    class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-3xl md:p-6"
+                >
+                    <div class="flex items-center gap-3 md:gap-4">
+                        <div
+                            class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-blue-50 text-blue-700 shadow-sm md:h-14 md:w-14"
+                        >
+                            <GraduationCap class="size-6 md:size-7" />
                         </div>
 
                         <div>
-                            <p class="text-sm font-black uppercase tracking-wide text-blue-700">
+                            <p
+                                class="text-[0.65rem] leading-tight font-black tracking-wide text-blue-700 uppercase sm:text-sm"
+                            >
                                 Students
                             </p>
-                            <p class="mt-1 text-4xl font-black text-blue-950">
+
+                            <p
+                                class="mt-1 text-2xl font-black text-blue-950 md:text-4xl"
+                            >
                                 {{ stats.students }}
                             </p>
-                            <p class="text-sm font-medium text-slate-500">
+
+                            <p
+                                class="text-xs font-medium text-slate-500 sm:text-sm"
+                            >
                                 Registered accounts
                             </p>
                         </div>
                     </div>
                 </div>
 
-                <div class="rounded-3xl border border-slate-200 bg-white/95 p-6 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl">
-                    <div class="flex items-center gap-4">
-                        <div class="grid h-14 w-14 place-items-center rounded-2xl bg-indigo-50 text-indigo-700 shadow-sm">
-                            <UserRoundCog class="size-7" />
+                <div
+                    class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-3xl md:p-6"
+                >
+                    <div class="flex items-center gap-3 md:gap-4">
+                        <div
+                            class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-indigo-50 text-indigo-700 shadow-sm md:h-14 md:w-14"
+                        >
+                            <UserRoundCog class="size-6 md:size-7" />
                         </div>
 
                         <div>
-                            <p class="text-sm font-black uppercase tracking-wide text-indigo-700">
+                            <p
+                                class="text-[0.65rem] leading-tight font-black tracking-wide text-indigo-700 uppercase sm:text-sm"
+                            >
                                 Staff
                             </p>
-                            <p class="mt-1 text-4xl font-black text-blue-950">
+
+                            <p
+                                class="mt-1 text-2xl font-black text-blue-950 md:text-4xl"
+                            >
                                 {{ stats.staff }}
                             </p>
-                            <p class="text-sm font-medium text-slate-500">
+
+                            <p
+                                class="text-xs font-medium text-slate-500 sm:text-sm"
+                            >
                                 Office approvers
                             </p>
                         </div>
                     </div>
                 </div>
 
-                <div class="rounded-3xl border border-slate-200 bg-white/95 p-6 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl">
-                    <div class="flex items-center gap-4">
-                        <div class="grid h-14 w-14 place-items-center rounded-2xl bg-green-50 text-green-700 shadow-sm">
-                            <FileText class="size-7" />
+                <div
+                    class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-3xl md:p-6"
+                >
+                    <div class="flex items-center gap-3 md:gap-4">
+                        <div
+                            class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-green-50 text-green-700 shadow-sm md:h-14 md:w-14"
+                        >
+                            <FileText class="size-6 md:size-7" />
                         </div>
 
                         <div>
-                            <p class="text-sm font-black uppercase tracking-wide text-green-700">
+                            <p
+                                class="text-[0.65rem] leading-tight font-black tracking-wide text-green-700 uppercase sm:text-sm"
+                            >
                                 Courses
                             </p>
-                            <p class="mt-1 text-4xl font-black text-blue-950">
+
+                            <p
+                                class="mt-1 text-2xl font-black text-blue-950 md:text-4xl"
+                            >
                                 {{ stats.courses }}
                             </p>
-                            <p class="text-sm font-medium text-slate-500">
+
+                            <p
+                                class="text-xs font-medium text-slate-500 sm:text-sm"
+                            >
                                 Course modules
                             </p>
                         </div>
                     </div>
                 </div>
 
-                <div class="rounded-3xl border border-slate-200 bg-white/95 p-6 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl">
-                    <div class="flex items-center gap-4">
-                        <div class="grid h-14 w-14 place-items-center rounded-2xl bg-purple-50 text-purple-700 shadow-sm">
-                            <Building2 class="size-7" />
+                <div
+                    class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-3xl md:p-6"
+                >
+                    <div class="flex items-center gap-3 md:gap-4">
+                        <div
+                            class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-purple-50 text-purple-700 shadow-sm md:h-14 md:w-14"
+                        >
+                            <Building2 class="size-6 md:size-7" />
                         </div>
 
                         <div>
-                            <p class="text-sm font-black uppercase tracking-wide text-purple-700">
+                            <p
+                                class="text-[0.65rem] leading-tight font-black tracking-wide text-purple-700 uppercase sm:text-sm"
+                            >
                                 Offices
                             </p>
-                            <p class="mt-1 text-4xl font-black text-blue-950">
+
+                            <p
+                                class="mt-1 text-2xl font-black text-blue-950 md:text-4xl"
+                            >
                                 {{ stats.offices }}
                             </p>
-                            <p class="text-sm font-medium text-slate-500">
+
+                            <p
+                                class="text-xs font-medium text-slate-500 sm:text-sm"
+                            >
                                 Clearance offices
                             </p>
                         </div>
@@ -214,81 +308,131 @@ defineProps<{
             </section>
 
             <!-- Clearance Stats -->
-            <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                <div class="rounded-3xl border border-slate-200 bg-white/95 p-6 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl">
-                    <div class="flex items-center gap-4">
-                        <div class="grid h-14 w-14 place-items-center rounded-2xl bg-blue-50 text-blue-700 shadow-sm">
-                            <ClipboardCheck class="size-7" />
+            <section
+                class="grid grid-cols-2 gap-3 md:grid-cols-2 md:gap-4 xl:grid-cols-4"
+            >
+                <div
+                    class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-3xl md:p-6"
+                >
+                    <div class="flex items-center gap-3 md:gap-4">
+                        <div
+                            class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-blue-50 text-blue-700 shadow-sm md:h-14 md:w-14"
+                        >
+                            <ClipboardCheck class="size-6 md:size-7" />
                         </div>
 
                         <div>
-                            <p class="text-sm font-black uppercase tracking-wide text-blue-700">
+                            <p
+                                class="text-[0.65rem] leading-tight font-black tracking-wide text-blue-700 uppercase sm:text-sm"
+                            >
                                 Clearance Requests
                             </p>
-                            <p class="mt-1 text-4xl font-black text-blue-950">
+
+                            <p
+                                class="mt-1 text-2xl font-black text-blue-950 md:text-4xl"
+                            >
                                 {{ stats.clearanceRequests }}
                             </p>
-                            <p class="text-sm font-medium text-slate-500">
+
+                            <p
+                                class="text-xs font-medium text-slate-500 sm:text-sm"
+                            >
                                 Submitted requests
                             </p>
                         </div>
                     </div>
                 </div>
 
-                <div class="rounded-3xl border border-slate-200 bg-white/95 p-6 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl">
-                    <div class="flex items-center gap-4">
-                        <div class="grid h-14 w-14 place-items-center rounded-2xl bg-orange-50 text-orange-600 shadow-sm">
-                            <BarChart3 class="size-7" />
+                <div
+                    class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-3xl md:p-6"
+                >
+                    <div class="flex items-center gap-3 md:gap-4">
+                        <div
+                            class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-orange-50 text-orange-600 shadow-sm md:h-14 md:w-14"
+                        >
+                            <BarChart3 class="size-6 md:size-7" />
                         </div>
 
                         <div>
-                            <p class="text-sm font-black uppercase tracking-wide text-orange-600">
+                            <p
+                                class="text-[0.65rem] leading-tight font-black tracking-wide text-orange-600 uppercase sm:text-sm"
+                            >
                                 Pending Approvals
                             </p>
-                            <p class="mt-1 text-4xl font-black text-blue-950">
+
+                            <p
+                                class="mt-1 text-2xl font-black text-blue-950 md:text-4xl"
+                            >
                                 {{ stats.pendingApprovals }}
                             </p>
-                            <p class="text-sm font-medium text-slate-500">
+
+                            <p
+                                class="text-xs font-medium text-slate-500 sm:text-sm"
+                            >
                                 Waiting actions
                             </p>
                         </div>
                     </div>
                 </div>
 
-                <div class="rounded-3xl border border-slate-200 bg-white/95 p-6 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl">
-                    <div class="flex items-center gap-4">
-                        <div class="grid h-14 w-14 place-items-center rounded-2xl bg-green-50 text-green-700 shadow-sm">
-                            <CheckCircle2 class="size-7" />
+                <div
+                    class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-3xl md:p-6"
+                >
+                    <div class="flex items-center gap-3 md:gap-4">
+                        <div
+                            class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-green-50 text-green-700 shadow-sm md:h-14 md:w-14"
+                        >
+                            <CheckCircle2 class="size-6 md:size-7" />
                         </div>
 
                         <div>
-                            <p class="text-sm font-black uppercase tracking-wide text-green-700">
+                            <p
+                                class="text-[0.65rem] leading-tight font-black tracking-wide text-green-700 uppercase sm:text-sm"
+                            >
                                 Approved Approvals
                             </p>
-                            <p class="mt-1 text-4xl font-black text-blue-950">
+
+                            <p
+                                class="mt-1 text-2xl font-black text-blue-950 md:text-4xl"
+                            >
                                 {{ stats.approvedApprovals }}
                             </p>
-                            <p class="text-sm font-medium text-slate-500">
+
+                            <p
+                                class="text-xs font-medium text-slate-500 sm:text-sm"
+                            >
                                 Completed actions
                             </p>
                         </div>
                     </div>
                 </div>
 
-                <div class="rounded-3xl border border-slate-200 bg-white/95 p-6 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl">
-                    <div class="flex items-center gap-4">
-                        <div class="grid h-14 w-14 place-items-center rounded-2xl bg-red-50 text-red-600 shadow-sm">
-                            <XCircle class="size-7" />
+                <div
+                    class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-3xl md:p-6"
+                >
+                    <div class="flex items-center gap-3 md:gap-4">
+                        <div
+                            class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-red-50 text-red-600 shadow-sm md:h-14 md:w-14"
+                        >
+                            <XCircle class="size-6 md:size-7" />
                         </div>
 
                         <div>
-                            <p class="text-sm font-black uppercase tracking-wide text-red-600">
+                            <p
+                                class="text-[0.65rem] leading-tight font-black tracking-wide text-red-600 uppercase sm:text-sm"
+                            >
                                 Rejected Approvals
                             </p>
-                            <p class="mt-1 text-4xl font-black text-blue-950">
+
+                            <p
+                                class="mt-1 text-2xl font-black text-blue-950 md:text-4xl"
+                            >
                                 {{ stats.rejectedApprovals }}
                             </p>
-                            <p class="text-sm font-medium text-slate-500">
+
+                            <p
+                                class="text-xs font-medium text-slate-500 sm:text-sm"
+                            >
                                 Needs attention
                             </p>
                         </div>
@@ -297,10 +441,16 @@ defineProps<{
             </section>
 
             <!-- Recent Requests -->
-            <section class="overflow-hidden rounded-3xl border border-slate-200 bg-white/95 shadow-sm shadow-slate-200/70">
-                <div class="flex flex-col gap-4 border-b border-slate-200 bg-white px-6 py-5 md:flex-row md:items-center md:justify-between">
+            <section
+                class="overflow-hidden rounded-3xl border border-slate-200 bg-white/95 shadow-sm shadow-slate-200/70"
+            >
+                <div
+                    class="flex flex-col gap-4 border-b border-slate-200 bg-white px-4 py-5 sm:px-6 md:flex-row md:items-center md:justify-between"
+                >
                     <div>
-                        <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">
+                        <p
+                            class="text-xs font-black tracking-[0.18em] text-slate-400 uppercase"
+                        >
                             Latest Submissions
                         </p>
 
@@ -309,21 +459,24 @@ defineProps<{
                         </h2>
 
                         <p class="mt-1 text-sm font-medium text-slate-500">
-                            Latest student clearance requests submitted in the system.
+                            Latest student clearance requests submitted in the
+                            system.
                         </p>
                     </div>
 
                     <Link
                         href="/admin/clearance-requests"
-                        class="inline-flex w-fit items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-black text-blue-700 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-200 hover:bg-blue-50 hover:shadow-md"
+                        class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-black text-blue-700 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-200 hover:bg-blue-50 hover:shadow-md sm:w-auto"
                     >
                         View Monitoring
                         <ClipboardCheck class="size-4" />
                     </Link>
                 </div>
 
-                <div v-if="recentRequests.length === 0" class="p-10 text-center">
-                    <div class="mx-auto grid h-16 w-16 place-items-center rounded-3xl bg-blue-50 text-blue-700">
+                <div v-if="recentRequests.length === 0" class="p-8 text-center sm:p-10">
+                    <div
+                        class="mx-auto grid h-16 w-16 place-items-center rounded-3xl bg-blue-50 text-blue-700"
+                    >
                         <ClipboardCheck class="size-8" />
                     </div>
 
@@ -336,67 +489,251 @@ defineProps<{
                     </p>
                 </div>
 
-                <div v-else class="overflow-x-auto">
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-slate-50 text-slate-500">
-                            <tr>
-                                <th class="px-6 py-4 text-xs font-black uppercase tracking-wide">
-                                    Student
-                                </th>
-                                <th class="px-6 py-4 text-xs font-black uppercase tracking-wide">
-                                    Student ID
-                                </th>
-                                <th class="px-6 py-4 text-xs font-black uppercase tracking-wide">
-                                    Course
-                                </th>
-                                <th class="px-6 py-4 text-xs font-black uppercase tracking-wide">
-                                    Semester
-                                </th>
-                                <th class="px-6 py-4 text-xs font-black uppercase tracking-wide">
-                                    School Year
-                                </th>
-                            </tr>
-                        </thead>
+                <div v-else>
+                    <!-- Mobile Recent Request Cards -->
+                    <div class="grid gap-3 p-4 lg:hidden">
+                        <article
+                            v-for="request in recentRequests"
+                            :key="request.id"
+                            class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+                        >
+                            <div class="flex items-start justify-between gap-3">
+                                <div class="min-w-0">
+                                    <h3
+                                        class="truncate text-base font-black text-blue-950"
+                                    >
+                                        {{ request.user.name }}
+                                    </h3>
 
-                        <tbody class="divide-y divide-slate-100">
-                            <tr
-                                v-for="request in recentRequests"
-                                :key="request.id"
-                                class="transition hover:bg-blue-50/50"
+                                    <p
+                                        class="mt-1 text-sm font-semibold text-slate-600"
+                                    >
+                                        {{ request.user.student_id }}
+                                    </p>
+
+                                    <p
+                                        class="mt-1 text-xs font-medium text-slate-500"
+                                    >
+                                        Clearance request #{{ request.id }}
+                                    </p>
+                                </div>
+
+                                <span
+                                    class="shrink-0 rounded-full bg-blue-50 px-3 py-1 text-xs font-black text-blue-700"
+                                >
+                                    {{ request.user.course?.code ?? 'N/A' }}
+                                </span>
+                            </div>
+
+                            <div
+                                class="mt-4 grid grid-cols-2 gap-2 text-sm font-semibold text-slate-700"
                             >
-                                <td class="px-6 py-4">
-                                    <div>
-                                        <p class="font-black text-blue-950">
-                                            {{ request.user.name }}
-                                        </p>
-                                        <p class="mt-1 text-xs font-medium text-slate-500">
-                                            Clearance request #{{ request.id }}
-                                        </p>
-                                    </div>
-                                </td>
+                                <div
+                                    class="rounded-xl border border-slate-100 bg-slate-50 px-3 py-2"
+                                >
+                                    <p class="text-xs text-slate-500">
+                                        Semester
+                                    </p>
 
-                                <td class="px-6 py-4 font-semibold text-slate-700">
-                                    {{ request.user.student_id }}
-                                </td>
+                                    <p class="mt-1 font-black text-blue-950">
+                                        {{ request.semester }}
+                                    </p>
+                                </div>
 
-                                <td class="px-6 py-4">
-                                    <span class="inline-flex rounded-full bg-blue-50 px-3 py-1 text-xs font-black text-blue-700">
-                                        {{ request.user.course?.code ?? 'N/A' }}
-                                    </span>
-                                </td>
+                                <div
+                                    class="rounded-xl border border-slate-100 bg-slate-50 px-3 py-2"
+                                >
+                                    <p class="text-xs text-slate-500">
+                                        School Year
+                                    </p>
 
-                                <td class="px-6 py-4 font-semibold text-slate-700">
-                                    {{ request.semester }}
-                                </td>
+                                    <p class="mt-1 font-black text-blue-950">
+                                        {{ request.school_year }}
+                                    </p>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
 
-                                <td class="px-6 py-4 font-semibold text-slate-700">
-                                    {{ request.school_year }}
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <!-- Desktop Recent Request Table -->
+                    <div class="hidden overflow-x-auto lg:block">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-slate-50 text-slate-500">
+                                <tr>
+                                    <th
+                                        class="px-6 py-4 text-xs font-black tracking-wide uppercase"
+                                    >
+                                        Student
+                                    </th>
+
+                                    <th
+                                        class="px-6 py-4 text-xs font-black tracking-wide uppercase"
+                                    >
+                                        Student ID
+                                    </th>
+
+                                    <th
+                                        class="px-6 py-4 text-xs font-black tracking-wide uppercase"
+                                    >
+                                        Course
+                                    </th>
+
+                                    <th
+                                        class="px-6 py-4 text-xs font-black tracking-wide uppercase"
+                                    >
+                                        Semester
+                                    </th>
+
+                                    <th
+                                        class="px-6 py-4 text-xs font-black tracking-wide uppercase"
+                                    >
+                                        School Year
+                                    </th>
+                                </tr>
+                            </thead>
+
+                            <tbody class="divide-y divide-slate-100">
+                                <tr
+                                    v-for="request in recentRequests"
+                                    :key="request.id"
+                                    class="transition hover:bg-blue-50/50"
+                                >
+                                    <td class="px-6 py-4">
+                                        <div>
+                                            <p class="font-black text-blue-950">
+                                                {{ request.user.name }}
+                                            </p>
+
+                                            <p
+                                                class="mt-1 text-xs font-medium text-slate-500"
+                                            >
+                                                Clearance request
+                                                #{{ request.id }}
+                                            </p>
+                                        </div>
+                                    </td>
+
+                                    <td
+                                        class="px-6 py-4 font-semibold text-slate-700"
+                                    >
+                                        {{ request.user.student_id }}
+                                    </td>
+
+                                    <td class="px-6 py-4">
+                                        <span
+                                            class="inline-flex rounded-full bg-blue-50 px-3 py-1 text-xs font-black text-blue-700"
+                                        >
+                                            {{
+                                                request.user.course?.code ??
+                                                'N/A'
+                                            }}
+                                        </span>
+                                    </td>
+
+                                    <td
+                                        class="px-6 py-4 font-semibold text-slate-700"
+                                    >
+                                        {{ request.semester }}
+                                    </td>
+
+                                    <td
+                                        class="px-6 py-4 font-semibold text-slate-700"
+                                    >
+                                        {{ request.school_year }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </section>
         </div>
     </div>
+
+    <!-- Admin Mobile More Sheet -->
+    <div
+        v-if="showAdminMobileMoreMenu"
+        class="fixed inset-x-3 bottom-24 z-40 rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl shadow-slate-900/20 md:hidden"
+    >
+        <div class="flex items-start justify-between gap-3">
+            <div>
+                <p class="text-sm font-black text-blue-950">Admin Tools</p>
+
+                <p class="mt-1 text-xs font-semibold text-slate-500">
+                    Quick access to reports and course modules.
+                </p>
+            </div>
+
+            <button
+                type="button"
+                class="grid size-10 place-items-center rounded-xl border border-slate-200 text-slate-500"
+                @click="closeAdminMobileMoreMenu"
+            >
+                <X class="size-5" />
+            </button>
+        </div>
+
+        <div class="mt-4 grid gap-2">
+            <Link
+                href="/admin/reports"
+                class="flex min-h-12 items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-black text-slate-700"
+            >
+                <span>Reports</span>
+                <span>→</span>
+            </Link>
+
+            <Link
+                href="/admin/course-modules"
+                class="flex min-h-12 items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-black text-slate-700"
+            >
+                <span>Course Modules</span>
+                <span>→</span>
+            </Link>
+        </div>
+    </div>
+
+    <!-- Admin Mobile Thumb Navigation -->
+    <nav
+        class="fixed inset-x-3 bottom-3 z-30 rounded-2xl border border-blue-200 bg-blue-950/95 p-2 shadow-2xl shadow-blue-950/25 backdrop-blur md:hidden"
+    >
+        <div class="grid grid-cols-4 gap-1">
+            <Link
+                href="/admin/dashboard"
+                class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl bg-white/15 px-2 py-2 text-[0.65rem] font-black text-white ring-1 ring-blue-200/40 transition hover:bg-white/10"
+            >
+                <LayoutDashboard class="size-4" />
+                <span>Home</span>
+            </Link>
+
+            <Link
+                href="/admin/users"
+                class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
+            >
+                <UserRoundCog class="size-4" />
+                <span>Users</span>
+            </Link>
+
+            <Link
+                href="/admin/clearance-requests"
+                class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
+            >
+                <ClipboardCheck class="size-4" />
+                <span>Requests</span>
+            </Link>
+
+            <button
+                type="button"
+                class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
+                :class="
+                    showAdminMobileMoreMenu
+                        ? 'bg-white/15 ring-1 ring-blue-200/40'
+                        : ''
+                "
+                @click="toggleAdminMobileMoreMenu"
+            >
+                <span class="text-base leading-none">•••</span>
+                <span>More</span>
+            </button>
+        </div>
+    </nav>
 </template>

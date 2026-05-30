@@ -8,6 +8,7 @@ import {
     Filter,
     Inbox,
     ShieldCheck,
+    X,
     XCircle,
 } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
@@ -72,6 +73,9 @@ const showRejectModal = ref(false);
 
 const selectedApprovalForApproval = ref<Approval | null>(null);
 const showApproveModal = ref(false);
+
+const showApproveAllModal = ref(false);
+const isApprovingAll = ref(false);
 
 const clearMessages = () => {
     successMessage.value = '';
@@ -140,6 +144,52 @@ const confirmApprove = () => {
             onError: () => {
                 errorMessage.value =
                     'Unable to approve request. Please try again.';
+            },
+        },
+    );
+};
+
+const openApproveAllModal = () => {
+    clearMessages();
+
+    if (pendingApprovals.value.length === 0) {
+        errorMessage.value = 'There are no pending requests to approve.';
+
+        return;
+    }
+
+    showApproveAllModal.value = true;
+};
+
+const closeApproveAllModal = () => {
+    if (isApprovingAll.value) {
+        return;
+    }
+
+    showApproveAllModal.value = false;
+};
+
+const confirmApproveAll = () => {
+    clearMessages();
+    isApprovingAll.value = true;
+
+    router.patch(
+        '/staff/clearance-approvals/approve-all',
+        {},
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                showApproveAllModal.value = false;
+                successMessage.value =
+                    'All pending requests for your office were approved successfully.';
+                activeFilter.value = 'approved';
+            },
+            onError: () => {
+                errorMessage.value =
+                    'Unable to approve all pending requests. Please try again.';
+            },
+            onFinish: () => {
+                isApprovingAll.value = false;
             },
         },
     );
@@ -221,36 +271,89 @@ const filterButtonClass = (filter: FilterStatus) => {
 
     return 'border-slate-200 bg-white text-slate-600 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700';
 };
+
+const thumbButtonClass = (filter: FilterStatus) => {
+    if (activeFilter.value === filter) {
+        return 'bg-white/15 ring-1 ring-blue-200/40';
+    }
+
+    return '';
+};
+
+const scrollToTop = () => {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth',
+    });
+};
 </script>
 
 <template>
     <Head title="Staff Clearance Requests" />
 
-    <div class="min-h-screen bg-linear-to-br from-slate-50 via-white to-blue-50/40 p-4 text-slate-900 md:p-6">
-        <div class="mx-auto flex max-w-7xl flex-col gap-6">
+    <div
+        class="min-h-screen bg-linear-to-br from-slate-50 via-white to-blue-50/40 p-3 pb-28 text-slate-900 sm:p-4 sm:pb-28 md:p-6 md:pb-6"
+    >
+        <div class="mx-auto flex max-w-7xl flex-col gap-4 md:gap-6">
             <!-- Hero -->
-            <section class="overflow-hidden rounded-4xl border border-slate-200 bg-white/95 shadow-xl shadow-slate-200/70">
-                <div class="grid gap-8 p-6 lg:grid-cols-[1fr_300px] lg:p-8">
+            <section
+                class="overflow-hidden rounded-3xl border border-slate-200 bg-white/95 shadow-xl shadow-slate-200/70 md:rounded-4xl"
+            >
+                <div
+                    class="grid gap-6 p-4 sm:p-6 lg:grid-cols-[1fr_300px] lg:p-8"
+                >
                     <div>
-                        <div class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-blue-700">
+                        <div
+                            class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-3 py-2 text-[0.65rem] font-black tracking-[0.14em] text-blue-700 uppercase sm:px-4 sm:text-xs sm:tracking-[0.18em]"
+                        >
                             <ShieldCheck class="size-4" />
                             Staff / Approver Panel
                         </div>
 
-                        <h1 class="mt-5 text-4xl font-black tracking-tight text-blue-950">
+                        <h1
+                            class="mt-5 text-3xl font-black tracking-tight text-blue-950 sm:text-4xl"
+                        >
                             Clearance Requests
                         </h1>
 
-                        <p class="mt-3 max-w-3xl text-base leading-7 text-slate-600">
-                            Review, approve, or reject student clearance requests assigned to your office.
+                        <p
+                            class="mt-3 max-w-3xl text-sm leading-6 text-slate-600 sm:text-base sm:leading-7"
+                        >
+                            Review, approve, or reject student clearance
+                            requests assigned to your office.
                         </p>
 
-                        <div class="mt-5 rounded-2xl border border-blue-100 bg-blue-50/80 p-4 text-sm font-medium leading-6 text-blue-900">
+                        <div
+                            class="mt-5 rounded-2xl border border-blue-100 bg-blue-50/80 p-4 text-sm leading-6 font-medium text-blue-900"
+                        >
                             <span class="font-black">Logged in as:</span>
                             {{ staff.name }}
                             <span v-if="staff.office">
                                 - {{ staff.office.name }}
                             </span>
+                        </div>
+
+                        <div
+                            class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2"
+                        >
+                            <button
+                                type="button"
+                                class="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-green-700 px-5 py-3 text-sm font-black text-white shadow-lg shadow-green-700/20 transition hover:-translate-y-0.5 hover:bg-green-800 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50"
+                                :disabled="pendingApprovals.length === 0"
+                                @click="openApproveAllModal"
+                            >
+                                <CheckCircle2 class="size-4" />
+                                Approve All Pending
+                            </button>
+
+                            <button
+                                type="button"
+                                class="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-black text-blue-700 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-200 hover:bg-blue-50 hover:shadow-md"
+                                @click="setFilter('pending')"
+                            >
+                                <Clock3 class="size-4" />
+                                Manual Review
+                            </button>
                         </div>
 
                         <div
@@ -269,12 +372,18 @@ const filterButtonClass = (filter: FilterStatus) => {
                     </div>
 
                     <div class="hidden items-center justify-center lg:flex">
-                        <div class="relative grid h-52 w-52 place-items-center rounded-4xl border border-blue-100 bg-linear-to-br from-white to-blue-50 shadow-2xl shadow-slate-300/70">
-                            <div class="grid h-20 w-20 place-items-center rounded-3xl bg-blue-700 text-white shadow-xl shadow-blue-700/25">
+                        <div
+                            class="relative grid h-52 w-52 place-items-center rounded-4xl border border-blue-100 bg-linear-to-br from-white to-blue-50 shadow-2xl shadow-slate-300/70"
+                        >
+                            <div
+                                class="grid h-20 w-20 place-items-center rounded-3xl bg-blue-700 text-white shadow-xl shadow-blue-700/25"
+                            >
                                 <ClipboardCheck class="size-10" />
                             </div>
 
-                            <p class="text-center text-sm font-black uppercase tracking-[0.18em] text-blue-700">
+                            <p
+                                class="text-center text-sm font-black tracking-[0.18em] text-blue-700 uppercase"
+                            >
                                 Office Review
                             </p>
                         </div>
@@ -283,81 +392,131 @@ const filterButtonClass = (filter: FilterStatus) => {
             </section>
 
             <!-- Summary Cards -->
-            <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                <div class="rounded-3xl border border-slate-200 bg-white/95 p-6 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl">
-                    <div class="flex items-center gap-4">
-                        <div class="grid h-14 w-14 place-items-center rounded-2xl bg-blue-50 text-blue-700 shadow-sm">
-                            <Building2 class="size-7" />
+            <section
+                class="grid grid-cols-2 gap-3 md:grid-cols-2 md:gap-4 xl:grid-cols-4"
+            >
+                <div
+                    class="col-span-2 rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-3xl md:p-6 xl:col-span-1"
+                >
+                    <div class="flex items-center gap-3 md:gap-4">
+                        <div
+                            class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-blue-50 text-blue-700 shadow-sm md:h-14 md:w-14"
+                        >
+                            <Building2 class="size-6 md:size-7" />
                         </div>
 
-                        <div>
-                            <p class="text-sm font-black uppercase tracking-wide text-blue-700">
+                        <div class="min-w-0">
+                            <p
+                                class="text-[0.65rem] leading-tight font-black tracking-wide text-blue-700 uppercase sm:text-sm"
+                            >
                                 Assigned Office
                             </p>
-                            <p class="mt-1 text-xl font-black text-blue-950">
+
+                            <p
+                                class="mt-1 truncate text-xl font-black text-blue-950 md:text-2xl"
+                            >
                                 {{ staff.office?.name ?? 'No Office Assigned' }}
                             </p>
-                            <p class="text-sm font-medium text-slate-500">
+
+                            <p
+                                class="text-xs font-medium text-slate-500 sm:text-sm"
+                            >
                                 Current responsibility
                             </p>
                         </div>
                     </div>
                 </div>
 
-                <div class="rounded-3xl border border-slate-200 bg-white/95 p-6 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl">
-                    <div class="flex items-center gap-4">
-                        <div class="grid h-14 w-14 place-items-center rounded-2xl bg-orange-50 text-orange-600 shadow-sm">
-                            <Clock3 class="size-7" />
+                <div
+                    class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-3xl md:p-6"
+                >
+                    <div class="flex items-center gap-3 md:gap-4">
+                        <div
+                            class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-orange-50 text-orange-600 shadow-sm md:h-14 md:w-14"
+                        >
+                            <Clock3 class="size-6 md:size-7" />
                         </div>
 
                         <div>
-                            <p class="text-sm font-black uppercase tracking-wide text-orange-600">
+                            <p
+                                class="text-[0.65rem] leading-tight font-black tracking-wide text-orange-600 uppercase sm:text-sm"
+                            >
                                 Pending
                             </p>
-                            <p class="mt-1 text-4xl font-black text-blue-950">
+
+                            <p
+                                class="mt-1 text-2xl font-black text-blue-950 md:text-4xl"
+                            >
                                 {{ pendingApprovals.length }}
                             </p>
-                            <p class="text-sm font-medium text-slate-500">
+
+                            <p
+                                class="text-xs font-medium text-slate-500 sm:text-sm"
+                            >
                                 Waiting review
                             </p>
                         </div>
                     </div>
                 </div>
 
-                <div class="rounded-3xl border border-slate-200 bg-white/95 p-6 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl">
-                    <div class="flex items-center gap-4">
-                        <div class="grid h-14 w-14 place-items-center rounded-2xl bg-green-50 text-green-700 shadow-sm">
-                            <CheckCircle2 class="size-7" />
+                <div
+                    class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-3xl md:p-6"
+                >
+                    <div class="flex items-center gap-3 md:gap-4">
+                        <div
+                            class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-green-50 text-green-700 shadow-sm md:h-14 md:w-14"
+                        >
+                            <CheckCircle2 class="size-6 md:size-7" />
                         </div>
 
                         <div>
-                            <p class="text-sm font-black uppercase tracking-wide text-green-700">
+                            <p
+                                class="text-[0.65rem] leading-tight font-black tracking-wide text-green-700 uppercase sm:text-sm"
+                            >
                                 Approved
                             </p>
-                            <p class="mt-1 text-4xl font-black text-blue-950">
+
+                            <p
+                                class="mt-1 text-2xl font-black text-blue-950 md:text-4xl"
+                            >
                                 {{ approvedApprovals.length }}
                             </p>
-                            <p class="text-sm font-medium text-slate-500">
+
+                            <p
+                                class="text-xs font-medium text-slate-500 sm:text-sm"
+                            >
                                 Completed reviews
                             </p>
                         </div>
                     </div>
                 </div>
 
-                <div class="rounded-3xl border border-slate-200 bg-white/95 p-6 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl">
-                    <div class="flex items-center gap-4">
-                        <div class="grid h-14 w-14 place-items-center rounded-2xl bg-red-50 text-red-600 shadow-sm">
-                            <XCircle class="size-7" />
+                <div
+                    class="col-span-2 rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-3xl md:p-6 xl:col-span-1"
+                >
+                    <div class="flex items-center gap-3 md:gap-4">
+                        <div
+                            class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-red-50 text-red-600 shadow-sm md:h-14 md:w-14"
+                        >
+                            <XCircle class="size-6 md:size-7" />
                         </div>
 
                         <div>
-                            <p class="text-sm font-black uppercase tracking-wide text-red-600">
+                            <p
+                                class="text-[0.65rem] leading-tight font-black tracking-wide text-red-600 uppercase sm:text-sm"
+                            >
                                 Rejected
                             </p>
-                            <p class="mt-1 text-4xl font-black text-blue-950">
+
+                            <p
+                                class="mt-1 text-2xl font-black text-blue-950 md:text-4xl"
+                            >
                                 {{ rejectedApprovals.length }}
                             </p>
-                            <p class="text-sm font-medium text-slate-500">
+
+                            <p
+                                class="text-xs font-medium text-slate-500 sm:text-sm"
+                            >
                                 Needs correction
                             </p>
                         </div>
@@ -366,10 +525,16 @@ const filterButtonClass = (filter: FilterStatus) => {
             </section>
 
             <!-- Records -->
-            <section class="overflow-hidden rounded-3xl border border-slate-200 bg-white/95 shadow-sm shadow-slate-200/70">
-                <div class="flex flex-col gap-4 border-b border-slate-200 bg-white px-6 py-5 md:flex-row md:items-center md:justify-between">
+            <section
+                class="overflow-hidden rounded-3xl border border-slate-200 bg-white/95 shadow-sm shadow-slate-200/70"
+            >
+                <div
+                    class="flex flex-col gap-4 border-b border-slate-200 bg-white px-4 py-5 sm:px-6 md:flex-row md:items-center md:justify-between"
+                >
                     <div>
-                        <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">
+                        <p
+                            class="text-xs font-black tracking-[0.18em] text-slate-400 uppercase"
+                        >
                             Office Queue
                         </p>
 
@@ -378,14 +543,15 @@ const filterButtonClass = (filter: FilterStatus) => {
                         </h2>
 
                         <p class="mt-1 text-sm font-medium text-slate-500">
-                            Filter pending, approved, and rejected requests assigned to your office.
+                            Filter pending, approved, and rejected requests
+                            assigned to your office.
                         </p>
                     </div>
 
-                    <div class="flex flex-wrap gap-2">
+                    <div class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
                         <button
                             type="button"
-                            class="inline-flex cursor-pointer items-center gap-2 rounded-2xl border px-4 py-2.5 text-sm font-black transition"
+                            class="inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-2xl border px-4 py-2.5 text-sm font-black transition"
                             :class="filterButtonClass('all')"
                             @click.prevent.stop="setFilter('all')"
                         >
@@ -395,7 +561,7 @@ const filterButtonClass = (filter: FilterStatus) => {
 
                         <button
                             type="button"
-                            class="inline-flex cursor-pointer items-center gap-2 rounded-2xl border px-4 py-2.5 text-sm font-black transition"
+                            class="inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-2xl border px-4 py-2.5 text-sm font-black transition"
                             :class="filterButtonClass('pending')"
                             @click.prevent.stop="setFilter('pending')"
                         >
@@ -404,7 +570,7 @@ const filterButtonClass = (filter: FilterStatus) => {
 
                         <button
                             type="button"
-                            class="inline-flex cursor-pointer items-center gap-2 rounded-2xl border px-4 py-2.5 text-sm font-black transition"
+                            class="inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-2xl border px-4 py-2.5 text-sm font-black transition"
                             :class="filterButtonClass('approved')"
                             @click.prevent.stop="setFilter('approved')"
                         >
@@ -413,7 +579,7 @@ const filterButtonClass = (filter: FilterStatus) => {
 
                         <button
                             type="button"
-                            class="inline-flex cursor-pointer items-center gap-2 rounded-2xl border px-4 py-2.5 text-sm font-black transition"
+                            class="inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-2xl border px-4 py-2.5 text-sm font-black transition"
                             :class="filterButtonClass('rejected')"
                             @click.prevent.stop="setFilter('rejected')"
                         >
@@ -424,9 +590,11 @@ const filterButtonClass = (filter: FilterStatus) => {
 
                 <div
                     v-if="filteredApprovals.length === 0"
-                    class="p-12 text-center"
+                    class="p-8 text-center sm:p-12"
                 >
-                    <div class="mx-auto grid h-16 w-16 place-items-center rounded-3xl bg-blue-50 text-blue-700">
+                    <div
+                        class="mx-auto grid h-16 w-16 place-items-center rounded-3xl bg-blue-50 text-blue-700"
+                    >
                         <Inbox class="size-8" />
                     </div>
 
@@ -439,153 +607,399 @@ const filterButtonClass = (filter: FilterStatus) => {
                     </p>
                 </div>
 
-                <div v-else class="overflow-x-auto">
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-slate-50 text-slate-500">
-                            <tr>
-                                <th class="px-6 py-4 text-xs font-black uppercase tracking-wide">
-                                    Student
-                                </th>
-                                <th class="px-6 py-4 text-xs font-black uppercase tracking-wide">
-                                    Student ID
-                                </th>
-                                <th class="px-6 py-4 text-xs font-black uppercase tracking-wide">
-                                    Course
-                                </th>
-                                <th class="px-6 py-4 text-xs font-black uppercase tracking-wide">
-                                    Semester
-                                </th>
-                                <th class="px-6 py-4 text-xs font-black uppercase tracking-wide">
-                                    Status
-                                </th>
-                                <th class="px-6 py-4 text-xs font-black uppercase tracking-wide">
-                                    Remarks
-                                </th>
-                                <th class="px-6 py-4 text-right text-xs font-black uppercase tracking-wide">
-                                    Actions
-                                </th>
-                            </tr>
-                        </thead>
+                <div v-else>
+                    <!-- Mobile Card List -->
+                    <div class="grid gap-3 p-4 lg:hidden">
+                        <article
+                            v-for="approval in filteredApprovals"
+                            :key="approval.id"
+                            class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+                        >
+                            <div class="flex items-start justify-between gap-3">
+                                <div class="min-w-0">
+                                    <h3
+                                        class="truncate text-base font-black text-blue-950"
+                                    >
+                                        {{
+                                            approval.clearance_request.user
+                                                .name
+                                        }}
+                                    </h3>
 
-                        <tbody class="divide-y divide-slate-100">
-                            <tr
-                                v-for="approval in filteredApprovals"
-                                :key="approval.id"
-                                class="transition hover:bg-blue-50/50"
+                                    <p
+                                        class="mt-1 text-sm font-semibold text-slate-600"
+                                    >
+                                        {{
+                                            approval.clearance_request.user
+                                                .student_id
+                                        }}
+                                    </p>
+
+                                    <p
+                                        class="mt-1 text-xs font-medium text-slate-500"
+                                    >
+                                        Request #{{
+                                            approval.clearance_request.id
+                                        }}
+                                    </p>
+                                </div>
+
+                                <span
+                                    class="shrink-0 rounded-full border px-3 py-1 text-xs font-black"
+                                    :class="statusBadgeClass(approval.status)"
+                                >
+                                    {{ statusLabel(approval.status) }}
+                                </span>
+                            </div>
+
+                            <div class="mt-3 flex flex-wrap gap-2">
+                                <span
+                                    class="rounded-full bg-blue-50 px-3 py-1 text-xs font-black text-blue-700"
+                                >
+                                    {{
+                                        approval.clearance_request.user.course
+                                            ?.code ?? 'N/A'
+                                    }}
+                                </span>
+
+                                <span
+                                    class="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-black text-slate-600"
+                                >
+                                    {{
+                                        approval.clearance_request.semester
+                                    }},
+                                    {{
+                                        approval.clearance_request.school_year
+                                    }}
+                                </span>
+                            </div>
+
+                            <div
+                                class="mt-3 rounded-xl border border-slate-100 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700"
                             >
-                                <td class="px-6 py-4">
-                                    <div>
-                                        <p class="font-black text-blue-950">
+                                <span class="font-black text-slate-600">
+                                    Remarks:
+                                </span>
+                                {{ approval.remarks ?? '-' }}
+                            </div>
+
+                            <div
+                                v-if="approval.status === 'pending'"
+                                class="mt-4 grid grid-cols-2 gap-2"
+                            >
+                                <button
+                                    type="button"
+                                    class="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-green-700 px-4 py-3 text-sm font-black text-white shadow-md shadow-green-700/20 transition hover:bg-green-800"
+                                    @click="openApproveModal(approval)"
+                                >
+                                    <CheckCircle2 class="size-4" />
+                                    Approve
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-red-600 px-4 py-3 text-sm font-black text-white shadow-md shadow-red-600/20 transition hover:bg-red-700"
+                                    @click="rejectRequest(approval.id)"
+                                >
+                                    <XCircle class="size-4" />
+                                    Reject
+                                </button>
+                            </div>
+
+                            <div v-else class="mt-4">
+                                <span
+                                    class="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-500"
+                                >
+                                    Completed
+                                </span>
+                            </div>
+                        </article>
+                    </div>
+
+                    <!-- Desktop Table -->
+                    <div class="hidden overflow-x-auto lg:block">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-slate-50 text-slate-500">
+                                <tr>
+                                    <th
+                                        class="px-6 py-4 text-xs font-black tracking-wide uppercase"
+                                    >
+                                        Student
+                                    </th>
+
+                                    <th
+                                        class="px-6 py-4 text-xs font-black tracking-wide uppercase"
+                                    >
+                                        Student ID
+                                    </th>
+
+                                    <th
+                                        class="px-6 py-4 text-xs font-black tracking-wide uppercase"
+                                    >
+                                        Course
+                                    </th>
+
+                                    <th
+                                        class="px-6 py-4 text-xs font-black tracking-wide uppercase"
+                                    >
+                                        Semester
+                                    </th>
+
+                                    <th
+                                        class="px-6 py-4 text-xs font-black tracking-wide uppercase"
+                                    >
+                                        Status
+                                    </th>
+
+                                    <th
+                                        class="px-6 py-4 text-xs font-black tracking-wide uppercase"
+                                    >
+                                        Remarks
+                                    </th>
+
+                                    <th
+                                        class="px-6 py-4 text-right text-xs font-black tracking-wide uppercase"
+                                    >
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+
+                            <tbody class="divide-y divide-slate-100">
+                                <tr
+                                    v-for="approval in filteredApprovals"
+                                    :key="approval.id"
+                                    class="transition hover:bg-blue-50/50"
+                                >
+                                    <td class="px-6 py-4">
+                                        <div>
+                                            <p class="font-black text-blue-950">
+                                                {{
+                                                    approval.clearance_request
+                                                        .user.name
+                                                }}
+                                            </p>
+
+                                            <p
+                                                class="mt-1 text-xs font-medium text-slate-500"
+                                            >
+                                                Request #{{
+                                                    approval.clearance_request
+                                                        .id
+                                                }}
+                                            </p>
+                                        </div>
+                                    </td>
+
+                                    <td
+                                        class="px-6 py-4 font-semibold text-slate-700"
+                                    >
+                                        {{
+                                            approval.clearance_request.user
+                                                .student_id
+                                        }}
+                                    </td>
+
+                                    <td class="px-6 py-4">
+                                        <span
+                                            class="inline-flex rounded-full bg-blue-50 px-3 py-1 text-xs font-black text-blue-700"
+                                        >
                                             {{
                                                 approval.clearance_request.user
-                                                    .name
+                                                    .course?.code ?? 'N/A'
                                             }}
-                                        </p>
-                                        <p class="mt-1 text-xs font-medium text-slate-500">
-                                            Request #{{ approval.clearance_request.id }}
-                                        </p>
-                                    </div>
-                                </td>
+                                        </span>
+                                    </td>
 
-                                <td class="px-6 py-4 font-semibold text-slate-700">
-                                    {{
-                                        approval.clearance_request.user
-                                            .student_id
-                                    }}
-                                </td>
-
-                                <td class="px-6 py-4">
-                                    <span class="inline-flex rounded-full bg-blue-50 px-3 py-1 text-xs font-black text-blue-700">
+                                    <td
+                                        class="px-6 py-4 font-semibold text-slate-700"
+                                    >
+                                        {{ approval.clearance_request.semester }},
                                         {{
-                                            approval.clearance_request.user.course
-                                                ?.code ?? 'N/A'
+                                            approval.clearance_request
+                                                .school_year
                                         }}
-                                    </span>
-                                </td>
+                                    </td>
 
-                                <td class="px-6 py-4 font-semibold text-slate-700">
-                                    {{ approval.clearance_request.semester }},
-                                    {{ approval.clearance_request.school_year }}
-                                </td>
-
-                                <td class="px-6 py-4">
-                                    <span
-                                        class="inline-flex rounded-full border px-3 py-1 text-xs font-black"
-                                        :class="
-                                            statusBadgeClass(approval.status)
-                                        "
-                                    >
-                                        {{ statusLabel(approval.status) }}
-                                    </span>
-                                </td>
-
-                                <td class="max-w-xs px-6 py-4 text-sm font-medium text-slate-600">
-                                    {{ approval.remarks ?? '-' }}
-                                </td>
-
-                                <td class="px-6 py-4 text-right">
-                                    <div
-                                        v-if="approval.status === 'pending'"
-                                        class="flex justify-end gap-2"
-                                    >
-                                        <button
-                                            type="button"
-                                            class="inline-flex items-center gap-2 rounded-2xl bg-green-700 px-4 py-2.5 text-sm font-black text-white shadow-md shadow-green-700/20 transition hover:-translate-y-0.5 hover:bg-green-800 hover:shadow-lg"
-                                            @click="openApproveModal(approval)"
+                                    <td class="px-6 py-4">
+                                        <span
+                                            class="inline-flex rounded-full border px-3 py-1 text-xs font-black"
+                                            :class="
+                                                statusBadgeClass(
+                                                    approval.status,
+                                                )
+                                            "
                                         >
-                                            <CheckCircle2 class="size-4" />
-                                            Approve
-                                        </button>
+                                            {{ statusLabel(approval.status) }}
+                                        </span>
+                                    </td>
 
-                                        <button
-                                            type="button"
-                                            class="inline-flex items-center gap-2 rounded-2xl bg-red-600 px-4 py-2.5 text-sm font-black text-white shadow-md shadow-red-600/20 transition hover:-translate-y-0.5 hover:bg-red-700 hover:shadow-lg"
-                                            @click="rejectRequest(approval.id)"
-                                        >
-                                            <XCircle class="size-4" />
-                                            Reject
-                                        </button>
-                                    </div>
-
-                                    <span
-                                        v-else
-                                        class="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-500"
+                                    <td
+                                        class="max-w-xs px-6 py-4 text-sm font-medium text-slate-600"
                                     >
-                                        Completed
-                                    </span>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                                        {{ approval.remarks ?? '-' }}
+                                    </td>
+
+                                    <td class="px-6 py-4 text-right">
+                                        <div
+                                            v-if="approval.status === 'pending'"
+                                            class="flex justify-end gap-2"
+                                        >
+                                            <button
+                                                type="button"
+                                                class="inline-flex min-h-11 items-center gap-2 rounded-2xl bg-green-700 px-4 py-2.5 text-sm font-black text-white shadow-md shadow-green-700/20 transition hover:-translate-y-0.5 hover:bg-green-800 hover:shadow-lg"
+                                                @click="
+                                                    openApproveModal(approval)
+                                                "
+                                            >
+                                                <CheckCircle2 class="size-4" />
+                                                Approve
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                class="inline-flex min-h-11 items-center gap-2 rounded-2xl bg-red-600 px-4 py-2.5 text-sm font-black text-white shadow-md shadow-red-600/20 transition hover:-translate-y-0.5 hover:bg-red-700 hover:shadow-lg"
+                                                @click="
+                                                    rejectRequest(approval.id)
+                                                "
+                                            >
+                                                <XCircle class="size-4" />
+                                                Reject
+                                            </button>
+                                        </div>
+
+                                        <span
+                                            v-else
+                                            class="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-500"
+                                        >
+                                            Completed
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </section>
+        </div>
+    </div>
+
+    <!-- Approve All Modal -->
+    <div
+        v-if="showApproveAllModal"
+        class="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/50 p-3 backdrop-blur-sm sm:items-center sm:p-4"
+        @click.self="closeApproveAllModal"
+    >
+        <div
+            class="flex max-h-[92dvh] w-full max-w-md flex-col overflow-hidden rounded-t-4xl border border-slate-200 bg-white shadow-2xl shadow-slate-900/20 sm:max-h-[90vh] sm:rounded-4xl"
+        >
+            <div class="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6">
+                <div class="flex items-start gap-4">
+                    <div
+                        class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-green-50 text-green-700"
+                    >
+                        <CheckCircle2 class="size-6" />
+                    </div>
+
+                    <div>
+                        <h2 class="text-xl font-black text-blue-950">
+                            Approve All Pending Requests
+                        </h2>
+
+                        <p class="mt-2 text-sm leading-6 text-slate-600">
+                            This will approve all pending clearance requests
+                            currently assigned to your office.
+                        </p>
+                    </div>
+                </div>
+
+                <div
+                    class="mt-5 rounded-2xl border border-green-200 bg-green-50 p-4 text-sm leading-6 font-medium text-green-800"
+                >
+                    <span class="font-black">
+                        {{ pendingApprovals.length }}
+                    </span>
+                    pending request(s) will be approved.
+                </div>
+
+                <div
+                    class="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 font-medium text-amber-900"
+                >
+                    Manual review is still available if you want to check each
+                    request one by one before approving.
+                </div>
+            </div>
+
+            <div
+                class="shrink-0 border-t border-slate-200 bg-white p-4 sm:p-6"
+            >
+                <div class="grid grid-cols-2 gap-3 sm:flex sm:justify-end">
+                    <button
+                        type="button"
+                        class="min-h-11 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-black text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                        :disabled="isApprovingAll"
+                        @click="closeApproveAllModal"
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        type="button"
+                        class="min-h-11 rounded-2xl bg-green-700 px-4 py-3 text-sm font-black text-white shadow-md shadow-green-700/20 transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50"
+                        :disabled="isApprovingAll"
+                        @click="confirmApproveAll"
+                    >
+                        {{ isApprovingAll ? 'Approving...' : 'Approve All' }}
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Reject Modal -->
     <div
         v-if="showRejectModal"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4 backdrop-blur-sm"
+        class="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/50 p-3 backdrop-blur-sm sm:items-center sm:p-4"
         @click.self="closeRejectModal"
     >
-        <div class="w-full max-w-lg rounded-4xl border border-slate-200 bg-white p-6 shadow-2xl shadow-slate-900/20">
-            <div class="flex items-start gap-4">
-                <div class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-red-50 text-red-600">
-                    <XCircle class="size-6" />
-                </div>
+        <div
+            class="flex max-h-[92dvh] w-full max-w-lg flex-col overflow-hidden rounded-t-4xl border border-slate-200 bg-white shadow-2xl shadow-slate-900/20 sm:max-h-[90vh] sm:rounded-4xl"
+        >
+            <div class="shrink-0 border-b border-slate-200 p-4 sm:p-6">
+                <div class="flex items-start justify-between gap-4">
+                    <div class="flex min-w-0 items-start gap-3 sm:gap-4">
+                        <div
+                            class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-red-50 text-red-600 sm:h-12 sm:w-12"
+                        >
+                            <XCircle class="size-6" />
+                        </div>
 
-                <div>
-                    <h3 class="text-xl font-black text-blue-950">
-                        Reject Clearance Request
-                    </h3>
+                        <div class="min-w-0">
+                            <h3
+                                class="text-lg font-black text-blue-950 sm:text-xl"
+                            >
+                                Reject Clearance Request
+                            </h3>
 
-                    <p class="mt-2 text-sm leading-6 text-slate-600">
-                        Provide a clear reason why this clearance request is being rejected. The student will use this remark as their guide for correction.
-                    </p>
+                            <p class="mt-2 text-sm leading-6 text-slate-600">
+                                Provide a clear reason why this clearance
+                                request is being rejected. The student will use
+                                this remark as their guide for correction.
+                            </p>
+                        </div>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="grid size-10 shrink-0 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:bg-slate-50 hover:text-slate-900"
+                        @click="closeRejectModal"
+                    >
+                        <X class="size-5" />
+                    </button>
                 </div>
             </div>
 
-            <div class="mt-5">
+            <div class="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6">
                 <label
                     for="reject-remarks"
                     class="text-sm font-black text-slate-700"
@@ -596,8 +1010,8 @@ const filterButtonClass = (filter: FilterStatus) => {
                 <textarea
                     id="reject-remarks"
                     v-model="rejectRemarks"
-                    rows="5"
-                    class="mt-2 w-full rounded-2xl border border-slate-200 bg-white p-4 text-sm font-medium text-slate-900 shadow-sm outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
+                    rows="6"
+                    class="mt-2 min-h-36 w-full rounded-2xl border border-slate-200 bg-white p-4 text-sm font-medium text-slate-900 shadow-sm outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
                     placeholder="Example: Please settle your library clearance before requesting approval."
                 ></textarea>
 
@@ -606,23 +1020,27 @@ const filterButtonClass = (filter: FilterStatus) => {
                 </p>
             </div>
 
-            <div class="mt-6 flex justify-end gap-3">
-                <button
-                    type="button"
-                    class="rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-black text-slate-700 transition hover:bg-slate-50"
-                    @click="closeRejectModal"
-                >
-                    Cancel
-                </button>
+            <div
+                class="shrink-0 border-t border-slate-200 bg-white p-4 sm:p-6"
+            >
+                <div class="grid grid-cols-2 gap-3 sm:flex sm:justify-end">
+                    <button
+                        type="button"
+                        class="min-h-11 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-black text-slate-700 transition hover:bg-slate-50"
+                        @click="closeRejectModal"
+                    >
+                        Cancel
+                    </button>
 
-                <button
-                    type="button"
-                    class="rounded-2xl bg-red-600 px-4 py-2.5 text-sm font-black text-white shadow-md shadow-red-600/20 transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
-                    :disabled="!rejectRemarks.trim()"
-                    @click="submitRejectRequest"
-                >
-                    Submit Rejection
-                </button>
+                    <button
+                        type="button"
+                        class="min-h-11 rounded-2xl bg-red-600 px-4 py-3 text-sm font-black text-white shadow-md shadow-red-600/20 transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+                        :disabled="!rejectRemarks.trim()"
+                        @click="submitRejectRequest"
+                    >
+                        Submit Rejection
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -630,82 +1048,140 @@ const filterButtonClass = (filter: FilterStatus) => {
     <!-- Approve Modal -->
     <div
         v-if="showApproveModal"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4 backdrop-blur-sm"
+        class="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/50 p-3 backdrop-blur-sm sm:items-center sm:p-4"
         @click.self="closeApproveModal"
     >
-        <div class="w-full max-w-md rounded-4xl border border-slate-200 bg-white p-6 shadow-2xl shadow-slate-900/20">
-            <div class="flex items-start gap-4">
-                <div class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-green-50 text-green-700">
-                    <CheckCircle2 class="size-6" />
+        <div
+            class="flex max-h-[92dvh] w-full max-w-md flex-col overflow-hidden rounded-t-4xl border border-slate-200 bg-white shadow-2xl shadow-slate-900/20 sm:max-h-[90vh] sm:rounded-4xl"
+        >
+            <div class="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6">
+                <div class="flex items-start gap-4">
+                    <div
+                        class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-green-50 text-green-700"
+                    >
+                        <CheckCircle2 class="size-6" />
+                    </div>
+
+                    <div>
+                        <h2 class="text-xl font-black text-blue-950">
+                            Confirm Clearance Approval
+                        </h2>
+
+                        <p class="mt-2 text-sm leading-6 text-slate-600">
+                            Are you sure you want to approve this clearance
+                            request? This will mark the student as cleared for
+                            your assigned office.
+                        </p>
+                    </div>
                 </div>
 
-                <div>
-                    <h2 class="text-xl font-black text-blue-950">
-                        Confirm Clearance Approval
-                    </h2>
+                <div
+                    v-if="selectedApprovalForApproval"
+                    class="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700"
+                >
+                    <div class="grid gap-3">
+                        <p>
+                            <span class="font-black">Student:</span>
+                            {{
+                                selectedApprovalForApproval.clearance_request
+                                    .user.name
+                            }}
+                        </p>
 
-                    <p class="mt-2 text-sm leading-6 text-slate-600">
-                        Are you sure you want to approve this clearance request? This will mark the student as cleared for your assigned office.
-                    </p>
+                        <p>
+                            <span class="font-black">Student ID:</span>
+                            {{
+                                selectedApprovalForApproval.clearance_request
+                                    .user.student_id
+                            }}
+                        </p>
+
+                        <p>
+                            <span class="font-black">Semester:</span>
+                            {{
+                                selectedApprovalForApproval.clearance_request
+                                    .semester
+                            }}
+                        </p>
+
+                        <p>
+                            <span class="font-black">School Year:</span>
+                            {{
+                                selectedApprovalForApproval.clearance_request
+                                    .school_year
+                            }}
+                        </p>
+                    </div>
                 </div>
             </div>
 
             <div
-                v-if="selectedApprovalForApproval"
-                class="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700"
+                class="shrink-0 border-t border-slate-200 bg-white p-4 sm:p-6"
             >
-                <div class="grid gap-3">
-                    <p>
-                        <span class="font-black">Student:</span>
-                        {{
-                            selectedApprovalForApproval.clearance_request.user
-                                .name
-                        }}
-                    </p>
+                <div class="grid grid-cols-2 gap-3 sm:flex sm:justify-end">
+                    <button
+                        type="button"
+                        class="min-h-11 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-black text-slate-700 transition hover:bg-slate-50"
+                        @click="closeApproveModal"
+                    >
+                        Cancel
+                    </button>
 
-                    <p>
-                        <span class="font-black">Student ID:</span>
-                        {{
-                            selectedApprovalForApproval.clearance_request.user
-                                .student_id
-                        }}
-                    </p>
-
-                    <p>
-                        <span class="font-black">Semester:</span>
-                        {{
-                            selectedApprovalForApproval.clearance_request
-                                .semester
-                        }}
-                    </p>
-
-                    <p>
-                        <span class="font-black">School Year:</span>
-                        {{
-                            selectedApprovalForApproval.clearance_request
-                                .school_year
-                        }}
-                    </p>
+                    <button
+                        type="button"
+                        class="min-h-11 rounded-2xl bg-green-700 px-4 py-3 text-sm font-black text-white shadow-md shadow-green-700/20 transition hover:bg-green-800"
+                        @click="confirmApprove"
+                    >
+                        Confirm Approval
+                    </button>
                 </div>
-            </div>
-
-            <div class="mt-6 flex justify-end gap-3">
-                <button
-                    type="button"
-                    class="rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-black text-slate-700 transition hover:bg-slate-50"
-                    @click="closeApproveModal"
-                >
-                    Cancel
-                </button>
-
-                <button
-                    type="button"
-                    class="rounded-2xl bg-green-700 px-4 py-2.5 text-sm font-black text-white shadow-md shadow-green-700/20 transition hover:bg-green-800"
-                    @click="confirmApprove"
-                >
-                    Confirm Approval
-                </button>
             </div>
         </div>
     </div>
+
+    <!-- Staff Mobile Thumb Navigation -->
+    <nav
+        class="fixed inset-x-3 bottom-3 z-30 rounded-2xl border border-blue-200 bg-blue-950/95 p-2 shadow-2xl shadow-blue-950/25 backdrop-blur md:hidden"
+    >
+        <div class="grid grid-cols-4 gap-1">
+            <button
+                type="button"
+                class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
+                @click="scrollToTop"
+            >
+                <ShieldCheck class="size-4" />
+                <span>Top</span>
+            </button>
+
+            <button
+                type="button"
+                class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
+                :class="thumbButtonClass('pending')"
+                @click="setFilter('pending')"
+            >
+                <Clock3 class="size-4" />
+                <span>Pending</span>
+            </button>
+
+            <button
+                type="button"
+                class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
+                :class="thumbButtonClass('approved')"
+                @click="setFilter('approved')"
+            >
+                <CheckCircle2 class="size-4" />
+                <span>Approved</span>
+            </button>
+
+            <button
+                type="button"
+                class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
+                :class="thumbButtonClass('rejected')"
+                @click="setFilter('rejected')"
+            >
+                <XCircle class="size-4" />
+                <span>Rejected</span>
+            </button>
+        </div>
+    </nav>
 </template>
