@@ -65,6 +65,8 @@ type CourseTheme = {
     primaryButtonHoverClass: string;
     selectedOfficeClass: string;
     selectedCheckClass: string;
+    mobileNavClass: string;
+    mobileNavActiveClass: string;
 };
 
 const props = defineProps<{
@@ -91,6 +93,9 @@ const courseTheme = computed<CourseTheme>(() => {
             primaryButtonHoverClass: 'hover:bg-blue-700',
             selectedOfficeClass: 'border-blue-600 bg-blue-50 text-blue-900',
             selectedCheckClass: 'border-blue-600 bg-blue-600 text-white',
+            mobileNavClass: 'border-blue-200 bg-blue-950/95 shadow-blue-950/25',
+            mobileNavActiveClass:
+                'bg-white/15 text-white ring-1 ring-blue-200/40',
         },
         BAEL: {
             label: 'BAEL Theme',
@@ -107,6 +112,10 @@ const courseTheme = computed<CourseTheme>(() => {
             selectedOfficeClass:
                 'border-yellow-500 bg-yellow-50 text-yellow-900',
             selectedCheckClass: 'border-yellow-500 bg-yellow-500 text-white',
+            mobileNavClass:
+                'border-yellow-200 bg-yellow-600/95 shadow-yellow-900/20',
+            mobileNavActiveClass:
+                'bg-white/20 text-white ring-1 ring-yellow-100/50',
         },
         BAPS: {
             label: 'BAPS Theme',
@@ -122,6 +131,9 @@ const courseTheme = computed<CourseTheme>(() => {
             primaryButtonHoverClass: 'hover:bg-red-700',
             selectedOfficeClass: 'border-red-600 bg-red-50 text-red-900',
             selectedCheckClass: 'border-red-600 bg-red-600 text-white',
+            mobileNavClass: 'border-red-200 bg-red-800/95 shadow-red-950/20',
+            mobileNavActiveClass:
+                'bg-white/15 text-white ring-1 ring-red-100/40',
         },
         BSA: {
             label: 'BSA Theme',
@@ -137,6 +149,10 @@ const courseTheme = computed<CourseTheme>(() => {
             primaryButtonHoverClass: 'hover:bg-green-700',
             selectedOfficeClass: 'border-green-600 bg-green-50 text-green-900',
             selectedCheckClass: 'border-green-600 bg-green-600 text-white',
+            mobileNavClass:
+                'border-green-200 bg-green-800/95 shadow-green-950/20',
+            mobileNavActiveClass:
+                'bg-white/15 text-white ring-1 ring-green-100/40',
         },
         BSAIS: {
             label: 'BSAIS Theme',
@@ -152,6 +168,9 @@ const courseTheme = computed<CourseTheme>(() => {
             primaryButtonHoverClass: 'hover:bg-gray-800',
             selectedOfficeClass: 'border-gray-700 bg-gray-100 text-gray-900',
             selectedCheckClass: 'border-gray-700 bg-gray-700 text-white',
+            mobileNavClass: 'border-gray-300 bg-gray-900/95 shadow-gray-950/20',
+            mobileNavActiveClass:
+                'bg-white/15 text-white ring-1 ring-gray-100/40',
         },
         BECED: {
             label: 'BECED Theme',
@@ -167,6 +186,9 @@ const courseTheme = computed<CourseTheme>(() => {
             primaryButtonHoverClass: 'hover:bg-sky-600',
             selectedOfficeClass: 'border-sky-500 bg-sky-50 text-sky-900',
             selectedCheckClass: 'border-sky-500 bg-sky-500 text-white',
+            mobileNavClass: 'border-sky-200 bg-sky-800/95 shadow-sky-950/20',
+            mobileNavActiveClass:
+                'bg-white/15 text-white ring-1 ring-sky-100/40',
         },
         BSCRIM: {
             label: 'BSCRIM Theme',
@@ -183,6 +205,10 @@ const courseTheme = computed<CourseTheme>(() => {
             selectedOfficeClass:
                 'border-orange-600 bg-orange-50 text-orange-900',
             selectedCheckClass: 'border-orange-600 bg-orange-600 text-white',
+            mobileNavClass:
+                'border-orange-200 bg-orange-800/95 shadow-orange-950/20',
+            mobileNavActiveClass:
+                'bg-white/15 text-white ring-1 ring-orange-100/40',
         },
     };
 
@@ -359,12 +385,32 @@ const selectedCompliedApproval = ref<{
     officeName: string;
 } | null>(null);
 
+const showMobileMoreMenu = ref(false);
+
+const showMobileLogoutModal = ref(false);
+
+const activeMobileNav = ref<'home' | 'request' | 'offices' | 'more'>('home');
+
+const courseCode = computed(() => {
+    return props.student.course?.code ?? 'N/A';
+});
+
+const studentInitials = computed(() => {
+    return props.student.name
+        .split(' ')
+        .map((name) => name.charAt(0))
+        .slice(0, 2)
+        .join('');
+});
+
 const openClearanceDetailsModal = () => {
+    showMobileMoreMenu.value = false;
     showClearanceDetailsModal.value = true;
 };
 
 const closeClearanceDetailsModal = () => {
     showClearanceDetailsModal.value = false;
+    activeMobileNav.value = 'home';
 };
 
 const openClearanceReceipt = () => {
@@ -372,6 +418,7 @@ const openClearanceReceipt = () => {
         return;
     }
 
+    showMobileMoreMenu.value = false;
     router.visit(`/clearance-receipts/${props.clearanceRequest.id}`);
 };
 
@@ -391,12 +438,14 @@ const requestableOffices = computed(() => {
 
 const openSubmitRequestModal = () => {
     selectedOfficeIds.value = [];
+    showMobileMoreMenu.value = false;
     showSubmitRequestModal.value = true;
 };
 
 const closeSubmitRequestModal = () => {
     selectedOfficeIds.value = [];
     showSubmitRequestModal.value = false;
+    activeMobileNav.value = 'home';
 };
 
 const toggleOfficeSelection = (officeId: number) => {
@@ -469,22 +518,73 @@ const submitClearanceRequest = () => {
 
     router.post('/student/clearance-requests', payload, options);
 };
+
+const scrollToDashboardTop = () => {
+    activeMobileNav.value = 'home';
+    showMobileMoreMenu.value = false;
+
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth',
+    });
+};
+
+const openMobileRequests = () => {
+    showMobileMoreMenu.value = false;
+
+    if (requestableOffices.value.length === 0) {
+        return;
+    }
+
+    activeMobileNav.value = 'request';
+    openSubmitRequestModal();
+};
+
+const openMobileOffices = () => {
+    activeMobileNav.value = 'offices';
+    showMobileMoreMenu.value = false;
+    openClearanceDetailsModal();
+};
+
+const toggleMobileMoreMenu = () => {
+    activeMobileNav.value = 'more';
+    showMobileMoreMenu.value = !showMobileMoreMenu.value;
+};
+
+const closeMobileMoreMenu = () => {
+    showMobileMoreMenu.value = false;
+    activeMobileNav.value = 'home';
+};
+
+const openMobileLogoutModal = () => {
+    showMobileMoreMenu.value = false;
+    showMobileLogoutModal.value = true;
+};
+
+const closeMobileLogoutModal = () => {
+    showMobileLogoutModal.value = false;
+};
+
+const confirmMobileLogout = () => {
+    router.post('/logout');
+};
 </script>
 
 <template>
     <Head title="Student Dashboard" />
 
     <div
-        class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/40 p-3 text-slate-900 sm:p-4 md:p-6"
+        class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/40 p-3 pb-28 text-slate-900 sm:p-4 sm:pb-28 md:p-6 md:pb-6"
     >
         <div class="mx-auto flex max-w-7xl flex-col gap-4 md:gap-6">
-            <!-- Welcome Banner -->
             <!-- Welcome Banner -->
             <section
                 class="overflow-hidden rounded-3xl border shadow-xl shadow-slate-200/70 md:rounded-[2rem]"
                 :class="courseTheme.bannerClass"
             >
-                <div class="grid gap-4 p-4 md:grid-cols-[1fr_320px] md:gap-6 md:p-8">
+                <div
+                    class="grid gap-4 p-4 md:grid-cols-[1fr_320px] md:gap-6 md:p-8"
+                >
                     <div class="flex flex-col justify-center gap-4 md:gap-5">
                         <div>
                             <p
@@ -510,7 +610,9 @@ const submitClearanceRequest = () => {
                                 requests when needed.
                             </p>
 
-                            <div class="mt-3 flex flex-wrap items-center gap-2 md:mt-4">
+                            <div
+                                class="mt-3 flex flex-wrap items-center gap-2 md:mt-4"
+                            >
                                 <span
                                     class="inline-flex rounded-full bg-white/85 px-3 py-1 text-xs font-black shadow-sm"
                                     :class="courseTheme.accentTextClass"
@@ -558,7 +660,9 @@ const submitClearanceRequest = () => {
                                 ></div>
                             </div>
 
-                            <p class="mt-2 text-xs leading-5 text-slate-600 md:mt-3 md:text-sm md:leading-6">
+                            <p
+                                class="mt-2 text-xs leading-5 text-slate-600 md:mt-3 md:text-sm md:leading-6"
+                            >
                                 {{ progressMessage }}
                             </p>
 
@@ -583,7 +687,7 @@ const submitClearanceRequest = () => {
 
                                 <button
                                     type="button"
-                                    class="mt-4 rounded-xl bg-green-700 px-4 py-2 text-sm font-black text-white shadow-md transition hover:-translate-y-0.5 hover:bg-green-800 hover:shadow-lg"
+                                    class="mt-4 min-h-11 w-full rounded-xl bg-green-700 px-4 py-3 text-sm font-black text-white shadow-md transition hover:-translate-y-0.5 hover:bg-green-800 hover:shadow-lg sm:w-auto"
                                     @click="openClearanceReceipt"
                                 >
                                     Print Clearance Receipt →
@@ -633,7 +737,6 @@ const submitClearanceRequest = () => {
             </section>
 
             <!-- Summary Cards -->
-            <!-- Summary Cards -->
             <section class="grid grid-cols-2 gap-3 md:gap-4 xl:grid-cols-4">
                 <div
                     class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-[1.5rem] md:p-6"
@@ -647,7 +750,7 @@ const submitClearanceRequest = () => {
                         </div>
                         <div>
                             <p
-                                class="text-[0.65rem] font-black leading-tight tracking-wide uppercase md:text-sm"
+                                class="text-[0.65rem] leading-tight font-black tracking-wide uppercase md:text-sm"
                                 :class="courseTheme.accentTextClass"
                             >
                                 Total Cleared
@@ -658,7 +761,9 @@ const submitClearanceRequest = () => {
                             >
                                 {{ approvedCount }} / {{ offices.length }}
                             </p>
-                            <p class="text-xs font-medium text-slate-500 md:text-sm">
+                            <p
+                                class="text-xs font-medium text-slate-500 md:text-sm"
+                            >
                                 Departments
                             </p>
                         </div>
@@ -676,7 +781,7 @@ const submitClearanceRequest = () => {
                         </div>
                         <div>
                             <p
-                                class="text-[0.65rem] font-black leading-tight tracking-wide text-orange-600 uppercase md:text-sm"
+                                class="text-[0.65rem] leading-tight font-black tracking-wide text-orange-600 uppercase md:text-sm"
                             >
                                 Pending Requests
                             </p>
@@ -686,7 +791,9 @@ const submitClearanceRequest = () => {
                             >
                                 {{ pendingCount }}
                             </p>
-                            <p class="text-xs font-medium text-slate-500 md:text-sm">
+                            <p
+                                class="text-xs font-medium text-slate-500 md:text-sm"
+                            >
                                 Departments
                             </p>
                         </div>
@@ -704,7 +811,7 @@ const submitClearanceRequest = () => {
                         </div>
                         <div>
                             <p
-                                class="text-[0.65rem] font-black leading-tight tracking-wide text-green-700 uppercase md:text-sm"
+                                class="text-[0.65rem] leading-tight font-black tracking-wide text-green-700 uppercase md:text-sm"
                             >
                                 Approved
                             </p>
@@ -714,7 +821,9 @@ const submitClearanceRequest = () => {
                             >
                                 {{ approvedCount }}
                             </p>
-                            <p class="text-xs font-medium text-slate-500 md:text-sm">
+                            <p
+                                class="text-xs font-medium text-slate-500 md:text-sm"
+                            >
                                 Departments
                             </p>
                         </div>
@@ -732,7 +841,7 @@ const submitClearanceRequest = () => {
                         </div>
                         <div>
                             <p
-                                class="text-[0.65rem] font-black leading-tight tracking-wide text-red-600 uppercase md:text-sm"
+                                class="text-[0.65rem] leading-tight font-black tracking-wide text-red-600 uppercase md:text-sm"
                             >
                                 Not Cleared
                             </p>
@@ -742,7 +851,9 @@ const submitClearanceRequest = () => {
                             >
                                 {{ notClearedCount }}
                             </p>
-                            <p class="text-xs font-medium text-slate-500 md:text-sm">
+                            <p
+                                class="text-xs font-medium text-slate-500 md:text-sm"
+                            >
                                 Departments
                             </p>
                         </div>
@@ -751,8 +862,9 @@ const submitClearanceRequest = () => {
             </section>
 
             <!-- Main Content -->
-            <!-- Main Content -->
-            <section class="order-4 grid gap-4 xl:order-3 xl:grid-cols-2 xl:gap-6">
+            <section
+                class="order-4 grid gap-4 xl:order-3 xl:grid-cols-2 xl:gap-6"
+            >
                 <!-- Recent Activity -->
                 <div
                     class="order-2 rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/70 md:rounded-[1.5rem] md:p-6 xl:order-1"
@@ -853,7 +965,9 @@ const submitClearanceRequest = () => {
                         </button>
                     </div>
 
-                    <div class="max-h-[22rem] space-y-2 overflow-y-auto pr-1 md:max-h-96 md:space-y-3 md:pr-2">
+                    <div
+                        class="max-h-[22rem] space-y-2 overflow-y-auto pr-1 md:max-h-96 md:space-y-3 md:pr-2"
+                    >
                         <div
                             v-for="office in officeStatuses"
                             :key="office.id"
@@ -924,7 +1038,6 @@ const submitClearanceRequest = () => {
             </section>
 
             <!-- Submit Request -->
-            <!-- Submit Request -->
             <section
                 class="order-3 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/70 md:flex-row md:items-center md:justify-between md:rounded-[1.5rem] md:p-6 xl:order-4"
             >
@@ -950,7 +1063,9 @@ const submitClearanceRequest = () => {
                             Submit New Clearance Request
                         </h2>
 
-                        <p class="text-xs font-medium text-slate-500 md:text-sm">
+                        <p
+                            class="text-xs font-medium text-slate-500 md:text-sm"
+                        >
                             Need to request clearance from all required offices?
                         </p>
                     </div>
@@ -983,13 +1098,13 @@ const submitClearanceRequest = () => {
             <!-- Submit Clearance Request Office Selection Modal -->
             <div
                 v-if="showSubmitRequestModal"
-                class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 py-6"
+                class="fixed inset-0 z-50 flex items-end justify-center bg-black/50 px-3 py-4 sm:items-center sm:px-4 sm:py-6"
             >
                 <div
-                    class="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white shadow-xl"
+                    class="max-h-[88vh] w-full max-w-3xl overflow-y-auto rounded-t-2xl bg-white shadow-xl sm:max-h-[90vh] sm:rounded-2xl"
                 >
                     <div
-                        class="flex items-start justify-between border-b border-slate-200 px-6 py-4"
+                        class="flex items-start justify-between gap-3 border-b border-slate-200 px-4 py-4 sm:px-6"
                     >
                         <div>
                             <h2
@@ -1015,7 +1130,7 @@ const submitClearanceRequest = () => {
                         </button>
                     </div>
 
-                    <div class="space-y-4 px-6 py-5">
+                    <div class="space-y-4 px-4 py-5 sm:px-6">
                         <div
                             class="rounded-xl border p-4 text-sm"
                             :class="courseTheme.statusBoxClass"
@@ -1027,12 +1142,12 @@ const submitClearanceRequest = () => {
                             <span class="font-semibold">Not Requested</span>.
                         </div>
 
-                        <div class="grid gap-3 md:grid-cols-2">
+                        <div class="grid gap-3 sm:grid-cols-2">
                             <button
                                 v-for="office in requestableOffices"
                                 :key="office.id"
                                 type="button"
-                                class="rounded-xl border p-4 text-left transition"
+                                class="min-h-16 rounded-xl border p-4 text-left transition"
                                 :class="
                                     selectedOfficeIds.includes(office.id)
                                         ? courseTheme.selectedOfficeClass
@@ -1078,7 +1193,7 @@ const submitClearanceRequest = () => {
                     </div>
 
                     <div
-                        class="flex flex-col gap-3 border-t border-slate-200 px-6 py-4 sm:flex-row sm:items-center sm:justify-between"
+                        class="flex flex-col gap-3 border-t border-slate-200 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6"
                     >
                         <p class="text-sm text-slate-500">
                             Selected offices:
@@ -1090,10 +1205,12 @@ const submitClearanceRequest = () => {
                             </span>
                         </p>
 
-                        <div class="flex justify-end gap-3">
+                        <div
+                            class="grid grid-cols-2 gap-3 sm:flex sm:justify-end"
+                        >
                             <button
                                 type="button"
-                                class="rounded-xl border border-slate-300 px-4 py-2 font-semibold text-slate-700 transition hover:bg-slate-100"
+                                class="min-h-11 rounded-xl border border-slate-300 px-4 py-3 font-semibold text-slate-700 transition hover:bg-slate-100"
                                 @click="closeSubmitRequestModal"
                             >
                                 Cancel
@@ -1101,7 +1218,7 @@ const submitClearanceRequest = () => {
 
                             <button
                                 type="button"
-                                class="rounded-xl px-4 py-2 font-semibold text-white transition"
+                                class="min-h-11 rounded-xl px-4 py-3 font-semibold text-white transition"
                                 :class="
                                     selectedOfficeIds.length === 0
                                         ? 'cursor-not-allowed bg-slate-400'
@@ -1123,13 +1240,13 @@ const submitClearanceRequest = () => {
             <!-- Clearance Details Modal -->
             <div
                 v-if="showClearanceDetailsModal"
-                class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 py-6"
+                class="fixed inset-0 z-50 flex items-end justify-center bg-black/50 px-3 py-4 sm:items-center sm:px-4 sm:py-6"
             >
                 <div
-                    class="max-h-[90vh] w-full max-w-5xl overflow-y-auto rounded-2xl bg-white shadow-xl"
+                    class="max-h-[88vh] w-full max-w-5xl overflow-y-auto rounded-t-2xl bg-white shadow-xl sm:max-h-[90vh] sm:rounded-2xl"
                 >
                     <div
-                        class="flex items-start justify-between border-b border-slate-200 px-6 py-4"
+                        class="flex items-start justify-between gap-3 border-b border-slate-200 px-4 py-4 sm:px-6"
                     >
                         <div>
                             <h2
@@ -1153,7 +1270,7 @@ const submitClearanceRequest = () => {
                         </button>
                     </div>
 
-                    <div class="space-y-6 px-6 py-5">
+                    <div class="space-y-6 px-4 py-5 sm:px-6">
                         <!-- Student Information -->
                         <div class="grid gap-4 md:grid-cols-3">
                             <div
@@ -1284,10 +1401,10 @@ const submitClearanceRequest = () => {
                             </h3>
 
                             <div
-                                class="overflow-hidden rounded-xl border border-slate-200"
+                                class="overflow-x-auto rounded-xl border border-slate-200"
                             >
                                 <table
-                                    class="min-w-full divide-y divide-slate-200"
+                                    class="min-w-[42rem] divide-y divide-slate-200"
                                 >
                                     <thead class="bg-slate-50">
                                         <tr>
@@ -1366,11 +1483,11 @@ const submitClearanceRequest = () => {
                     </div>
 
                     <div
-                        class="flex justify-end border-t border-slate-200 px-6 py-4"
+                        class="flex justify-end border-t border-slate-200 px-4 py-4 sm:px-6"
                     >
                         <button
                             type="button"
-                            class="rounded-xl bg-slate-900 px-5 py-2 font-semibold text-white transition hover:bg-slate-800"
+                            class="min-h-11 w-full rounded-xl bg-slate-900 px-5 py-3 font-semibold text-white transition hover:bg-slate-800 sm:w-auto"
                             @click="closeClearanceDetailsModal"
                         >
                             Close
@@ -1382,9 +1499,11 @@ const submitClearanceRequest = () => {
             <!-- Mark as Complied Confirmation Modal -->
             <div
                 v-if="selectedCompliedApproval"
-                class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 py-6"
+                class="fixed inset-0 z-50 flex items-end justify-center bg-black/50 px-3 py-4 sm:items-center sm:px-4 sm:py-6"
             >
-                <div class="w-full max-w-md rounded-2xl bg-white shadow-xl">
+                <div
+                    class="w-full max-w-md rounded-t-2xl bg-white shadow-xl sm:rounded-2xl"
+                >
                     <div class="border-b border-slate-200 px-6 py-4">
                         <h2
                             class="text-xl font-bold"
@@ -1423,11 +1542,11 @@ const submitClearanceRequest = () => {
                     </div>
 
                     <div
-                        class="flex justify-end gap-3 border-t border-slate-200 px-6 py-4"
+                        class="grid grid-cols-2 gap-3 border-t border-slate-200 px-6 py-4 sm:flex sm:justify-end"
                     >
                         <button
                             type="button"
-                            class="rounded-xl border border-slate-300 px-4 py-2 font-semibold text-slate-700 transition hover:bg-slate-100"
+                            class="min-h-11 rounded-xl border border-slate-300 px-4 py-3 font-semibold text-slate-700 transition hover:bg-slate-100"
                             @click="closeMarkAsCompliedModal"
                         >
                             Cancel
@@ -1435,7 +1554,7 @@ const submitClearanceRequest = () => {
 
                         <button
                             type="button"
-                            class="rounded-xl bg-orange-600 px-4 py-2 font-semibold text-white transition hover:bg-orange-700"
+                            class="min-h-11 rounded-xl bg-orange-600 px-4 py-3 font-semibold text-white transition hover:bg-orange-700"
                             @click="confirmMarkAsComplied"
                         >
                             Confirm
@@ -1443,6 +1562,190 @@ const submitClearanceRequest = () => {
                     </div>
                 </div>
             </div>
+
+            <!-- Mobile More / Profile Sheet -->
+            <div
+                v-if="showMobileMoreMenu"
+                class="fixed inset-x-3 bottom-24 z-50 rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl shadow-slate-900/20 md:hidden"
+            >
+                <div class="flex items-start justify-between gap-3">
+                    <div class="flex min-w-0 items-center gap-3">
+                        <div
+                            class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-sm font-black shadow-sm"
+                            :class="courseTheme.iconBgClass"
+                        >
+                            {{ studentInitials }}
+                        </div>
+
+                        <div class="min-w-0">
+                            <p
+                                class="truncate text-sm font-black"
+                                :class="courseTheme.headingTextClass"
+                            >
+                                {{ student.name }}
+                            </p>
+
+                            <p class="text-xs font-semibold text-slate-500">
+                                Student ID: {{ student.student_id }}
+                            </p>
+
+                            <p
+                                class="mt-1 inline-flex rounded-full bg-slate-100 px-2 py-0.5 text-[0.65rem] font-black"
+                                :class="courseTheme.accentTextClass"
+                            >
+                                {{ courseCode }} Course Theme
+                            </p>
+                        </div>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-lg font-black text-slate-500 transition hover:bg-slate-100"
+                        @click="closeMobileMoreMenu"
+                    >
+                        ×
+                    </button>
+                </div>
+
+                <div class="mt-4 grid gap-2">
+                    <button
+                        type="button"
+                        class="flex min-h-12 items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-left text-sm font-black text-slate-700 transition hover:bg-white"
+                        @click="openClearanceDetailsModal"
+                    >
+                        <span>View Clearance Details</span>
+                        <span>→</span>
+                    </button>
+
+                    <button
+                        v-if="isFullyCleared"
+                        type="button"
+                        class="flex min-h-12 items-center justify-between rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-left text-sm font-black text-green-700 transition hover:bg-green-100"
+                        @click="openClearanceReceipt"
+                    >
+                        <span>Print Clearance Receipt</span>
+                        <span>→</span>
+                    </button>
+
+                    <button
+                        type="button"
+                        class="flex min-h-12 items-center justify-between rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-left text-sm font-black text-red-700 transition hover:bg-red-100"
+                        @click="openMobileLogoutModal"
+                    >
+                        <span>Logout</span>
+                        <span>↪</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Logout Confirmation Modal -->
+            <div
+                v-if="showMobileLogoutModal"
+                class="fixed inset-0 z-[60] flex items-end justify-center bg-black/50 px-3 py-4 sm:items-center"
+            >
+                <div
+                    class="w-full max-w-md rounded-t-2xl bg-white shadow-xl sm:rounded-2xl"
+                >
+                    <div class="border-b border-slate-200 px-6 py-4">
+                        <h2
+                            class="text-xl font-bold"
+                            :class="courseTheme.headingTextClass"
+                        >
+                            Logout?
+                        </h2>
+
+                        <p class="mt-1 text-sm text-slate-500">
+                            Are you sure you want to log out of your student
+                            account?
+                        </p>
+                    </div>
+
+                    <div
+                        class="grid grid-cols-2 gap-3 border-t border-slate-200 px-6 py-4"
+                    >
+                        <button
+                            type="button"
+                            class="min-h-11 rounded-xl border border-slate-300 px-4 py-3 font-semibold text-slate-700 transition hover:bg-slate-100"
+                            @click="closeMobileLogoutModal"
+                        >
+                            Cancel
+                        </button>
+
+                        <button
+                            type="button"
+                            class="min-h-11 rounded-xl bg-red-600 px-4 py-3 font-semibold text-white transition hover:bg-red-700"
+                            @click="confirmMobileLogout"
+                        >
+                            Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+<!-- Mobile Thumb Navigation -->
+<nav
+    class="fixed inset-x-3 bottom-3 z-40 rounded-2xl border p-2 shadow-2xl backdrop-blur md:hidden"
+    :class="courseTheme.mobileNavClass"
+>
+    <div class="grid grid-cols-4 gap-1">
+        <button
+            type="button"
+            class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
+            :class="
+                activeMobileNav === 'home'
+                    ? courseTheme.mobileNavActiveClass
+                    : ''
+            "
+            @click="scrollToDashboardTop"
+        >
+            <span class="text-base">⌂</span>
+            <span>Home</span>
+        </button>
+
+        <button
+            type="button"
+            class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-45"
+            :class="
+                activeMobileNav === 'request'
+                    ? courseTheme.mobileNavActiveClass
+                    : ''
+            "
+            :disabled="requestableOffices.length === 0"
+            @click="openMobileRequests"
+        >
+            <span class="text-base">📄</span>
+            <span>Request</span>
+        </button>
+
+        <button
+            type="button"
+            class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
+            :class="
+                activeMobileNav === 'offices'
+                    ? courseTheme.mobileNavActiveClass
+                    : ''
+            "
+            @click="openMobileOffices"
+        >
+            <span class="text-base">🏢</span>
+            <span>Offices</span>
+        </button>
+
+        <button
+            type="button"
+            class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
+            :class="
+                activeMobileNav === 'more' || showMobileMoreMenu
+                    ? courseTheme.mobileNavActiveClass
+                    : ''
+            "
+            @click="toggleMobileMoreMenu"
+        >
+            <span class="text-base">•••</span>
+            <span>More</span>
+        </button>
+    </div>
+</nav>
         </div>
     </div>
 </template>
