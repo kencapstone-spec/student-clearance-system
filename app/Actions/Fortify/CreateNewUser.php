@@ -22,8 +22,7 @@ class CreateNewUser implements CreatesNewUsers
             'student_id' => [
                 'required',
                 'string',
-                'min:8',
-                'regex:/^(?=.*\d)[0-9-]+$/',
+                'regex:/^[0-9]{8,}$/',
                 'unique:users,student_id',
             ],
             'name' => ['required', 'string', 'max:255'],

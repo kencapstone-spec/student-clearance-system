@@ -38,7 +38,10 @@ defineOptions({
     >
         <div class="grid gap-4">
             <div class="grid gap-2">
-                <Label for="student_id" class="text-sm font-black text-slate-800">
+                <Label
+                    for="student_id"
+                    class="text-sm font-black text-slate-800"
+                >
                     Student ID
                 </Label>
 
@@ -50,14 +53,16 @@ defineOptions({
                     :tabindex="1"
                     autocomplete="username"
                     name="student_id"
-                    placeholder="Example: 2024-001"
-                    pattern="[0-9\-]{8,}"
-                    title="Student ID must be at least 8 characters and can contain numbers and hyphens only."
+                    placeholder="Example: 20240001"
+                    pattern="[0-9]{8,}"
+                    inputmode="numeric"
+                    title="Student ID must be at least 8 digits and contain numbers only."
                     class="!h-12 !rounded-2xl !border-slate-200 !bg-white !px-4 !text-sm !font-semibold !text-slate-900 !shadow-sm placeholder:!font-medium placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20"
                 />
 
                 <p class="text-xs font-medium text-slate-500">
-                    Student ID must be at least 8 characters and can contain numbers and hyphens only.
+                    Student ID must be at least 8 characters and can contain
+                    numbers only.
                 </p>
 
                 <InputError :message="errors.student_id" />
@@ -83,7 +88,10 @@ defineOptions({
             </div>
 
             <div class="grid gap-2">
-                <Label for="course_id" class="text-sm font-black text-slate-800">
+                <Label
+                    for="course_id"
+                    class="text-sm font-black text-slate-800"
+                >
                     Course
                 </Label>
 
@@ -92,7 +100,7 @@ defineOptions({
                     name="course_id"
                     required
                     :tabindex="3"
-                    class="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+                    class="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-900 shadow-sm transition outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                     <option value="">Select your course</option>
                     <option
@@ -126,7 +134,10 @@ defineOptions({
             </div>
 
             <div class="grid gap-2">
-                <Label for="password_confirmation" class="text-sm font-black text-slate-800">
+                <Label
+                    for="password_confirmation"
+                    class="text-sm font-black text-slate-800"
+                >
                     Confirm Password
                 </Label>
 
