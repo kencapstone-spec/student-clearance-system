@@ -20,7 +20,7 @@ test('new students can register with student id and course', function () {
     ]);
 
     $response = $this->post(route('register.store'), [
-        'student_id' => '2026-0001',
+        'student_id' => '20260001',
         'name' => 'Test Student',
         'course_id' => $course->id,
         'password' => 'password',
@@ -30,11 +30,101 @@ test('new students can register with student id and course', function () {
     $this->assertAuthenticated();
 
     $this->assertDatabaseHas('users', [
-        'student_id' => '2026-0001',
+        'student_id' => '20260001',
         'name' => 'Test Student',
         'course_id' => $course->id,
         'role' => 'student',
     ]);
 
     $response->assertRedirect(route('dashboard', absolute: false));
+});
+
+test('registration fails with invalid student id format', function () {
+    $course = Course::create([
+        'code' => 'BSIS',
+        'name' => 'Bachelor of Science in Information System',
+    ]);
+
+    $this->post(route('register.store'), [
+        'student_id' => '2026-0001', // dashes not allowed
+        'name' => 'Test Student',
+        'course_id' => $course->id,
+        'password' => 'password',
+        'password_confirmation' => 'password',
+    ])->assertSessionHasErrors('student_id');
+
+    $this->assertGuest();
+});
+
+test('registration fails with student id shorter than 8 digits', function () {
+    $course = Course::create([
+        'code' => 'BSIS',
+        'name' => 'Bachelor of Science in Information System',
+    ]);
+
+    $this->post(route('register.store'), [
+        'student_id' => '2026001', // only 7 digits
+        'name' => 'Test Student',
+        'course_id' => $course->id,
+        'password' => 'password',
+        'password_confirmation' => 'password',
+    ])->assertSessionHasErrors('student_id');
+
+    $this->assertGuest();
+});
+
+test('registration fails with duplicate student id', function () {
+    $course = Course::create([
+        'code' => 'BSIS',
+        'name' => 'Bachelor of Science in Information System',
+    ]);
+
+    $this->post(route('register.store'), [
+        'student_id' => '20260001',
+        'name' => 'First Student',
+        'course_id' => $course->id,
+        'password' => 'password',
+        'password_confirmation' => 'password',
+    ]);
+
+    $this->assertAuthenticated();
+
+    $this->post(route('logout'));
+
+    $this->post(route('register.store'), [
+        'student_id' => '20260001', // same student_id
+        'name' => 'Second Student',
+        'course_id' => $course->id,
+        'password' => 'password',
+        'password_confirmation' => 'password',
+    ])->assertSessionHasErrors('student_id');
+});
+
+test('registration fails with invalid course', function () {
+    $this->post(route('register.store'), [
+        'student_id' => '20260001',
+        'name' => 'Test Student',
+        'course_id' => 9999, // non-existent course
+        'password' => 'password',
+        'password_confirmation' => 'password',
+    ])->assertSessionHasErrors('course_id');
+
+    $this->assertGuest();
+});
+
+test('registration fails when passwords do not match', function () {
+    $course = Course::create([
+        'code' => 'BSIS',
+        'name' => 'Bachelor of Science in Information System',
+    ]);
+
+    $this->post(route('register.store'), [
+        'student_id' => '20260001',
+        'name' => 'Test Student',
+        'course_id' => $course->id,
+        'password' => 'password',
+        'password_confirmation' => 'different_password',
+    ])->assertSessionHasErrors('password');
+
+    $this->assertGuest();
 });
