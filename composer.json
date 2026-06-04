@@ -1,11 +1,14 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/vue-starter-kit",
+    "name": "capstone/student-clearance-system",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "Student clearance system built with Laravel, Vue, Inertia, Fortify, and PDF receipt generation.",
     "keywords": [
         "laravel",
-        "framework"
+        "vue",
+        "inertia",
+        "student-clearance",
+        "capstone"
     ],
     "license": "MIT",
     "require": {
@@ -19,13 +22,12 @@
     },
     "require-dev": {
         "fakerphp/faker": "^1.24",
-        "laravel/boost": "^2.2",
         "laravel/pail": "^1.2.5",
+        "laravel/pao": "^1.1",
         "laravel/pint": "^1.27",
         "laravel/sail": "^1.53",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.9.3",
-        "nunomaduro/pao": "^1.0.3",
         "pestphp/pest": "^4.6",
         "pestphp/pest-plugin-laravel": "^4.1"
     },
@@ -77,8 +79,7 @@
             "@php artisan package:discover --ansi"
         ],
         "post-update-cmd": [
-            "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
-            "@php artisan boost:update --ansi"
+            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
         ],
         "post-root-package-install": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
