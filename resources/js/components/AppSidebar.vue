@@ -94,11 +94,19 @@ const mainNavItems = computed<NavItem[]>(() => {
 </script>
 
 <template>
-    <Sidebar collapsible="icon" variant="inset">
-        <SidebarHeader class="border-b border-slate-100 px-3 py-4">
+<Sidebar
+    collapsible="offcanvas"
+    variant="inset"
+    class="border-r border-slate-200/80 bg-white"
+>
+        <SidebarHeader class="border-b border-slate-100 px-4 py-5">
             <SidebarMenu>
                 <SidebarMenuItem>
-                    <SidebarMenuButton size="lg" as-child>
+                    <SidebarMenuButton
+                        size="lg"
+                        as-child
+                        class="h-auto rounded-2xl px-2 py-2 transition hover:bg-slate-50 data-[state=open]:bg-slate-50"
+                    >
                         <Link :href="dashboard()">
                             <AppLogo />
                         </Link>
@@ -107,13 +115,14 @@ const mainNavItems = computed<NavItem[]>(() => {
             </SidebarMenu>
         </SidebarHeader>
 
-        <SidebarContent class="px-1 py-3">
+        <SidebarContent class="px-2 py-5">
             <NavMain :items="mainNavItems" />
         </SidebarContent>
 
-        <SidebarFooter class="border-t border-slate-100 px-3 py-4">
+        <SidebarFooter class="border-t border-slate-100 px-4 py-4">
             <NavUser />
         </SidebarFooter>
     </Sidebar>
+
     <slot />
 </template>

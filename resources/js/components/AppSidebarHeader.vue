@@ -27,7 +27,13 @@ type NotificationsProp = {
     unread_count: number;
 };
 
-withDefaults(
+type AuthProps = {
+    user?: {
+        role?: string;
+    };
+};
+
+const props = withDefaults(
     defineProps<{
         breadcrumbs?: BreadcrumbItem[];
     }>(),
@@ -37,6 +43,55 @@ withDefaults(
 );
 
 const page = usePage();
+
+const userRole = computed(() => {
+    const auth = page.props.auth as AuthProps | undefined;
+
+    return auth?.user?.role ?? 'student';
+});
+
+const portalLabel = computed(() => {
+    if (userRole.value === 'admin') {
+        return 'Admin Portal';
+    }
+
+    if (userRole.value === 'staff') {
+        return 'Staff Portal';
+    }
+
+    if (userRole.value === 'president') {
+        return 'President Portal';
+    }
+
+    return 'Student Portal';
+});
+
+const formatPageTitle = (value: string) => {
+    return value
+        .split(/[-_]/)
+        .filter(Boolean)
+        .map((word) => {
+            return word.charAt(0).toUpperCase() + word.slice(1);
+        })
+        .join(' ');
+};
+
+const pageTitle = computed(() => {
+    const breadcrumbTitle = props.breadcrumbs.at(-1)?.title;
+
+    if (breadcrumbTitle) {
+        return breadcrumbTitle;
+    }
+
+    const currentPath = page.url?.split('?')[0] ?? '';
+    const currentSegment = currentPath.split('/').filter(Boolean).at(-1);
+
+    if (currentSegment) {
+        return formatPageTitle(currentSegment);
+    }
+
+    return portalLabel.value;
+});
 
 const notifications = computed<NotificationsProp>(() => {
     const sharedNotifications = page.props.notifications as
@@ -62,18 +117,37 @@ const markAllNotificationsAsRead = () => {
 
 <template>
     <header
-        class="sticky top-0 z-20 flex h-16 shrink-0 items-center gap-3 border-b border-slate-200 bg-white/90 px-6 text-slate-900 shadow-sm shadow-slate-200/70 backdrop-blur-xl transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 md:px-4"
+        class="sticky top-0 z-20 flex h-16 shrink-0 items-center border-b border-slate-200/80 bg-white/90 px-4 text-slate-900 shadow-sm shadow-slate-200/70 backdrop-blur-xl transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-14 md:px-6"
     >
-        <div class="flex min-w-0 items-center gap-3">
+        <div class="flex min-w-0 flex-1 items-center gap-4">
             <SidebarTrigger
-                class="-ml-1 rounded-xl text-slate-600 transition hover:bg-blue-50 hover:text-blue-700"
+                class="-ml-1 rounded-2xl border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 hover:shadow-md"
             />
 
-            <div class="hidden h-6 w-px bg-slate-200 sm:block"></div>
+            <div class="hidden h-8 w-px bg-slate-200 sm:block"></div>
 
-            <template v-if="breadcrumbs && breadcrumbs.length > 0">
-                <Breadcrumbs :breadcrumbs="breadcrumbs" />
-            </template>
+            <div class="min-w-0">
+                <div class="flex min-w-0 items-center gap-2">
+                    <h1
+                        class="truncate text-lg font-black tracking-tight text-slate-950 md:text-xl"
+                    >
+                        {{ pageTitle }}
+                    </h1>
+
+                    <span
+                        class="hidden rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[0.65rem] font-black tracking-wide text-slate-600 uppercase sm:inline-flex"
+                    >
+                        {{ portalLabel }}
+                    </span>
+                </div>
+
+                <div
+                    v-if="props.breadcrumbs && props.breadcrumbs.length > 1"
+                    class="mt-1 hidden text-xs text-slate-500 lg:block"
+                >
+                    <Breadcrumbs :breadcrumbs="props.breadcrumbs" />
+                </div>
+            </div>
         </div>
 
         <div class="ml-auto flex items-center gap-2">
@@ -82,7 +156,7 @@ const markAllNotificationsAsRead = () => {
                     <Button
                         variant="ghost"
                         size="icon"
-                        class="relative h-10 w-10 cursor-pointer rounded-2xl border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700 hover:shadow-md"
+                        class="relative h-11 w-11 cursor-pointer rounded-2xl border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 hover:shadow-md"
                     >
                         <Bell class="size-5" />
 
@@ -103,7 +177,7 @@ const markAllNotificationsAsRead = () => {
 
                 <DropdownMenuContent
                     align="end"
-                    class="w-86 overflow-hidden rounded-2xl border border-slate-200 bg-white p-0 shadow-2xl shadow-slate-300/70"
+                    class="w-[22rem] overflow-hidden rounded-2xl border border-slate-200 bg-white p-0 shadow-2xl shadow-slate-300/70"
                 >
                     <div
                         class="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-4 py-3"
@@ -112,6 +186,7 @@ const markAllNotificationsAsRead = () => {
                             <p class="text-sm font-black text-slate-900">
                                 Notifications
                             </p>
+
                             <p class="text-xs font-medium text-slate-500">
                                 {{ notifications.unread_count }} unread
                             </p>
@@ -120,7 +195,7 @@ const markAllNotificationsAsRead = () => {
                         <button
                             v-if="notifications.unread_count > 0"
                             type="button"
-                            class="rounded-full px-3 py-1 text-xs font-bold text-blue-700 transition hover:bg-blue-50 hover:text-blue-900"
+                            class="rounded-full px-3 py-1 text-xs font-bold text-slate-700 transition hover:bg-slate-100 hover:text-slate-950"
                             @click="markAllNotificationsAsRead"
                         >
                             Mark all as read
@@ -139,18 +214,19 @@ const markAllNotificationsAsRead = () => {
                             v-for="notification in notifications.items"
                             :key="notification.id"
                             :href="`/notifications/${notification.id}/open`"
-                            class="block border-b border-slate-100 px-4 py-3 text-left transition last:border-b-0 hover:bg-blue-50/60"
+                            class="block border-b border-slate-100 px-4 py-3 text-left transition last:border-b-0 hover:bg-slate-50"
                             :class="
                                 notification.read_at
                                     ? 'bg-white opacity-75'
-                                    : 'bg-blue-50/40'
+                                    : 'bg-slate-50'
                             "
                         >
                             <div class="flex items-start gap-3">
                                 <span
                                     v-if="!notification.read_at"
-                                    class="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full bg-blue-600 shadow-sm"
+                                    class="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full bg-slate-900 shadow-sm"
                                 ></span>
+
                                 <span
                                     v-else
                                     class="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full bg-slate-200"
@@ -160,11 +236,13 @@ const markAllNotificationsAsRead = () => {
                                     <p class="text-sm font-bold text-slate-900">
                                         {{ notification.title }}
                                     </p>
+
                                     <p
                                         class="mt-1 line-clamp-2 text-xs leading-5 text-slate-500"
                                     >
                                         {{ notification.message }}
                                     </p>
+
                                     <p
                                         v-if="notification.created_at_human"
                                         class="mt-1 text-xs font-medium text-slate-400"
