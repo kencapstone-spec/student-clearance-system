@@ -72,6 +72,15 @@ class FinalApprovalController extends Controller
 
     /**
      * Get all clearance requests ready for President final approval.
+     *
+     * Filtering is done entirely at the database level to avoid loading every
+     * clearance request into memory (which would cause fatal memory exhaustion
+     * as the table grows over multiple semesters).
+     *
+     * A request is "ready" when:
+     *   1. All of its non-final-approver approvals are 'approved'.
+     *   2. Its president (final approver) approval is still 'pending'.
+     *   3. The overall request is not yet 'cleared'.
      */
     private function readyClearanceRequests()
     {
@@ -80,12 +89,28 @@ class FinalApprovalController extends Controller
             'approvals.office',
             'approvals.approver',
         ])
-            ->latest()
-            ->get()
-            ->filter(function ($clearanceRequest) {
-                return $this->isReadyForFinalApproval($clearanceRequest);
+            // Must NOT already be cleared
+            ->where('status', '!=', 'cleared')
+            // Must have at least one regular (non-final-approver) approval
+            ->whereHas('approvals', function ($query) {
+                $query->whereHas('office', function ($officeQuery) {
+                    $officeQuery->where('is_final_approver', false);
+                });
             })
-            ->values();
+            // All regular approvals must be 'approved'
+            ->whereDoesntHave('approvals', function ($query) {
+                $query->whereHas('office', function ($officeQuery) {
+                    $officeQuery->where('is_final_approver', false);
+                })->where('status', '!=', 'approved');
+            })
+            // The president approval must exist and still be 'pending'
+            ->whereHas('approvals', function ($query) {
+                $query->whereHas('office', function ($officeQuery) {
+                    $officeQuery->where('is_final_approver', true);
+                })->where('status', 'pending');
+            })
+            ->latest()
+            ->get();
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
+use App\Models\AppSetting;
 use App\Models\ClearanceApproval;
 use App\Models\ClearanceRequest;
 use App\Models\Office;
@@ -24,8 +25,8 @@ class ClearanceRequestController extends Controller
             'office_ids.*' => ['integer', 'exists:offices,id'],
         ]);
 
-        $semester = '1st Semester';
-        $schoolYear = '2026-2027';
+        $semester = AppSetting::get('active_semester', '1st Semester');
+        $schoolYear = AppSetting::get('active_school_year', '2026-2027');
 
         $existingRequest = ClearanceRequest::where('user_id', $user->id)
             ->where('semester', $semester)
@@ -97,8 +98,8 @@ class ClearanceRequestController extends Controller
             'office_ids.*' => ['integer', 'exists:offices,id'],
         ]);
 
-        $semester = '1st Semester';
-        $schoolYear = '2026-2027';
+        $semester = AppSetting::get('active_semester', '1st Semester');
+        $schoolYear = AppSetting::get('active_school_year', '2026-2027');
 
         $clearanceRequest = ClearanceRequest::where('user_id', $user->id)
             ->where('semester', $semester)

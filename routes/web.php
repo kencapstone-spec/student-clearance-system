@@ -58,10 +58,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->merge($finalApproverOffices)
             ->values();
 
+        $semester = \App\Models\AppSetting::get('active_semester', '1st Semester');
+        $schoolYear = \App\Models\AppSetting::get('active_school_year', '2026-2027');
+
         $clearanceRequest = ClearanceRequest::query()
             ->where('user_id', $user->id)
+            ->where('semester', $semester)
+            ->where('school_year', $schoolYear)
             ->with(['approvals.office'])
-            ->latest()
             ->first();
 
         return Inertia::render('Dashboard', [
@@ -148,6 +152,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::get('/admin/reports/print', [AdminReportController::class, 'printReport'])
             ->name('admin.reports.print');
+
+        Route::patch('/admin/settings', [\App\Http\Controllers\Admin\AdminSettingController::class, 'update'])
+            ->name('admin.settings.update');
     });
 
     Route::middleware('role:president')->group(function () {

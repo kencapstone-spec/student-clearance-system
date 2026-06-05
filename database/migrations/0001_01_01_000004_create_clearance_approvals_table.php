@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('clearance_request_id')->constrained()->cascadeOnDelete();
             $table->foreignId('office_id')->constrained()->cascadeOnDelete();
             $table->foreignId('approved_by')->nullable()->constrained('users')->nullOnDelete();
-            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
+            $table->enum('status', ['not_requested', 'pending', 'approved', 'rejected'])->default('pending');
             $table->text('remarks')->nullable();
             $table->timestamp('acted_at')->nullable();
             $table->timestamps();

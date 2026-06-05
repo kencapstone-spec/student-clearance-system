@@ -17,9 +17,16 @@ class PendingRequestController extends Controller
     {
         $user = $request->user()->load('office');
 
+        $semester = \App\Models\AppSetting::get('active_semester', '1st Semester');
+        $schoolYear = \App\Models\AppSetting::get('active_school_year', '2026-2027');
+
         $approvals = ClearanceApproval::query()
             ->where('office_id', $user->office_id)
             ->whereIn('status', ['pending', 'approved', 'rejected'])
+            ->whereHas('clearanceRequest', function ($query) use ($semester, $schoolYear) {
+                $query->where('semester', $semester)
+                      ->where('school_year', $schoolYear);
+            })
             ->with([
                 'clearanceRequest.user.course',
                 'office',
@@ -157,7 +164,8 @@ class PendingRequestController extends Controller
         $clearanceRequest->load(['user', 'approvals.office']);
 
         $regularApprovals = $clearanceRequest->approvals->filter(function ($approval) {
-            return ! $approval->office->is_final_approver;
+            // Use null-safe operator: skip approvals whose office was deleted
+            return ! $approval->office?->is_final_approver;
         });
 
         $allRegularOfficesApproved = $regularApprovals->isNotEmpty()
@@ -170,7 +178,7 @@ class PendingRequestController extends Controller
         }
 
         $presidentApproval = $clearanceRequest->approvals->first(function ($approval) {
-            return $approval->office->is_final_approver;
+            return $approval->office?->is_final_approver;
         });
 
         if (! $presidentApproval || $presidentApproval->status !== 'not_requested') {

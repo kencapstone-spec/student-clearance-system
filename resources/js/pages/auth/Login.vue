@@ -14,7 +14,7 @@ import { request } from '@/routes/password';
 defineOptions({
     layout: {
         title: 'Welcome Back!',
-        description: 'Login to your student clearance account',
+        description: 'Sign in to access the clearance portal',
     },
 });
 
@@ -44,7 +44,7 @@ defineProps<{
         <div class="grid gap-5">
             <div class="grid gap-2">
                 <Label for="student_id" class="text-sm font-black text-slate-800">
-                    Student ID
+                    Account ID
                 </Label>
 
                 <Input
@@ -55,7 +55,7 @@ defineProps<{
                     autofocus
                     :tabindex="1"
                     autocomplete="username"
-                    placeholder="Enter your Student ID"
+                    placeholder="Enter your Account ID"
                     class="!h-12 !rounded-2xl !border-slate-200 !bg-white !px-4 !text-sm !font-semibold !text-slate-900 !shadow-sm placeholder:!font-medium placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20"
                 />
 

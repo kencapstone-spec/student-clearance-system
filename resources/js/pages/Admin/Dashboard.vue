@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
+import { ref } from 'vue';
 import {
+    AlertTriangle,
     BarChart3,
     Building2,
     CheckCircle2,
@@ -15,7 +17,6 @@ import {
     X,
     XCircle,
 } from 'lucide-vue-next';
-import { ref } from 'vue';
 
 type Stats = {
     students: number;
@@ -41,19 +42,48 @@ type Student = {
     course?: Course | null;
 };
 
-type ClearanceRequest = {
-    id: number;
-    semester: string;
-    school_year: string;
-    user: Student;
+type SystemSettings = {
+    active_semester: string;
+    active_school_year: string;
 };
 
 defineProps<{
     stats: Stats;
     recentRequests: ClearanceRequest[];
+    settings: SystemSettings;
 }>();
 
 const showAdminMobileMoreMenu = ref(false);
+
+const showTermModal = ref(false);
+const confirmText = ref('');
+
+const termForm = useForm({
+    active_semester: '',
+    active_school_year: '',
+});
+
+const openTermModal = (settings: SystemSettings) => {
+    termForm.active_semester = settings.active_semester;
+    termForm.active_school_year = settings.active_school_year;
+    confirmText.value = '';
+    showTermModal.value = true;
+};
+
+const closeTermModal = () => {
+    showTermModal.value = false;
+    termForm.reset();
+};
+
+const submitTermChange = () => {
+    if (confirmText.value !== 'RESET CLEARANCES') return;
+
+    termForm.patch('/admin/settings', {
+        onSuccess: () => {
+            closeTermModal();
+        },
+    });
+};
 
 const toggleAdminMobileMoreMenu = () => {
     showAdminMobileMoreMenu.value = !showAdminMobileMoreMenu.value;
@@ -440,6 +470,52 @@ const closeAdminMobileMoreMenu = () => {
                 </div>
             </section>
 
+            <!-- Academic Term Settings -->
+            <section
+                class="overflow-hidden rounded-3xl border border-blue-200 bg-white/95 shadow-sm shadow-blue-200/70"
+            >
+                <div
+                    class="flex flex-col gap-4 border-b border-blue-100 bg-linear-to-r from-blue-50 to-white px-4 py-5 sm:px-6 md:flex-row md:items-center md:justify-between"
+                >
+                    <div>
+                        <p
+                            class="text-xs font-black tracking-[0.18em] text-blue-600 uppercase"
+                        >
+                            System Configuration
+                        </p>
+
+                        <h2 class="mt-1 text-xl font-black text-blue-950">
+                            Active Academic Term
+                        </h2>
+
+                        <p class="mt-1 text-sm font-medium text-slate-500">
+                            The current semester and school year for all new
+                            clearance requests.
+                        </p>
+                    </div>
+
+                    <button
+                        type="button"
+                        @click="openTermModal(settings)"
+                        class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl bg-amber-500 px-5 py-3 text-sm font-black text-white shadow-lg shadow-amber-500/20 transition hover:-translate-y-0.5 hover:bg-amber-600 hover:shadow-xl sm:w-auto"
+                    >
+                        Change Term
+                        <AlertTriangle class="size-4" />
+                    </button>
+                </div>
+
+                <div class="grid gap-0 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-slate-100">
+                    <div class="p-6">
+                        <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Current Semester</p>
+                        <p class="mt-2 text-3xl font-black text-blue-950">{{ settings.active_semester }}</p>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Current School Year</p>
+                        <p class="mt-2 text-3xl font-black text-blue-950">{{ settings.active_school_year }}</p>
+                    </div>
+                </div>
+            </section>
+
             <!-- Recent Requests -->
             <section
                 class="overflow-hidden rounded-3xl border border-slate-200 bg-white/95 shadow-sm shadow-slate-200/70"
@@ -736,4 +812,106 @@ const closeAdminMobileMoreMenu = () => {
             </button>
         </div>
     </nav>
+
+    <!-- Term Change Confirmation Modal -->
+    <transition
+        enter-active-class="transition duration-200 ease-out"
+        enter-from-class="opacity-0 scale-95"
+        enter-to-class="opacity-100 scale-100"
+        leave-active-class="transition duration-150 ease-in"
+        leave-from-class="opacity-100 scale-100"
+        leave-to-class="opacity-0 scale-95"
+    >
+        <div
+            v-if="showTermModal"
+            class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
+        >
+            <!-- Backdrop -->
+            <div
+                class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm"
+                @click="closeTermModal"
+            ></div>
+
+            <!-- Modal Panel -->
+            <div
+                class="relative w-full max-w-lg overflow-hidden rounded-3xl bg-white shadow-2xl"
+            >
+                <div class="border-b border-slate-100 bg-amber-50 px-6 py-5">
+                    <div class="flex items-center gap-3">
+                        <div class="grid size-10 shrink-0 place-items-center rounded-full bg-amber-100 text-amber-600">
+                            <AlertTriangle class="size-5" />
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-black text-amber-950">Change Academic Term</h3>
+                            <p class="text-sm font-medium text-amber-700">DANGER: This action will reset clearances.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <form @submit.prevent="submitTermChange" class="p-6">
+                    <div class="rounded-2xl border border-red-100 bg-red-50 p-4 mb-6">
+                        <p class="text-sm font-bold text-red-800">
+                            Warning: Updating the academic term will force all students to submit new clearance requests for the new term. Old clearance requests will remain in the database for historical purposes but will no longer be considered active.
+                        </p>
+                    </div>
+
+                    <div class="grid gap-5">
+                        <div>
+                            <label class="mb-2 block text-sm font-bold text-slate-700">New Semester</label>
+                            <select
+                                v-model="termForm.active_semester"
+                                class="w-full rounded-xl border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 focus:border-amber-500 focus:ring-amber-500"
+                                required
+                            >
+                                <option value="1st Semester">1st Semester</option>
+                                <option value="2nd Semester">2nd Semester</option>
+                                <option value="Summer">Summer</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="mb-2 block text-sm font-bold text-slate-700">New School Year</label>
+                            <input
+                                v-model="termForm.active_school_year"
+                                type="text"
+                                placeholder="e.g., 2026-2027"
+                                class="w-full rounded-xl border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 focus:border-amber-500 focus:ring-amber-500"
+                                required
+                            />
+                        </div>
+
+                        <div class="mt-4 border-t border-slate-100 pt-5">
+                            <label class="mb-2 block text-sm font-bold text-slate-700">
+                                Type <span class="rounded bg-slate-200 px-1.5 py-0.5 font-mono text-red-600">RESET CLEARANCES</span> to confirm:
+                            </label>
+                            <input
+                                v-model="confirmText"
+                                type="text"
+                                placeholder="RESET CLEARANCES"
+                                class="w-full rounded-xl border-slate-200 bg-slate-50 px-4 py-3 font-mono text-sm font-bold text-red-600 focus:border-red-500 focus:ring-red-500"
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    <div class="mt-8 flex items-center justify-end gap-3">
+                        <button
+                            type="button"
+                            class="rounded-xl px-5 py-3 text-sm font-bold text-slate-600 hover:bg-slate-100"
+                            @click="closeTermModal"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            class="inline-flex min-h-12 items-center justify-center rounded-xl bg-red-600 px-6 py-3 text-sm font-black text-white shadow-lg shadow-red-600/20 transition hover:-translate-y-0.5 hover:bg-red-700 hover:shadow-xl disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:bg-red-600 disabled:hover:shadow-none"
+                            :disabled="confirmText !== 'RESET CLEARANCES' || termForm.processing"
+                        >
+                            {{ termForm.processing ? 'Saving...' : 'Save & Reset Clearances' }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </transition>
 </template>

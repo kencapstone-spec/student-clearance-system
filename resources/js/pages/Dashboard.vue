@@ -2,6 +2,8 @@
 import { Head, router } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import { dashboard } from '@/routes';
+import { type CourseTheme, resolveCourseTheme } from '@/utils/courseThemes';
+import { CheckCircle2, Download, ChevronRight, LogOut } from 'lucide-vue-next';
 
 defineOptions({
     layout: {
@@ -52,22 +54,6 @@ type ClearanceRequest = {
     approvals: Approval[];
 } | null;
 
-type CourseTheme = {
-    label: string;
-    bannerClass: string;
-    accentTextClass: string;
-    softTextClass: string;
-    headingTextClass: string;
-    iconBgClass: string;
-    progressBarClass: string;
-    statusBoxClass: string;
-    primaryButtonClass: string;
-    primaryButtonHoverClass: string;
-    selectedOfficeClass: string;
-    selectedCheckClass: string;
-    mobileNavClass: string;
-    mobileNavActiveClass: string;
-};
 
 const props = defineProps<{
     student: Student;
@@ -75,145 +61,9 @@ const props = defineProps<{
     clearanceRequest: ClearanceRequest;
 }>();
 
-const courseTheme = computed<CourseTheme>(() => {
-    const courseCode = props.student.course?.code ?? 'BSIS';
-
-    const themes: Record<string, CourseTheme> = {
-        BSIS: {
-            label: 'BSIS Theme',
-            bannerClass:
-                'border border-blue-100 bg-gradient-to-r from-blue-100 via-blue-50 to-white',
-            accentTextClass: 'text-blue-700',
-            softTextClass: 'text-blue-900/80',
-            headingTextClass: 'text-blue-950',
-            iconBgClass: 'bg-blue-200',
-            progressBarClass: 'bg-blue-600',
-            statusBoxClass: 'border-blue-200 bg-blue-50 text-blue-800',
-            primaryButtonClass: 'bg-blue-600',
-            primaryButtonHoverClass: 'hover:bg-blue-700',
-            selectedOfficeClass: 'border-blue-600 bg-blue-50 text-blue-900',
-            selectedCheckClass: 'border-blue-600 bg-blue-600 text-white',
-            mobileNavClass: 'border-blue-200 bg-blue-950/95 shadow-blue-950/25',
-            mobileNavActiveClass:
-                'bg-white/15 text-white ring-1 ring-blue-200/40',
-        },
-        BAEL: {
-            label: 'BAEL Theme',
-            bannerClass:
-                'border border-yellow-100 bg-gradient-to-r from-yellow-100 via-yellow-50 to-white',
-            accentTextClass: 'text-yellow-700',
-            softTextClass: 'text-yellow-900/80',
-            headingTextClass: 'text-yellow-950',
-            iconBgClass: 'bg-yellow-200',
-            progressBarClass: 'bg-yellow-500',
-            statusBoxClass: 'border-yellow-200 bg-yellow-50 text-yellow-800',
-            primaryButtonClass: 'bg-yellow-500',
-            primaryButtonHoverClass: 'hover:bg-yellow-600',
-            selectedOfficeClass:
-                'border-yellow-500 bg-yellow-50 text-yellow-900',
-            selectedCheckClass: 'border-yellow-500 bg-yellow-500 text-white',
-            mobileNavClass:
-                'border-yellow-200 bg-yellow-600/95 shadow-yellow-900/20',
-            mobileNavActiveClass:
-                'bg-white/20 text-white ring-1 ring-yellow-100/50',
-        },
-        BAPS: {
-            label: 'BAPS Theme',
-            bannerClass:
-                'border border-red-100 bg-gradient-to-r from-red-100 via-red-50 to-white',
-            accentTextClass: 'text-red-700',
-            softTextClass: 'text-red-900/80',
-            headingTextClass: 'text-red-950',
-            iconBgClass: 'bg-red-200',
-            progressBarClass: 'bg-red-600',
-            statusBoxClass: 'border-red-200 bg-red-50 text-red-800',
-            primaryButtonClass: 'bg-red-600',
-            primaryButtonHoverClass: 'hover:bg-red-700',
-            selectedOfficeClass: 'border-red-600 bg-red-50 text-red-900',
-            selectedCheckClass: 'border-red-600 bg-red-600 text-white',
-            mobileNavClass: 'border-red-200 bg-red-800/95 shadow-red-950/20',
-            mobileNavActiveClass:
-                'bg-white/15 text-white ring-1 ring-red-100/40',
-        },
-        BSA: {
-            label: 'BSA Theme',
-            bannerClass:
-                'border border-green-100 bg-gradient-to-r from-green-100 via-green-50 to-white',
-            accentTextClass: 'text-green-700',
-            softTextClass: 'text-green-900/80',
-            headingTextClass: 'text-green-950',
-            iconBgClass: 'bg-green-200',
-            progressBarClass: 'bg-green-600',
-            statusBoxClass: 'border-green-200 bg-green-50 text-green-800',
-            primaryButtonClass: 'bg-green-600',
-            primaryButtonHoverClass: 'hover:bg-green-700',
-            selectedOfficeClass: 'border-green-600 bg-green-50 text-green-900',
-            selectedCheckClass: 'border-green-600 bg-green-600 text-white',
-            mobileNavClass:
-                'border-green-200 bg-green-800/95 shadow-green-950/20',
-            mobileNavActiveClass:
-                'bg-white/15 text-white ring-1 ring-green-100/40',
-        },
-        BSAIS: {
-            label: 'BSAIS Theme',
-            bannerClass:
-                'border border-gray-200 bg-gradient-to-r from-gray-200 via-gray-100 to-white',
-            accentTextClass: 'text-gray-700',
-            softTextClass: 'text-gray-800/80',
-            headingTextClass: 'text-gray-950',
-            iconBgClass: 'bg-gray-300',
-            progressBarClass: 'bg-gray-700',
-            statusBoxClass: 'border-gray-300 bg-gray-100 text-gray-800',
-            primaryButtonClass: 'bg-gray-700',
-            primaryButtonHoverClass: 'hover:bg-gray-800',
-            selectedOfficeClass: 'border-gray-700 bg-gray-100 text-gray-900',
-            selectedCheckClass: 'border-gray-700 bg-gray-700 text-white',
-            mobileNavClass: 'border-gray-300 bg-gray-900/95 shadow-gray-950/20',
-            mobileNavActiveClass:
-                'bg-white/15 text-white ring-1 ring-gray-100/40',
-        },
-        BECED: {
-            label: 'BECED Theme',
-            bannerClass:
-                'border border-sky-100 bg-gradient-to-r from-sky-100 via-sky-50 to-white',
-            accentTextClass: 'text-sky-700',
-            softTextClass: 'text-sky-900/80',
-            headingTextClass: 'text-sky-950',
-            iconBgClass: 'bg-sky-200',
-            progressBarClass: 'bg-sky-500',
-            statusBoxClass: 'border-sky-200 bg-sky-50 text-sky-800',
-            primaryButtonClass: 'bg-sky-500',
-            primaryButtonHoverClass: 'hover:bg-sky-600',
-            selectedOfficeClass: 'border-sky-500 bg-sky-50 text-sky-900',
-            selectedCheckClass: 'border-sky-500 bg-sky-500 text-white',
-            mobileNavClass: 'border-sky-200 bg-sky-800/95 shadow-sky-950/20',
-            mobileNavActiveClass:
-                'bg-white/15 text-white ring-1 ring-sky-100/40',
-        },
-        BSCRIM: {
-            label: 'BSCRIM Theme',
-            bannerClass:
-                'border border-orange-100 bg-gradient-to-r from-orange-100 via-orange-50 to-white',
-            accentTextClass: 'text-orange-700',
-            softTextClass: 'text-orange-900/80',
-            headingTextClass: 'text-orange-950',
-            iconBgClass: 'bg-orange-200',
-            progressBarClass: 'bg-orange-600',
-            statusBoxClass: 'border-orange-200 bg-orange-50 text-orange-800',
-            primaryButtonClass: 'bg-orange-600',
-            primaryButtonHoverClass: 'hover:bg-orange-700',
-            selectedOfficeClass:
-                'border-orange-600 bg-orange-50 text-orange-900',
-            selectedCheckClass: 'border-orange-600 bg-orange-600 text-white',
-            mobileNavClass:
-                'border-orange-200 bg-orange-800/95 shadow-orange-950/20',
-            mobileNavActiveClass:
-                'bg-white/15 text-white ring-1 ring-orange-100/40',
-        },
-    };
-
-    return themes[courseCode] ?? themes.BSIS;
-});
+const courseTheme = computed<CourseTheme>(() =>
+    resolveCourseTheme(props.student.course?.code),
+);
 
 const approvals = computed(() => props.clearanceRequest?.approvals ?? []);
 
@@ -583,7 +433,7 @@ const confirmMobileLogout = () => {
                 :class="courseTheme.bannerClass"
             >
                 <div
-                    class="grid gap-4 p-4 md:grid-cols-[1fr_320px] md:gap-6 md:p-8"
+                    class="grid gap-4 p-4 md:grid-cols-[1fr_360px] md:gap-6 md:p-8"
                 >
                     <div class="flex flex-col justify-center gap-4 md:gap-5">
                         <div>
@@ -666,70 +516,107 @@ const confirmMobileLogout = () => {
                                 {{ progressMessage }}
                             </p>
 
-                            <div
-                                v-if="isFullyCleared"
-                                class="mt-4 rounded-2xl border border-green-200 bg-green-50 p-4 text-green-800"
-                            >
-                                <p class="text-sm font-black">
-                                    Final Clearance Status
-                                </p>
-
-                                <h2 class="mt-1 text-2xl font-black">
-                                    Fully Cleared
-                                </h2>
-
-                                <p class="mt-1 text-sm leading-6">
-                                    Congratulations! Your clearance has been
-                                    approved by all required offices and
-                                    received final approval from the College
-                                    President.
-                                </p>
-
-                                <button
-                                    type="button"
-                                    class="mt-4 min-h-11 w-full rounded-xl bg-green-700 px-4 py-3 text-sm font-black text-white shadow-md transition hover:-translate-y-0.5 hover:bg-green-800 hover:shadow-lg sm:w-auto"
-                                    @click="openClearanceReceipt"
-                                >
-                                    Print Clearance Receipt →
-                                </button>
-                            </div>
-
-                            <div
-                                v-else
-                                class="mt-4 hidden rounded-2xl border p-4 md:block"
-                                :class="courseTheme.statusBoxClass"
-                            >
-                                <p class="text-sm font-black">
-                                    Final Clearance Status
-                                </p>
-
-                                <h2 class="mt-1 text-2xl font-black">
-                                    {{ finalClearanceLabel }}
-                                </h2>
-
-                                <p class="mt-1 text-sm leading-6">
-                                    Your clearance is not yet fully cleared.
-                                    Please wait for all required offices and the
-                                    College President final approval.
-                                </p>
-                            </div>
                         </div>
                     </div>
 
                     <div class="hidden items-center justify-center md:flex">
+                        <!-- Fully Cleared: show celebration card with print button -->
                         <div
-                            class="relative flex h-60 w-60 items-center justify-center"
+                            v-if="isFullyCleared"
+                            class="flex w-full flex-col items-center justify-center gap-6 text-center"
                         >
                             <div
-                                class="absolute inset-0 rounded-full opacity-70 blur-2xl"
-                                :class="courseTheme.iconBgClass"
-                            ></div>
-
-                            <div
-                                class="relative flex h-48 w-48 items-center justify-center rounded-full bg-white/65 text-7xl shadow-2xl shadow-slate-300/70 backdrop-blur"
-                                :class="courseTheme.headingTextClass"
+                                class="relative flex h-72 w-72 items-center justify-center"
                             >
-                                🎓
+                                <div
+                                    class="absolute inset-0 rounded-full opacity-70 blur-2xl transition duration-1000 animate-pulse"
+                                    :class="courseTheme.iconBgClass"
+                                ></div>
+                                <div
+                                    class="relative flex h-60 w-60 flex-col items-center justify-center gap-3 rounded-full bg-white/80 shadow-2xl shadow-slate-300/70 backdrop-blur"
+                                >
+                                    <!-- Beautiful large green check mark instead of emoji -->
+                                    <div class="flex items-center justify-center rounded-full bg-green-100 p-4 shadow-inner">
+                                        <CheckCircle2 class="size-16 text-green-600" stroke-width="2.5" />
+                                    </div>
+                                    <span
+                                        class="text-xl font-black tracking-tight"
+                                        :class="courseTheme.headingTextClass"
+                                    >
+                                        Fully Cleared!
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="w-full px-4">
+                                <p
+                                    class="text-[0.65rem] font-black uppercase tracking-[0.16em] opacity-70 mb-3"
+                                    :class="courseTheme.headingTextClass"
+                                >
+                                    All approvals verified
+                                </p>
+                                <button
+                                    type="button"
+                                    class="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-2xl px-6 py-4 text-sm font-black text-white shadow-xl shadow-green-600/20 transition-all hover:-translate-y-1 hover:shadow-2xl hover:shadow-green-600/40 active:translate-y-0 bg-green-600 hover:bg-green-700"
+                                    @click="openClearanceReceipt"
+                                >
+                                    <div class="absolute inset-0 bg-black/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+                                    <span class="relative">Print Clearance Receipt</span>
+                                    <Download class="relative size-4 transition-transform group-hover:translate-y-0.5" />
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Not cleared: show course code circle + status -->
+                        <div
+                            v-else
+                            class="flex flex-col items-center gap-4"
+                        >
+                            <div
+                                class="relative flex h-72 w-72 items-center justify-center"
+                            >
+                                <div
+                                    class="absolute inset-0 rounded-full opacity-70 blur-2xl"
+                                    :class="courseTheme.iconBgClass"
+                                ></div>
+
+                                <div
+                                    class="relative flex h-60 w-60 flex-col items-center justify-center gap-1 rounded-full bg-white/70 shadow-2xl shadow-slate-300/70 backdrop-blur"
+                                >
+                                    <span
+                                        class="text-6xl font-black tracking-tighter leading-none"
+                                        :class="courseTheme.headingTextClass"
+                                    >
+                                        {{ student.course?.code ?? '—' }}
+                                    </span>
+                                    <span
+                                        class="text-[0.65rem] font-black tracking-[0.2em] uppercase opacity-40"
+                                        :class="courseTheme.headingTextClass"
+                                    >
+                                        Course
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="text-center">
+                                <p
+                                    class="text-[0.65rem] font-black tracking-[0.16em] uppercase opacity-50"
+                                    :class="courseTheme.accentTextClass"
+                                >
+                                    Clearance Status
+                                </p>
+                                <p
+                                    class="mt-1 text-lg font-black"
+                                    :class="courseTheme.headingTextClass"
+                                >
+                                    {{ finalClearanceLabel }}
+                                </p>
+                                <p
+                                    class="mt-0.5 text-xs font-bold opacity-50"
+                                    :class="courseTheme.accentTextClass"
+                                >
+                                    {{ progressPercentage }}% complete
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -1272,9 +1159,9 @@ const confirmMobileLogout = () => {
 
                     <div class="space-y-6 px-4 py-5 sm:px-6">
                         <!-- Student Information -->
-                        <div class="grid gap-4 md:grid-cols-3">
+                        <div class="grid grid-cols-2 gap-3 md:grid-cols-3">
                             <div
-                                class="rounded-xl border border-slate-200 bg-slate-50 p-4"
+                                class="rounded-xl border border-slate-200 bg-slate-50 p-3"
                             >
                                 <p
                                     class="text-xs font-semibold tracking-wide text-slate-500 uppercase"
@@ -1290,7 +1177,7 @@ const confirmMobileLogout = () => {
                             </div>
 
                             <div
-                                class="rounded-xl border border-slate-200 bg-slate-50 p-4"
+                                class="rounded-xl border border-slate-200 bg-slate-50 p-3"
                             >
                                 <p
                                     class="text-xs font-semibold tracking-wide text-slate-500 uppercase"
@@ -1306,7 +1193,7 @@ const confirmMobileLogout = () => {
                             </div>
 
                             <div
-                                class="rounded-xl border border-slate-200 bg-slate-50 p-4"
+                                class="col-span-2 rounded-xl border border-slate-200 bg-slate-50 p-3 md:col-span-1"
                             >
                                 <p
                                     class="text-xs font-semibold tracking-wide text-slate-500 uppercase"
@@ -1323,8 +1210,8 @@ const confirmMobileLogout = () => {
                         </div>
 
                         <!-- Request Information -->
-                        <div class="grid gap-4 md:grid-cols-4">
-                            <div class="rounded-xl border p-4">
+                        <div class="grid grid-cols-2 gap-3 md:grid-cols-4">
+                            <div class="rounded-xl border p-3">
                                 <p
                                     class="text-xs font-semibold tracking-wide text-slate-500 uppercase"
                                 >
@@ -1341,7 +1228,7 @@ const confirmMobileLogout = () => {
                                 </p>
                             </div>
 
-                            <div class="rounded-xl border p-4">
+                            <div class="rounded-xl border p-3">
                                 <p
                                     class="text-xs font-semibold tracking-wide text-slate-500 uppercase"
                                 >
@@ -1358,7 +1245,7 @@ const confirmMobileLogout = () => {
                                 </p>
                             </div>
 
-                            <div class="rounded-xl border p-4">
+                            <div class="rounded-xl border p-3">
                                 <p
                                     class="text-xs font-semibold tracking-wide text-slate-500 uppercase"
                                 >
@@ -1372,7 +1259,7 @@ const confirmMobileLogout = () => {
                                 </p>
                             </div>
 
-                            <div class="rounded-xl border p-4">
+                            <div class="rounded-xl border p-3">
                                 <p
                                     class="text-xs font-semibold tracking-wide text-slate-500 uppercase"
                                 >
@@ -1400,84 +1287,51 @@ const confirmMobileLogout = () => {
                                 Office Approval Breakdown
                             </h3>
 
-                            <div
-                                class="overflow-x-auto rounded-xl border border-slate-200"
-                            >
-                                <table
-                                    class="min-w-[42rem] divide-y divide-slate-200"
+                            <div class="grid gap-3 max-h-[60vh] overflow-y-auto px-1 pb-4">
+                                <div
+                                    v-for="office in officeStatuses"
+                                    :key="office.id"
+                                    class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-slate-300"
                                 >
-                                    <thead class="bg-slate-50">
-                                        <tr>
-                                            <th
-                                                class="px-4 py-3 text-left text-xs font-bold tracking-wide text-slate-500 uppercase"
-                                            >
-                                                Office
-                                            </th>
-                                            <th
-                                                class="px-4 py-3 text-left text-xs font-bold tracking-wide text-slate-500 uppercase"
-                                            >
-                                                Status
-                                            </th>
-                                            <th
-                                                class="px-4 py-3 text-left text-xs font-bold tracking-wide text-slate-500 uppercase"
-                                            >
-                                                Remarks
-                                            </th>
-                                        </tr>
-                                    </thead>
-
-                                    <tbody
-                                        class="divide-y divide-slate-200 bg-white"
-                                    >
-                                        <tr
-                                            v-for="office in officeStatuses"
-                                            :key="office.id"
-                                            class="hover:bg-slate-50"
-                                        >
-                                            <td
-                                                class="px-4 py-3 text-sm font-semibold"
-                                                :class="
-                                                    courseTheme.headingTextClass
-                                                "
+                                    <div class="flex items-start justify-between gap-4">
+                                        <div class="flex-1">
+                                            <h4
+                                                class="text-sm font-bold leading-tight"
+                                                :class="courseTheme.headingTextClass"
                                             >
                                                 {{ office.name }}
-                                            </td>
-
-                                            <td class="px-4 py-3 text-sm">
-                                                <span
-                                                    class="font-semibold"
-                                                    :class="
-                                                        statusClass(
-                                                            office.status,
-                                                        )
-                                                    "
-                                                >
-                                                    {{
-                                                        statusLabel(
-                                                            office.status,
-                                                        )
-                                                    }}
-                                                </span>
-                                            </td>
-
-                                            <td class="px-4 py-3 text-sm">
-                                                <span
-                                                    v-if="office.remarks"
-                                                    class="text-red-600"
-                                                >
+                                            </h4>
+                                            
+                                            <div class="mt-1.5 text-xs">
+                                                <span v-if="office.remarks" class="font-medium text-red-600">
                                                     {{ office.remarks }}
                                                 </span>
-
-                                                <span
-                                                    v-else
-                                                    class="text-slate-400"
-                                                >
+                                                <span v-else class="text-slate-400">
                                                     No remarks
                                                 </span>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                            </div>
+
+                                            <div v-if="office.status === 'rejected'" class="mt-3">
+                                                <button
+                                                    type="button"
+                                                    class="inline-flex items-center rounded-lg bg-orange-100 px-3 py-1.5 text-[0.7rem] font-black uppercase tracking-wider text-orange-700 shadow-sm transition hover:bg-orange-200"
+                                                    @click="openMarkAsCompliedModal(office.approvalId, office.name)"
+                                                >
+                                                    Mark as Complied
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div class="shrink-0 text-right">
+                                            <span
+                                                class="inline-flex rounded-full px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider"
+                                                :class="statusClass(office.status)"
+                                            >
+                                                {{ statusLabel(office.status) }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1610,30 +1464,30 @@ const confirmMobileLogout = () => {
                 <div class="mt-4 grid gap-2">
                     <button
                         type="button"
-                        class="flex min-h-12 items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-left text-sm font-black text-slate-700 transition hover:bg-white"
+                        class="flex min-h-12 items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-left text-sm font-black text-slate-700 transition hover:bg-slate-100 active:bg-slate-200"
                         @click="openClearanceDetailsModal"
                     >
                         <span>View Clearance Details</span>
-                        <span>→</span>
+                        <ChevronRight class="size-4 opacity-50" />
                     </button>
 
                     <button
                         v-if="isFullyCleared"
                         type="button"
-                        class="flex min-h-12 items-center justify-between rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-left text-sm font-black text-green-700 transition hover:bg-green-100"
+                        class="flex min-h-12 items-center justify-between rounded-xl bg-green-600 px-4 py-3 text-left text-sm font-black text-white shadow-md shadow-green-600/20 transition hover:bg-green-700 active:translate-y-0.5"
                         @click="openClearanceReceipt"
                     >
                         <span>Print Clearance Receipt</span>
-                        <span>→</span>
+                        <Download class="size-4 opacity-90" />
                     </button>
 
                     <button
                         type="button"
-                        class="flex min-h-12 items-center justify-between rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-left text-sm font-black text-red-700 transition hover:bg-red-100"
+                        class="flex min-h-12 items-center justify-between rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-left text-sm font-black text-red-700 transition hover:bg-red-100 active:bg-red-200"
                         @click="openMobileLogoutModal"
                     >
                         <span>Logout</span>
-                        <span>↪</span>
+                        <LogOut class="size-4 opacity-70" />
                     </button>
                 </div>
             </div>
