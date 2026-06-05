@@ -29,7 +29,7 @@ Route::get('/verify-clearance/{verificationCode}', [ClearanceVerificationControl
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function (Request $request) {
-        $user = $request->user()->load('course.offices');
+        $user = $request->user()->load('course.offices.prerequisites:id,name');
 
         if ($user->role === 'admin') {
             return redirect()->route('admin.dashboard');
@@ -51,6 +51,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->values();
 
         $finalApproverOffices = Office::query()
+            ->with('prerequisites:id,name')
             ->where('is_final_approver', true)
             ->orderBy('sort_order')
             ->get(['id', 'name', 'group', 'sort_order', 'is_final_approver']);
@@ -121,6 +122,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('/admin/course-modules/{course}', [AdminCourseModuleController::class, 'update'])
             ->name('admin.course-modules.update');
 
+        Route::get('/admin/office-prerequisites', [\App\Http\Controllers\Admin\AdminOfficePrerequisiteController::class, 'index'])
+            ->name('admin.office-prerequisites.index');
+
+        Route::patch('/admin/office-prerequisites/{office}', [\App\Http\Controllers\Admin\AdminOfficePrerequisiteController::class, 'update'])
+            ->name('admin.office-prerequisites.update');
+
         Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])
             ->name('admin.dashboard');
 
@@ -153,6 +160,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::get('/admin/reports/print', [AdminReportController::class, 'printReport'])
             ->name('admin.reports.print');
+
+        Route::get('/admin/settings', [AdminSettingController::class, 'index'])
+            ->name('admin.settings.index');
 
         Route::patch('/admin/settings', [AdminSettingController::class, 'update'])
             ->name('admin.settings.update');

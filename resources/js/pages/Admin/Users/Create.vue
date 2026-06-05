@@ -13,6 +13,7 @@ defineProps<{
 
 const form = useForm({
     name: '',
+    email: '',
     student_id: '',
     office_id: '',
     password: '',
@@ -90,6 +91,30 @@ const submit = () => {
                             class="mt-2 text-sm text-red-600"
                         >
                             {{ form.errors.name }}
+                        </p>
+                    </div>
+
+                    <div>
+                        <label
+                            for="email"
+                            class="text-sm font-semibold text-slate-700"
+                        >
+                            Email Address
+                        </label>
+
+                        <input
+                            id="email"
+                            v-model="form.email"
+                            type="email"
+                            class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                            placeholder="Example: staff@university.edu"
+                        />
+
+                        <p
+                            v-if="form.errors.email"
+                            class="mt-2 text-sm text-red-600"
+                        >
+                            {{ form.errors.email }}
                         </p>
                     </div>
 

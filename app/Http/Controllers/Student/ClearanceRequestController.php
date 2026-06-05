@@ -52,6 +52,13 @@ class ClearanceRequestController extends Controller
             return back()->with('error', 'Please select at least one office assigned to your course.');
         }
 
+        $selectedOffices = Office::with('prerequisites')->whereIn('id', $selectedOfficeIds)->get();
+        foreach ($selectedOffices as $office) {
+            if ($office->prerequisites->isNotEmpty()) {
+                return back()->with('error', "You must clear prerequisites before requesting {$office->name}.");
+            }
+        }
+
         $approvalOfficeIds = $this->courseApprovalOfficeIds($user);
 
         DB::transaction(function () use ($user, $semester, $schoolYear, $selectedOfficeIds, $approvalOfficeIds) {
@@ -101,7 +108,8 @@ class ClearanceRequestController extends Controller
         $semester = AppSetting::get('active_semester', '1st Semester');
         $schoolYear = AppSetting::get('active_school_year', '2026-2027');
 
-        $clearanceRequest = ClearanceRequest::where('user_id', $user->id)
+        $clearanceRequest = ClearanceRequest::with('approvals')
+            ->where('user_id', $user->id)
             ->where('semester', $semester)
             ->where('school_year', $schoolYear)
             ->first();
@@ -123,6 +131,17 @@ class ClearanceRequestController extends Controller
 
         if ($selectedOfficeIds->isEmpty()) {
             return back()->with('error', 'Please select at least one office assigned to your course.');
+        }
+
+        $approvedOfficeIds = $clearanceRequest->approvals->where('status', 'approved')->pluck('office_id');
+        $selectedOffices = Office::with('prerequisites')->whereIn('id', $selectedOfficeIds)->get();
+
+        foreach ($selectedOffices as $office) {
+            foreach ($office->prerequisites as $prerequisite) {
+                if (! $approvedOfficeIds->contains($prerequisite->id)) {
+                    return back()->with('error', "You must clear {$prerequisite->name} before requesting {$office->name}.");
+                }
+            }
         }
 
         $requestableOfficeIds = ClearanceApproval::where('clearance_request_id', $clearanceRequest->id)

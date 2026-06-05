@@ -431,7 +431,7 @@ const scrollToQueue = () => {
                             <div class="flex items-start justify-between gap-3">
                                 <div class="min-w-0">
                                     <h3
-                                        class="truncate text-base font-black text-blue-950"
+                                        class="line-clamp-2 break-words text-base font-black leading-tight text-blue-950"
                                     >
                                         {{ request.user.name }}
                                     </h3>

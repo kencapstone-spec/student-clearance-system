@@ -40,6 +40,7 @@ type User = {
     student_id: string;
     role: UserRole;
     is_active: boolean;
+    email: string | null;
     deactivated_at: string | null;
     course: Course | null;
     office: Office | null;
@@ -72,6 +73,7 @@ const form = useForm({
 
 const editForm = useForm<{
     name: string;
+    email: string;
     role: UserRole;
     course_id: string | number;
     office_id: string | number;
@@ -79,6 +81,7 @@ const editForm = useForm<{
     password_confirmation: string;
 }>({
     name: '',
+    email: '',
     role: 'student',
     course_id: '',
     office_id: '',
@@ -202,6 +205,7 @@ const openEditUserModal = (user: User) => {
 
     editForm.clearErrors();
     editForm.name = user.name;
+    editForm.email = user.email || '';
     editForm.role = user.role;
     editForm.course_id = user.course ? user.course.id : '';
     editForm.office_id = user.office ? user.office.id : '';
@@ -722,7 +726,7 @@ const roleFilterButtonClass = (role: RoleFilter) => {
                             <div class="flex items-start justify-between gap-3">
                                 <div class="min-w-0">
                                     <h3
-                                        class="truncate text-base font-black text-blue-950"
+                                        class="line-clamp-2 break-words text-base font-black leading-tight text-blue-950"
                                     >
                                         {{ user.name }}
                                     </h3>
@@ -765,10 +769,10 @@ const roleFilterButtonClass = (role: RoleFilter) => {
                                 {{ user.office ? user.office.name : 'N/A' }}
                             </div>
 
-                            <div class="mt-4 grid grid-cols-2 gap-2">
+                            <div class="mt-4 flex flex-col gap-2 sm:grid sm:grid-cols-2">
                                 <button
                                     type="button"
-                                    class="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-blue-700 px-4 py-3 text-sm font-black text-white shadow-md shadow-blue-700/20 transition hover:bg-blue-800"
+                                    class="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-blue-700 px-3 py-2.5 text-xs font-black text-white shadow-md shadow-blue-700/20 transition hover:bg-blue-800 sm:px-4 sm:py-3 sm:text-sm"
                                     @click="openEditUserModal(user)"
                                 >
                                     <Pencil class="size-4" />
@@ -777,7 +781,7 @@ const roleFilterButtonClass = (role: RoleFilter) => {
 
                                 <button
                                     type="button"
-                                    class="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-black text-white shadow-md transition"
+                                    class="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl px-3 py-2.5 text-xs font-black text-white shadow-md transition sm:px-4 sm:py-3 sm:text-sm"
                                     :class="
                                         user.is_active
                                             ? 'bg-red-600 shadow-red-600/20 hover:bg-red-700'
@@ -1227,6 +1231,29 @@ const roleFilterButtonClass = (role: RoleFilter) => {
                                 class="mt-2 text-sm font-medium text-red-600"
                             >
                                 {{ editForm.errors.name }}
+                            </p>
+                        </div>
+
+                        <div>
+                            <label
+                                for="edit_email"
+                                class="text-sm font-black text-slate-700"
+                            >
+                                Email Address
+                            </label>
+
+                            <input
+                                id="edit_email"
+                                v-model="editForm.email"
+                                type="email"
+                                class="mt-2 min-h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 shadow-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
+                            />
+
+                            <p
+                                v-if="editForm.errors.email"
+                                class="mt-2 text-sm font-medium text-red-600"
+                            >
+                                {{ editForm.errors.email }}
                             </p>
                         </div>
 

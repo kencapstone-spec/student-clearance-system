@@ -22,9 +22,10 @@ class CreateNewUser implements CreatesNewUsers
             'student_id' => [
                 'required',
                 'string',
-                'regex:/^[0-9]{8,}$/',
+                'regex:/^[0-9]{8,10}$/',
                 'unique:users,student_id',
             ],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'name' => ['required', 'string', 'max:255'],
             'course_id' => ['required', 'exists:courses,id'],
             'password' => $this->passwordRules(),
@@ -32,6 +33,7 @@ class CreateNewUser implements CreatesNewUsers
 
         return User::create([
             'student_id' => $input['student_id'],
+            'email' => $input['email'],
             'name' => $input['name'],
             'course_id' => $input['course_id'],
             'role' => 'student',

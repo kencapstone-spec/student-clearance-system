@@ -54,18 +54,39 @@ defineOptions({
                     autocomplete="username"
                     name="student_id"
                     placeholder="Example: 20240001"
-                    pattern="[0-9]{8,}"
+                    minlength="8"
+                    maxlength="10"
+                    pattern="[0-9]{8,10}"
                     inputmode="numeric"
-                    title="Student ID must be at least 8 digits and contain numbers only."
+                    title="Student ID must be between 8 to 10 digits and contain numbers only."
                     class="!h-12 !rounded-2xl !border-slate-200 !bg-white !px-4 !text-sm !font-semibold !text-slate-900 !shadow-sm placeholder:!font-medium placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20"
                 />
 
                 <p class="text-xs font-medium text-slate-500">
-                    Student ID must be at least 8 characters and can contain
+                    Student ID must be between 8 to 10 characters and can contain
                     numbers only.
                 </p>
 
                 <InputError :message="errors.student_id" />
+            </div>
+
+            <div class="grid gap-2">
+                <Label for="email" class="text-sm font-black text-slate-800">
+                    Email Address
+                </Label>
+
+                <Input
+                    id="email"
+                    type="email"
+                    required
+                    :tabindex="2"
+                    autocomplete="email"
+                    name="email"
+                    placeholder="Enter your email address"
+                    class="!h-12 !rounded-2xl !border-slate-200 !bg-white !px-4 !text-sm !font-semibold !text-slate-900 !shadow-sm placeholder:!font-medium placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20"
+                />
+
+                <InputError :message="errors.email" />
             </div>
 
             <div class="grid gap-2">
@@ -77,7 +98,7 @@ defineOptions({
                     id="name"
                     type="text"
                     required
-                    :tabindex="2"
+                    :tabindex="3"
                     autocomplete="name"
                     name="name"
                     placeholder="Enter your full name"
@@ -99,7 +120,7 @@ defineOptions({
                     id="course_id"
                     name="course_id"
                     required
-                    :tabindex="3"
+                    :tabindex="4"
                     class="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-900 shadow-sm transition outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                     <option value="">Select your course</option>
@@ -123,7 +144,7 @@ defineOptions({
                 <PasswordInput
                     id="password"
                     required
-                    :tabindex="4"
+                    :tabindex="5"
                     autocomplete="new-password"
                     name="password"
                     placeholder="Password"
@@ -144,7 +165,7 @@ defineOptions({
                 <PasswordInput
                     id="password_confirmation"
                     required
-                    :tabindex="5"
+                    :tabindex="6"
                     autocomplete="new-password"
                     name="password_confirmation"
                     placeholder="Confirm password"
@@ -157,7 +178,7 @@ defineOptions({
             <Button
                 type="submit"
                 class="mt-2 h-12 w-full rounded-2xl bg-blue-700 text-sm font-black text-white shadow-xl shadow-blue-700/25 transition hover:-translate-y-0.5 hover:bg-blue-800 hover:shadow-2xl disabled:translate-y-0 disabled:opacity-70"
-                tabindex="6"
+                tabindex="7"
                 :disabled="processing"
                 data-test="register-user-button"
             >
@@ -171,7 +192,7 @@ defineOptions({
             <Link
                 :href="login()"
                 class="font-black text-blue-700 underline-offset-4 transition hover:text-blue-900 hover:underline"
-                :tabindex="7"
+                :tabindex="8"
             >
                 Log in
             </Link>

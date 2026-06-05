@@ -8,6 +8,16 @@ use Illuminate\Http\Request;
 
 class AdminSettingController extends Controller
 {
+    public function index()
+    {
+        return \Inertia\Inertia::render('Admin/Settings/Index', [
+            'settings' => [
+                'active_semester' => AppSetting::get('active_semester', '1st Semester'),
+                'active_school_year' => AppSetting::get('active_school_year', '2026-2027'),
+            ],
+        ]);
+    }
+
     public function update(Request $request)
     {
         $validated = $request->validate([

@@ -58,6 +58,16 @@ const mainNavItems = computed<NavItem[]>(() => {
             {
                 title: 'Course Modules',
                 href: '/admin/course-modules',
+                icon: LayoutGrid,
+            },
+            {
+                title: 'Office Prerequisites',
+                href: '/admin/office-prerequisites',
+                icon: LayoutGrid, // Using LayoutGrid as a safe fallback
+            },
+            {
+                title: 'System Settings',
+                href: '/admin/settings',
                 icon: Settings,
             },
         ];

@@ -18,7 +18,7 @@ class ReadyForPresidentApprovalSeeder extends Seeder
      */
     public function run(): void
     {
-        $studentsToCreate = 5;
+        $studentsToCreate = 3;
 
         $course = Course::firstOrCreate(
             ['code' => 'BSIS'],
