@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\AppSetting;
 use App\Models\ClearanceApproval;
 use App\Models\ClearanceRequest;
 use App\Models\Course;
@@ -15,8 +16,8 @@ class AdminDashboardController extends Controller
 {
     public function index(): Response
     {
-        $semester = \App\Models\AppSetting::get('active_semester', '1st Semester');
-        $schoolYear = \App\Models\AppSetting::get('active_school_year', '2026-2027');
+        $semester = AppSetting::get('active_semester', '1st Semester');
+        $schoolYear = AppSetting::get('active_school_year', '2026-2027');
 
         return Inertia::render('Admin/Dashboard', [
             'stats' => [
@@ -25,9 +26,9 @@ class AdminDashboardController extends Controller
                 'courses' => Course::count(),
                 'offices' => Office::count(),
                 'clearanceRequests' => ClearanceRequest::where('semester', $semester)->where('school_year', $schoolYear)->count(),
-                'pendingApprovals' => ClearanceApproval::whereHas('clearanceRequest', fn($q) => $q->where('semester', $semester)->where('school_year', $schoolYear))->where('status', 'pending')->count(),
-                'approvedApprovals' => ClearanceApproval::whereHas('clearanceRequest', fn($q) => $q->where('semester', $semester)->where('school_year', $schoolYear))->where('status', 'approved')->count(),
-                'rejectedApprovals' => ClearanceApproval::whereHas('clearanceRequest', fn($q) => $q->where('semester', $semester)->where('school_year', $schoolYear))->where('status', 'rejected')->count(),
+                'pendingApprovals' => ClearanceApproval::whereHas('clearanceRequest', fn ($q) => $q->where('semester', $semester)->where('school_year', $schoolYear))->where('status', 'pending')->count(),
+                'approvedApprovals' => ClearanceApproval::whereHas('clearanceRequest', fn ($q) => $q->where('semester', $semester)->where('school_year', $schoolYear))->where('status', 'approved')->count(),
+                'rejectedApprovals' => ClearanceApproval::whereHas('clearanceRequest', fn ($q) => $q->where('semester', $semester)->where('school_year', $schoolYear))->where('status', 'rejected')->count(),
             ],
 
             'recentRequests' => ClearanceRequest::with(['user.course'])
@@ -38,8 +39,8 @@ class AdminDashboardController extends Controller
                 ->get(),
 
             'settings' => [
-                'active_semester' => \App\Models\AppSetting::get('active_semester', '1st Semester'),
-                'active_school_year' => \App\Models\AppSetting::get('active_school_year', '2026-2027'),
+                'active_semester' => AppSetting::get('active_semester', '1st Semester'),
+                'active_school_year' => AppSetting::get('active_school_year', '2026-2027'),
             ],
         ]);
     }

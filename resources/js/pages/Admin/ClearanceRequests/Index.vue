@@ -1042,9 +1042,7 @@ const formatDateTime = (value: string | null) => {
                             {{ selectedRequest.user.name }}
                         </h2>
 
-                        <p
-                            class="mt-1 text-sm font-medium text-slate-500"
-                        >
+                        <p class="mt-1 text-sm font-medium text-slate-500">
                             Student ID: {{ selectedRequest.user.student_id }}
                             <span v-if="selectedRequest.user.course">
                                 • {{ selectedRequest.user.course.code }}
@@ -1203,9 +1201,7 @@ const formatDateTime = (value: string | null) => {
                                 </p>
                             </div>
 
-                            <p
-                                class="mt-3 text-sm font-medium text-slate-700"
-                            >
+                            <p class="mt-3 text-sm font-medium text-slate-700">
                                 <span class="font-black">Remarks:</span>
                                 {{ approval.remarks ?? '-' }}
                             </p>
@@ -1314,9 +1310,7 @@ const formatDateTime = (value: string | null) => {
                 </section>
             </div>
 
-            <div
-                class="shrink-0 border-t border-slate-200 bg-white p-4 sm:p-6"
-            >
+            <div class="shrink-0 border-t border-slate-200 bg-white p-4 sm:p-6">
                 <div class="flex justify-end">
                     <button
                         type="button"

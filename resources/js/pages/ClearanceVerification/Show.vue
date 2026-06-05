@@ -53,7 +53,9 @@ defineProps<{
                         {{ isValid ? '✓' : '!' }}
                     </div>
 
-                    <p class="mt-6 text-sm font-semibold uppercase tracking-wide text-slate-500">
+                    <p
+                        class="mt-6 text-sm font-semibold tracking-wide text-slate-500 uppercase"
+                    >
                         Talibon Polytechnic College
                     </p>
 
@@ -70,7 +72,11 @@ defineProps<{
                         "
                     >
                         <p class="text-lg font-bold">
-                            {{ isValid ? 'Valid Clearance Receipt' : 'Invalid / Not Cleared' }}
+                            {{
+                                isValid
+                                    ? 'Valid Clearance Receipt'
+                                    : 'Invalid / Not Cleared'
+                            }}
                         </p>
 
                         <p class="mt-1 text-sm">
@@ -79,13 +85,14 @@ defineProps<{
                     </div>
                 </div>
 
-                <div
-                    v-if="clearanceRequest && student"
-                    class="mt-8 space-y-6"
-                >
+                <div v-if="clearanceRequest && student" class="mt-8 space-y-6">
                     <div class="grid gap-4 md:grid-cols-2">
-                        <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                            <p class="text-xs font-semibold uppercase text-slate-500">
+                        <div
+                            class="rounded-xl border border-slate-200 bg-slate-50 p-4"
+                        >
+                            <p
+                                class="text-xs font-semibold text-slate-500 uppercase"
+                            >
                                 Receipt Number
                             </p>
                             <p class="mt-1 font-bold text-blue-950">
@@ -93,20 +100,30 @@ defineProps<{
                             </p>
                         </div>
 
-                        <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                            <p class="text-xs font-semibold uppercase text-slate-500">
+                        <div
+                            class="rounded-xl border border-slate-200 bg-slate-50 p-4"
+                        >
+                            <p
+                                class="text-xs font-semibold text-slate-500 uppercase"
+                            >
                                 Status
                             </p>
                             <p
                                 class="mt-1 font-bold uppercase"
-                                :class="isValid ? 'text-green-700' : 'text-red-700'"
+                                :class="
+                                    isValid ? 'text-green-700' : 'text-red-700'
+                                "
                             >
                                 {{ clearanceRequest.status }}
                             </p>
                         </div>
 
-                        <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                            <p class="text-xs font-semibold uppercase text-slate-500">
+                        <div
+                            class="rounded-xl border border-slate-200 bg-slate-50 p-4"
+                        >
+                            <p
+                                class="text-xs font-semibold text-slate-500 uppercase"
+                            >
                                 Student Name
                             </p>
                             <p class="mt-1 font-bold text-blue-950">
@@ -114,8 +131,12 @@ defineProps<{
                             </p>
                         </div>
 
-                        <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                            <p class="text-xs font-semibold uppercase text-slate-500">
+                        <div
+                            class="rounded-xl border border-slate-200 bg-slate-50 p-4"
+                        >
+                            <p
+                                class="text-xs font-semibold text-slate-500 uppercase"
+                            >
                                 Student ID
                             </p>
                             <p class="mt-1 font-bold text-blue-950">
@@ -123,8 +144,12 @@ defineProps<{
                             </p>
                         </div>
 
-                        <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                            <p class="text-xs font-semibold uppercase text-slate-500">
+                        <div
+                            class="rounded-xl border border-slate-200 bg-slate-50 p-4"
+                        >
+                            <p
+                                class="text-xs font-semibold text-slate-500 uppercase"
+                            >
                                 Course
                             </p>
                             <p class="mt-1 font-bold text-blue-950">
@@ -135,17 +160,26 @@ defineProps<{
                             </p>
                         </div>
 
-                        <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                            <p class="text-xs font-semibold uppercase text-slate-500">
+                        <div
+                            class="rounded-xl border border-slate-200 bg-slate-50 p-4"
+                        >
+                            <p
+                                class="text-xs font-semibold text-slate-500 uppercase"
+                            >
                                 Semester / School Year
                             </p>
                             <p class="mt-1 font-bold text-blue-950">
-                                {{ clearanceRequest.semester }} / {{ clearanceRequest.school_year }}
+                                {{ clearanceRequest.semester }} /
+                                {{ clearanceRequest.school_year }}
                             </p>
                         </div>
 
-                        <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                            <p class="text-xs font-semibold uppercase text-slate-500">
+                        <div
+                            class="rounded-xl border border-slate-200 bg-slate-50 p-4"
+                        >
+                            <p
+                                class="text-xs font-semibold text-slate-500 uppercase"
+                            >
                                 Submitted At
                             </p>
                             <p class="mt-1 font-bold text-blue-950">
@@ -153,8 +187,12 @@ defineProps<{
                             </p>
                         </div>
 
-                        <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                            <p class="text-xs font-semibold uppercase text-slate-500">
+                        <div
+                            class="rounded-xl border border-slate-200 bg-slate-50 p-4"
+                        >
+                            <p
+                                class="text-xs font-semibold text-slate-500 uppercase"
+                            >
                                 Cleared At
                             </p>
                             <p class="mt-1 font-bold text-blue-950">
@@ -173,7 +211,9 @@ defineProps<{
 
                         <div class="mt-4 grid gap-4 md:grid-cols-2">
                             <div>
-                                <p class="text-xs font-semibold uppercase text-slate-500">
+                                <p
+                                    class="text-xs font-semibold text-slate-500 uppercase"
+                                >
                                     Office
                                 </p>
                                 <p class="mt-1 font-medium">
@@ -182,7 +222,9 @@ defineProps<{
                             </div>
 
                             <div>
-                                <p class="text-xs font-semibold uppercase text-slate-500">
+                                <p
+                                    class="text-xs font-semibold text-slate-500 uppercase"
+                                >
                                     Approved By
                                 </p>
                                 <p class="mt-1 font-medium">
@@ -191,16 +233,22 @@ defineProps<{
                             </div>
 
                             <div>
-                                <p class="text-xs font-semibold uppercase text-slate-500">
+                                <p
+                                    class="text-xs font-semibold text-slate-500 uppercase"
+                                >
                                     Approval Status
                                 </p>
-                                <p class="mt-1 font-semibold uppercase text-green-700">
+                                <p
+                                    class="mt-1 font-semibold text-green-700 uppercase"
+                                >
                                     {{ presidentApproval.status }}
                                 </p>
                             </div>
 
                             <div>
-                                <p class="text-xs font-semibold uppercase text-slate-500">
+                                <p
+                                    class="text-xs font-semibold text-slate-500 uppercase"
+                                >
                                     Date Approved
                                 </p>
                                 <p class="mt-1 font-medium">
@@ -210,11 +258,17 @@ defineProps<{
                         </div>
                     </div>
 
-                    <div class="rounded-xl border border-dashed border-slate-300 p-4">
-                        <p class="text-xs font-semibold uppercase text-slate-500">
+                    <div
+                        class="rounded-xl border border-dashed border-slate-300 p-4"
+                    >
+                        <p
+                            class="text-xs font-semibold text-slate-500 uppercase"
+                        >
                             Verification Code
                         </p>
-                        <p class="mt-1 break-all font-mono text-sm font-semibold text-slate-800">
+                        <p
+                            class="mt-1 font-mono text-sm font-semibold break-all text-slate-800"
+                        >
                             {{ clearanceRequest.verification_code ?? 'N/A' }}
                         </p>
                     </div>
@@ -233,7 +287,8 @@ defineProps<{
                 </div>
 
                 <p class="mt-8 text-center text-xs text-slate-500">
-                    This page verifies clearance records generated by the Web-based Student Clearance System.
+                    This page verifies clearance records generated by the
+                    Web-based Student Clearance System.
                 </p>
             </div>
         </div>

@@ -162,7 +162,7 @@ const markAllNotificationsAsRead = () => {
 
                         <span
                             v-if="notifications.unread_count > 0"
-                            class="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1 text-xs font-black text-white shadow-sm"
+                            class="absolute -top-1 -right-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1 text-xs font-black text-white shadow-sm"
                         >
                             {{
                                 notifications.unread_count > 99

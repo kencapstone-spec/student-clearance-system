@@ -258,7 +258,9 @@ const scrollToQueue = () => {
             </section>
 
             <!-- Summary Cards -->
-            <section class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            <section
+                class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3"
+            >
                 <div
                     class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-3xl md:p-6"
                 >
@@ -562,7 +564,9 @@ const scrollToQueue = () => {
                                             <p
                                                 class="mt-1 text-xs font-medium text-slate-500"
                                             >
-                                                Clearance request #{{ request.id }}
+                                                Clearance request #{{
+                                                    request.id
+                                                }}
                                             </p>
                                         </div>
                                     </td>
@@ -711,9 +715,7 @@ const scrollToQueue = () => {
                 </div>
             </div>
 
-            <div
-                class="shrink-0 border-t border-slate-200 bg-white p-4 sm:p-6"
-            >
+            <div class="shrink-0 border-t border-slate-200 bg-white p-4 sm:p-6">
                 <div class="grid grid-cols-2 gap-3 sm:flex sm:justify-end">
                     <button
                         type="button"
@@ -802,9 +804,7 @@ const scrollToQueue = () => {
                 </div>
             </div>
 
-            <div
-                class="shrink-0 border-t border-slate-200 bg-white p-4 sm:p-6"
-            >
+            <div class="shrink-0 border-t border-slate-200 bg-white p-4 sm:p-6">
                 <div class="grid grid-cols-2 gap-3 sm:flex sm:justify-end">
                     <button
                         type="button"

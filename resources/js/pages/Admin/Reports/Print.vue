@@ -43,9 +43,13 @@ const printPage = () => {
 <template>
     <Head title="Printable Clearance Report" />
 
-    <div class="min-h-screen bg-slate-100 p-4 text-slate-900 print:bg-white print:p-0">
+    <div
+        class="min-h-screen bg-slate-100 p-4 text-slate-900 print:bg-white print:p-0"
+    >
         <div class="mx-auto max-w-7xl bg-white p-8 shadow-sm print:shadow-none">
-            <div class="mb-6 flex flex-wrap items-center justify-between gap-3 print:hidden">
+            <div
+                class="mb-6 flex flex-wrap items-center justify-between gap-3 print:hidden"
+            >
                 <Link
                     href="/admin/reports"
                     class="rounded-xl border bg-white px-4 py-2 text-sm font-semibold text-blue-950 hover:bg-slate-100"
@@ -63,7 +67,9 @@ const printPage = () => {
             </div>
 
             <header class="border-b pb-5 text-center">
-                <p class="text-sm font-semibold uppercase tracking-wide text-blue-700">
+                <p
+                    class="text-sm font-semibold tracking-wide text-blue-700 uppercase"
+                >
                     Talibon Polytechnic College
                 </p>
 
@@ -99,7 +105,9 @@ const printPage = () => {
                 </div>
 
                 <div class="rounded-lg border p-3">
-                    <p class="font-semibold text-slate-600">School Year Filter</p>
+                    <p class="font-semibold text-slate-600">
+                        School Year Filter
+                    </p>
                     <p class="mt-1 text-blue-950">
                         {{ filters.school_year || 'All School Years' }}
                     </p>
@@ -147,7 +155,10 @@ const printPage = () => {
                     </p>
                 </div>
 
-                <div v-if="requests.length === 0" class="rounded-xl border p-8 text-center">
+                <div
+                    v-if="requests.length === 0"
+                    class="rounded-xl border p-8 text-center"
+                >
                     <p class="font-medium text-slate-700">
                         No clearance requests found.
                     </p>
@@ -169,10 +180,7 @@ const printPage = () => {
                         </thead>
 
                         <tbody>
-                            <tr
-                                v-for="request in requests"
-                                :key="request.id"
-                            >
+                            <tr v-for="request in requests" :key="request.id">
                                 <td class="border px-3 py-2">
                                     {{ request.student_name }}
                                 </td>
@@ -203,7 +211,9 @@ const printPage = () => {
                                 </td>
 
                                 <td class="border px-3 py-2">
-                                    {{ request.cleared_at ?? 'Not cleared yet' }}
+                                    {{
+                                        request.cleared_at ?? 'Not cleared yet'
+                                    }}
                                 </td>
                             </tr>
                         </tbody>
@@ -211,8 +221,11 @@ const printPage = () => {
                 </div>
             </section>
 
-            <footer class="mt-8 border-t pt-4 text-center text-xs text-slate-500">
-                This report was generated from the Web-based Student Clearance System.
+            <footer
+                class="mt-8 border-t pt-4 text-center text-xs text-slate-500"
+            >
+                This report was generated from the Web-based Student Clearance
+                System.
             </footer>
         </div>
     </div>

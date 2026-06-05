@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { Head, router } from '@inertiajs/vue3';
+import { CheckCircle2, Download, ChevronRight, LogOut } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import { dashboard } from '@/routes';
-import { type CourseTheme, resolveCourseTheme } from '@/utils/courseThemes';
-import { CheckCircle2, Download, ChevronRight, LogOut } from 'lucide-vue-next';
+import { resolveCourseTheme } from '@/utils/courseThemes';
+import type { CourseTheme } from '@/utils/courseThemes';
 
 defineOptions({
     layout: {
@@ -53,7 +54,6 @@ type ClearanceRequest = {
     status: 'pending' | 'cleared';
     approvals: Approval[];
 } | null;
-
 
 const props = defineProps<{
     student: Student;
@@ -515,7 +515,6 @@ const confirmMobileLogout = () => {
                             >
                                 {{ progressMessage }}
                             </p>
-
                         </div>
                     </div>
 
@@ -529,15 +528,20 @@ const confirmMobileLogout = () => {
                                 class="relative flex h-72 w-72 items-center justify-center"
                             >
                                 <div
-                                    class="absolute inset-0 rounded-full opacity-70 blur-2xl transition duration-1000 animate-pulse"
+                                    class="absolute inset-0 animate-pulse rounded-full opacity-70 blur-2xl transition duration-1000"
                                     :class="courseTheme.iconBgClass"
                                 ></div>
                                 <div
                                     class="relative flex h-60 w-60 flex-col items-center justify-center gap-3 rounded-full bg-white/80 shadow-2xl shadow-slate-300/70 backdrop-blur"
                                 >
                                     <!-- Beautiful large green check mark instead of emoji -->
-                                    <div class="flex items-center justify-center rounded-full bg-green-100 p-4 shadow-inner">
-                                        <CheckCircle2 class="size-16 text-green-600" stroke-width="2.5" />
+                                    <div
+                                        class="flex items-center justify-center rounded-full bg-green-100 p-4 shadow-inner"
+                                    >
+                                        <CheckCircle2
+                                            class="size-16 text-green-600"
+                                            stroke-width="2.5"
+                                        />
                                     </div>
                                     <span
                                         class="text-xl font-black tracking-tight"
@@ -550,28 +554,31 @@ const confirmMobileLogout = () => {
 
                             <div class="w-full px-4">
                                 <p
-                                    class="text-[0.65rem] font-black uppercase tracking-[0.16em] opacity-70 mb-3"
+                                    class="mb-3 text-[0.65rem] font-black tracking-[0.16em] uppercase opacity-70"
                                     :class="courseTheme.headingTextClass"
                                 >
                                     All approvals verified
                                 </p>
                                 <button
                                     type="button"
-                                    class="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-2xl px-6 py-4 text-sm font-black text-white shadow-xl shadow-green-600/20 transition-all hover:-translate-y-1 hover:shadow-2xl hover:shadow-green-600/40 active:translate-y-0 bg-green-600 hover:bg-green-700"
+                                    class="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-2xl bg-green-600 px-6 py-4 text-sm font-black text-white shadow-xl shadow-green-600/20 transition-all hover:-translate-y-1 hover:bg-green-700 hover:shadow-2xl hover:shadow-green-600/40 active:translate-y-0"
                                     @click="openClearanceReceipt"
                                 >
-                                    <div class="absolute inset-0 bg-black/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
-                                    <span class="relative">Print Clearance Receipt</span>
-                                    <Download class="relative size-4 transition-transform group-hover:translate-y-0.5" />
+                                    <div
+                                        class="absolute inset-0 bg-black/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                                    ></div>
+                                    <span class="relative"
+                                        >Print Clearance Receipt</span
+                                    >
+                                    <Download
+                                        class="relative size-4 transition-transform group-hover:translate-y-0.5"
+                                    />
                                 </button>
                             </div>
                         </div>
 
                         <!-- Not cleared: show course code circle + status -->
-                        <div
-                            v-else
-                            class="flex flex-col items-center gap-4"
-                        >
+                        <div v-else class="flex flex-col items-center gap-4">
                             <div
                                 class="relative flex h-72 w-72 items-center justify-center"
                             >
@@ -584,7 +591,7 @@ const confirmMobileLogout = () => {
                                     class="relative flex h-60 w-60 flex-col items-center justify-center gap-1 rounded-full bg-white/70 shadow-2xl shadow-slate-300/70 backdrop-blur"
                                 >
                                     <span
-                                        class="text-6xl font-black tracking-tighter leading-none"
+                                        class="text-6xl leading-none font-black tracking-tighter"
                                         :class="courseTheme.headingTextClass"
                                     >
                                         {{ student.course?.code ?? '—' }}
@@ -1287,35 +1294,57 @@ const confirmMobileLogout = () => {
                                 Office Approval Breakdown
                             </h3>
 
-                            <div class="grid gap-3 max-h-[60vh] overflow-y-auto px-1 pb-4">
+                            <div
+                                class="grid max-h-[60vh] gap-3 overflow-y-auto px-1 pb-4"
+                            >
                                 <div
                                     v-for="office in officeStatuses"
                                     :key="office.id"
                                     class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-slate-300"
                                 >
-                                    <div class="flex items-start justify-between gap-4">
+                                    <div
+                                        class="flex items-start justify-between gap-4"
+                                    >
                                         <div class="flex-1">
                                             <h4
-                                                class="text-sm font-bold leading-tight"
-                                                :class="courseTheme.headingTextClass"
+                                                class="text-sm leading-tight font-bold"
+                                                :class="
+                                                    courseTheme.headingTextClass
+                                                "
                                             >
                                                 {{ office.name }}
                                             </h4>
-                                            
+
                                             <div class="mt-1.5 text-xs">
-                                                <span v-if="office.remarks" class="font-medium text-red-600">
+                                                <span
+                                                    v-if="office.remarks"
+                                                    class="font-medium text-red-600"
+                                                >
                                                     {{ office.remarks }}
                                                 </span>
-                                                <span v-else class="text-slate-400">
+                                                <span
+                                                    v-else
+                                                    class="text-slate-400"
+                                                >
                                                     No remarks
                                                 </span>
                                             </div>
 
-                                            <div v-if="office.status === 'rejected'" class="mt-3">
+                                            <div
+                                                v-if="
+                                                    office.status === 'rejected'
+                                                "
+                                                class="mt-3"
+                                            >
                                                 <button
                                                     type="button"
-                                                    class="inline-flex items-center rounded-lg bg-orange-100 px-3 py-1.5 text-[0.7rem] font-black uppercase tracking-wider text-orange-700 shadow-sm transition hover:bg-orange-200"
-                                                    @click="openMarkAsCompliedModal(office.approvalId, office.name)"
+                                                    class="inline-flex items-center rounded-lg bg-orange-100 px-3 py-1.5 text-[0.7rem] font-black tracking-wider text-orange-700 uppercase shadow-sm transition hover:bg-orange-200"
+                                                    @click="
+                                                        openMarkAsCompliedModal(
+                                                            office.approvalId,
+                                                            office.name,
+                                                        )
+                                                    "
                                                 >
                                                     Mark as Complied
                                                 </button>
@@ -1324,8 +1353,10 @@ const confirmMobileLogout = () => {
 
                                         <div class="shrink-0 text-right">
                                             <span
-                                                class="inline-flex rounded-full px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider"
-                                                :class="statusClass(office.status)"
+                                                class="inline-flex rounded-full px-2.5 py-1 text-[0.65rem] font-bold tracking-wider uppercase"
+                                                :class="
+                                                    statusClass(office.status)
+                                                "
                                             >
                                                 {{ statusLabel(office.status) }}
                                             </span>
@@ -1536,70 +1567,70 @@ const confirmMobileLogout = () => {
                 </div>
             </div>
 
-<!-- Mobile Thumb Navigation -->
-<nav
-    class="fixed inset-x-3 bottom-3 z-40 rounded-2xl border p-2 shadow-2xl backdrop-blur md:hidden"
-    :class="courseTheme.mobileNavClass"
->
-    <div class="grid grid-cols-4 gap-1">
-        <button
-            type="button"
-            class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
-            :class="
-                activeMobileNav === 'home'
-                    ? courseTheme.mobileNavActiveClass
-                    : ''
-            "
-            @click="scrollToDashboardTop"
-        >
-            <span class="text-base">⌂</span>
-            <span>Home</span>
-        </button>
+            <!-- Mobile Thumb Navigation -->
+            <nav
+                class="fixed inset-x-3 bottom-3 z-40 rounded-2xl border p-2 shadow-2xl backdrop-blur md:hidden"
+                :class="courseTheme.mobileNavClass"
+            >
+                <div class="grid grid-cols-4 gap-1">
+                    <button
+                        type="button"
+                        class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
+                        :class="
+                            activeMobileNav === 'home'
+                                ? courseTheme.mobileNavActiveClass
+                                : ''
+                        "
+                        @click="scrollToDashboardTop"
+                    >
+                        <span class="text-base">⌂</span>
+                        <span>Home</span>
+                    </button>
 
-        <button
-            type="button"
-            class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-45"
-            :class="
-                activeMobileNav === 'request'
-                    ? courseTheme.mobileNavActiveClass
-                    : ''
-            "
-            :disabled="requestableOffices.length === 0"
-            @click="openMobileRequests"
-        >
-            <span class="text-base">📄</span>
-            <span>Request</span>
-        </button>
+                    <button
+                        type="button"
+                        class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-45"
+                        :class="
+                            activeMobileNav === 'request'
+                                ? courseTheme.mobileNavActiveClass
+                                : ''
+                        "
+                        :disabled="requestableOffices.length === 0"
+                        @click="openMobileRequests"
+                    >
+                        <span class="text-base">📄</span>
+                        <span>Request</span>
+                    </button>
 
-        <button
-            type="button"
-            class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
-            :class="
-                activeMobileNav === 'offices'
-                    ? courseTheme.mobileNavActiveClass
-                    : ''
-            "
-            @click="openMobileOffices"
-        >
-            <span class="text-base">🏢</span>
-            <span>Offices</span>
-        </button>
+                    <button
+                        type="button"
+                        class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
+                        :class="
+                            activeMobileNav === 'offices'
+                                ? courseTheme.mobileNavActiveClass
+                                : ''
+                        "
+                        @click="openMobileOffices"
+                    >
+                        <span class="text-base">🏢</span>
+                        <span>Offices</span>
+                    </button>
 
-        <button
-            type="button"
-            class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
-            :class="
-                activeMobileNav === 'more' || showMobileMoreMenu
-                    ? courseTheme.mobileNavActiveClass
-                    : ''
-            "
-            @click="toggleMobileMoreMenu"
-        >
-            <span class="text-base">•••</span>
-            <span>More</span>
-        </button>
-    </div>
-</nav>
+                    <button
+                        type="button"
+                        class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
+                        :class="
+                            activeMobileNav === 'more' || showMobileMoreMenu
+                                ? courseTheme.mobileNavActiveClass
+                                : ''
+                        "
+                        @click="toggleMobileMoreMenu"
+                    >
+                        <span class="text-base">•••</span>
+                        <span>More</span>
+                    </button>
+                </div>
+            </nav>
         </div>
     </div>
 </template>

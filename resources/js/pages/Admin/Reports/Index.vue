@@ -486,7 +486,9 @@ const statusClass = (request: ReportRequest) => {
             <section
                 class="overflow-hidden rounded-3xl border border-slate-200 bg-white/95 shadow-sm shadow-slate-200/70"
             >
-                <div class="border-b border-slate-200 bg-white px-4 py-5 sm:px-6">
+                <div
+                    class="border-b border-slate-200 bg-white px-4 py-5 sm:px-6"
+                >
                     <p
                         class="text-xs font-black tracking-[0.18em] text-slate-400 uppercase"
                     >
@@ -503,7 +505,10 @@ const statusClass = (request: ReportRequest) => {
                     </p>
                 </div>
 
-                <div v-if="requests.length === 0" class="p-8 text-center sm:p-12">
+                <div
+                    v-if="requests.length === 0"
+                    class="p-8 text-center sm:p-12"
+                >
                     <div
                         class="mx-auto grid h-16 w-16 place-items-center rounded-3xl bg-blue-50 text-blue-700"
                     >
@@ -603,13 +608,9 @@ const statusClass = (request: ReportRequest) => {
                                     </p>
 
                                     <p class="mt-1 font-black text-blue-950">
-                                        {{
-                                            request.approved_regular_approvals
-                                        }}
+                                        {{ request.approved_regular_approvals }}
                                         /
-                                        {{
-                                            request.total_regular_approvals
-                                        }}
+                                        {{ request.total_regular_approvals }}
                                     </p>
                                 </div>
 

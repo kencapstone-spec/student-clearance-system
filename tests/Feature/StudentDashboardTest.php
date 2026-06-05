@@ -1,10 +1,10 @@
 <?php
 
-use App\Models\User;
-use App\Models\Office;
-use App\Models\Course;
-use App\Models\ClearanceRequest;
 use App\Models\ClearanceApproval;
+use App\Models\ClearanceRequest;
+use App\Models\Course;
+use App\Models\Office;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
@@ -32,7 +32,7 @@ test('student can submit a clearance request', function () {
     $course = Course::factory()->create();
     $office = Office::factory()->create(['is_final_approver' => false]);
     $course->offices()->attach($office->id);
-    
+
     $student = User::factory()->create([
         'role' => 'student',
         'course_id' => $course->id,
@@ -51,7 +51,7 @@ test('student can request more offices', function () {
     $office1 = Office::factory()->create(['is_final_approver' => false]);
     $office2 = Office::factory()->create(['is_final_approver' => false]);
     $course->offices()->attach([$office1->id, $office2->id]);
-    
+
     $student = User::factory()->create([
         'role' => 'student',
         'course_id' => $course->id,
@@ -61,12 +61,12 @@ test('student can request more offices', function () {
     ClearanceApproval::factory()->create([
         'clearance_request_id' => $clearanceRequest->id,
         'office_id' => $office1->id,
-        'status' => 'pending'
+        'status' => 'pending',
     ]);
     ClearanceApproval::factory()->create([
         'clearance_request_id' => $clearanceRequest->id,
         'office_id' => $office2->id,
-        'status' => 'not_requested'
+        'status' => 'not_requested',
     ]);
 
     $response = $this->actingAs($student)->patch(route('student.clearance-requests.request-more-offices'), [
@@ -84,7 +84,7 @@ test('student can mark rejected clearance as complied', function () {
     $approval = ClearanceApproval::factory()->create([
         'clearance_request_id' => $clearanceRequest->id,
         'office_id' => $office->id,
-        'status' => 'rejected'
+        'status' => 'rejected',
     ]);
 
     $response = $this->actingAs($student)->patch(route('student.clearance-approvals.mark-as-complied', $approval));

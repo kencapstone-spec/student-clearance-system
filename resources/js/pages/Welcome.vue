@@ -40,11 +40,11 @@ withDefaults(
                 ></div>
 
                 <div
-                    class="absolute inset-0 opacity-[0.06] [background-image:linear-gradient(rgba(255,255,255,0.9)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.9)_1px,transparent_1px)] [background-size:64px_64px]"
+                    class="absolute inset-0 [background-image:linear-gradient(rgba(255,255,255,0.9)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.9)_1px,transparent_1px)] [background-size:64px_64px] opacity-[0.06]"
                 ></div>
 
                 <div
-                    class="absolute right-[-12rem] top-16 h-[28rem] w-[28rem] rounded-full bg-blue-500/25 blur-3xl"
+                    class="absolute top-16 right-[-12rem] h-[28rem] w-[28rem] rounded-full bg-blue-500/25 blur-3xl"
                 ></div>
 
                 <div
@@ -68,7 +68,7 @@ withDefaults(
 
                         <div class="hidden min-w-0 sm:block">
                             <p
-                                class="text-[11px] font-black uppercase tracking-[0.22em] text-blue-300"
+                                class="text-[11px] font-black tracking-[0.22em] text-blue-300 uppercase"
                             >
                                 Talibon Polytechnic College
                             </p>
@@ -94,7 +94,7 @@ withDefaults(
                         <template v-else>
                             <Link
                                 :href="login()"
-                                class="inline-flex items-center justify-center whitespace-nowrap rounded-2xl border border-white/15 bg-white/5 px-3.5 py-2.5 text-sm font-medium text-white/80 transition hover:-translate-y-0.5 hover:border-blue-300/40 hover:bg-white/10 hover:text-white sm:px-4"
+                                class="inline-flex items-center justify-center rounded-2xl border border-white/15 bg-white/5 px-3.5 py-2.5 text-sm font-medium whitespace-nowrap text-white/80 transition hover:-translate-y-0.5 hover:border-blue-300/40 hover:bg-white/10 hover:text-white sm:px-4"
                             >
                                 Log in
                             </Link>
@@ -102,7 +102,7 @@ withDefaults(
                             <Link
                                 v-if="canRegister"
                                 :href="register()"
-                                class="inline-flex items-center justify-center whitespace-nowrap rounded-2xl bg-blue-600 px-3.5 py-2.5 text-sm font-black text-white shadow-lg shadow-blue-600/25 transition hover:-translate-y-0.5 hover:bg-blue-500 sm:px-4"
+                                class="inline-flex items-center justify-center rounded-2xl bg-blue-600 px-3.5 py-2.5 text-sm font-black whitespace-nowrap text-white shadow-lg shadow-blue-600/25 transition hover:-translate-y-0.5 hover:bg-blue-500 sm:px-4"
                             >
                                 Register
                             </Link>
@@ -127,7 +127,7 @@ withDefaults(
                     </div>
 
                     <h2
-                        class="max-w-4xl text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl md:text-7xl"
+                        class="max-w-4xl text-4xl leading-[1.05] font-black tracking-tight text-white sm:text-5xl md:text-7xl"
                     >
                         A faster, cleaner, and more reliable way to process
                         student clearance.
@@ -172,7 +172,7 @@ withDefaults(
                     </div>
 
                     <span
-                        class="mt-8 block text-xs font-black uppercase tracking-[0.2em] text-white/35 sm:mt-10"
+                        class="mt-8 block text-xs font-black tracking-[0.2em] text-white/35 uppercase sm:mt-10"
                     >
                         Roles
                     </span>
@@ -220,7 +220,7 @@ withDefaults(
                         <div class="flex items-start justify-between gap-4">
                             <div>
                                 <p
-                                    class="text-xs font-black uppercase tracking-[0.22em] text-blue-300"
+                                    class="text-xs font-black tracking-[0.22em] text-blue-300 uppercase"
                                 >
                                     Core Workflow
                                 </p>
@@ -406,10 +406,12 @@ withDefaults(
 
         <!-- Features -->
         <main class="relative z-10 bg-slate-50">
-            <section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:py-20">
+            <section
+                class="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:py-20"
+            >
                 <div class="max-w-3xl">
                     <p
-                        class="text-xs font-black uppercase tracking-[0.22em] text-blue-700"
+                        class="text-xs font-black tracking-[0.22em] text-blue-700 uppercase"
                     >
                         What's Included
                     </p>
@@ -550,10 +552,12 @@ withDefaults(
 
             <!-- How It Works -->
             <section class="border-y border-slate-200 bg-white">
-                <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:py-20">
+                <div
+                    class="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:py-20"
+                >
                     <div class="max-w-3xl">
                         <p
-                            class="text-xs font-black uppercase tracking-[0.22em] text-blue-700"
+                            class="text-xs font-black tracking-[0.22em] text-blue-700 uppercase"
                         >
                             How It Works
                         </p>
@@ -655,10 +659,12 @@ withDefaults(
 
             <!-- Roles -->
             <section class="bg-slate-950 text-white">
-                <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:py-20">
+                <div
+                    class="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:py-20"
+                >
                     <div class="max-w-3xl">
                         <p
-                            class="text-xs font-black uppercase tracking-[0.22em] text-blue-300"
+                            class="text-xs font-black tracking-[0.22em] text-blue-300 uppercase"
                         >
                             Access Levels
                         </p>
@@ -666,7 +672,8 @@ withDefaults(
                         <h2
                             class="mt-4 text-3xl font-black tracking-tight sm:text-4xl md:text-5xl"
                         >
-                            Built for everyone involved in the clearance process.
+                            Built for everyone involved in the clearance
+                            process.
                         </h2>
 
                         <p

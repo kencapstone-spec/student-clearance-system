@@ -35,13 +35,13 @@ class ReadyForPresidentApprovalSeeder extends Seeder
             $nextNumber = User::where('student_id', 'like', 'TESTFINAL%')->count() + 1;
 
             do {
-                $studentId = 'TESTFINAL' . str_pad((string) $nextNumber, 3, '0', STR_PAD_LEFT);
+                $studentId = 'TESTFINAL'.str_pad((string) $nextNumber, 3, '0', STR_PAD_LEFT);
                 $nextNumber++;
             } while (User::where('student_id', $studentId)->exists());
 
             $student = User::create([
                 'student_id' => $studentId,
-                'name' => 'Final Approval Test Student ' . $studentId,
+                'name' => 'Final Approval Test Student '.$studentId,
                 'email' => null,
                 'course_id' => $course->id,
                 'office_id' => null,
@@ -81,13 +81,13 @@ class ReadyForPresidentApprovalSeeder extends Seeder
                 NotificationService::send(
                     user: $president,
                     title: 'Clearance Ready for Final Approval',
-                    message: $student->name . ' has completed all regular office approvals and is ready for final approval.',
+                    message: $student->name.' has completed all regular office approvals and is ready for final approval.',
                     link: '/president/final-approvals'
                 );
             }
 
             $this->command->info('Ready-for-President test student created.');
-            $this->command->info('Student ID: ' . $studentId);
+            $this->command->info('Student ID: '.$studentId);
             $this->command->info('Password: password');
         }
 

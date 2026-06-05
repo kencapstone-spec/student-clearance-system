@@ -1,11 +1,13 @@
 <?php
 
+use App\Models\ClearanceApproval;
 use App\Models\ClearanceRequest;
 use App\Models\User;
-use App\Models\ClearanceApproval;
+use Carbon\CarbonInterface;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
-uses(Tests\TestCase::class, RefreshDatabase::class);
+uses(TestCase::class, RefreshDatabase::class);
 
 test('it belongs to a user', function () {
     $user = User::factory()->create();
@@ -28,6 +30,6 @@ test('it casts dates correctly', function () {
         'cleared_at' => now(),
     ]);
 
-    expect($clearanceRequest->submitted_at)->toBeInstanceOf(\Carbon\CarbonInterface::class)
-        ->and($clearanceRequest->cleared_at)->toBeInstanceOf(\Carbon\CarbonInterface::class);
+    expect($clearanceRequest->submitted_at)->toBeInstanceOf(CarbonInterface::class)
+        ->and($clearanceRequest->cleared_at)->toBeInstanceOf(CarbonInterface::class);
 });

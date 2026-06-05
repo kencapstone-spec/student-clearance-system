@@ -33,7 +33,9 @@ const { isMobile, state } = useSidebar();
                     >
                         <UserInfo :user="user" />
 
-                        <div class="ml-auto flex size-8 items-center justify-center rounded-xl bg-slate-100 text-slate-500 transition group-hover:bg-white group-hover:text-blue-700">
+                        <div
+                            class="ml-auto flex size-8 items-center justify-center rounded-xl bg-slate-100 text-slate-500 transition group-hover:bg-white group-hover:text-blue-700"
+                        >
                             <ChevronsUpDown class="size-4" />
                         </div>
                     </SidebarMenuButton>

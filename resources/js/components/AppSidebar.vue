@@ -94,11 +94,11 @@ const mainNavItems = computed<NavItem[]>(() => {
 </script>
 
 <template>
-<Sidebar
-    collapsible="offcanvas"
-    variant="inset"
-    class="border-r border-slate-200/80 bg-white"
->
+    <Sidebar
+        collapsible="offcanvas"
+        variant="inset"
+        class="border-r border-slate-200/80 bg-white"
+    >
         <SidebarHeader class="border-b border-slate-100 px-4 py-5">
             <SidebarMenu>
                 <SidebarMenuItem>

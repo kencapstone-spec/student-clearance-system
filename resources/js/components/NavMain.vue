@@ -34,10 +34,7 @@ const { isCurrentUrl } = useCurrentUrl();
                     class="h-11 rounded-2xl border border-transparent px-3 text-sm font-bold text-slate-600 transition hover:border-slate-200 hover:bg-slate-50 hover:text-slate-950 hover:shadow-sm data-[active=true]:border-slate-200 data-[active=true]:bg-slate-100 data-[active=true]:text-slate-950 data-[active=true]:shadow-sm"
                 >
                     <Link :href="item.href">
-                        <component
-                            :is="item.icon"
-                            class="size-4 shrink-0"
-                        />
+                        <component :is="item.icon" class="size-4 shrink-0" />
 
                         <span class="truncate">
                             {{ item.title }}

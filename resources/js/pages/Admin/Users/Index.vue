@@ -913,9 +913,7 @@ const roleFilterButtonClass = (role: RoleFilter) => {
                                             <button
                                                 type="button"
                                                 class="inline-flex items-center gap-2 rounded-2xl bg-blue-700 px-4 py-2.5 text-sm font-black text-white shadow-md shadow-blue-700/20 transition hover:-translate-y-0.5 hover:bg-blue-800 hover:shadow-lg"
-                                                @click="
-                                                    openEditUserModal(user)
-                                                "
+                                                @click="openEditUserModal(user)"
                                             >
                                                 <Pencil class="size-4" />
                                                 Edit
@@ -1493,9 +1491,7 @@ const roleFilterButtonClass = (role: RoleFilter) => {
                 </div>
             </div>
 
-            <div
-                class="shrink-0 border-t border-slate-200 bg-white p-4 sm:p-6"
-            >
+            <div class="shrink-0 border-t border-slate-200 bg-white p-4 sm:p-6">
                 <div class="grid grid-cols-2 gap-3 sm:flex sm:justify-end">
                     <button
                         type="button"

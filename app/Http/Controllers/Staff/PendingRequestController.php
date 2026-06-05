@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Staff;
 
 use App\Http\Controllers\Controller;
+use App\Models\AppSetting;
 use App\Models\ClearanceApproval;
 use App\Models\User;
 use App\Services\NotificationService;
@@ -17,15 +18,15 @@ class PendingRequestController extends Controller
     {
         $user = $request->user()->load('office');
 
-        $semester = \App\Models\AppSetting::get('active_semester', '1st Semester');
-        $schoolYear = \App\Models\AppSetting::get('active_school_year', '2026-2027');
+        $semester = AppSetting::get('active_semester', '1st Semester');
+        $schoolYear = AppSetting::get('active_school_year', '2026-2027');
 
         $approvals = ClearanceApproval::query()
             ->where('office_id', $user->office_id)
             ->whereIn('status', ['pending', 'approved', 'rejected'])
             ->whereHas('clearanceRequest', function ($query) use ($semester, $schoolYear) {
                 $query->where('semester', $semester)
-                      ->where('school_year', $schoolYear);
+                    ->where('school_year', $schoolYear);
             })
             ->with([
                 'clearanceRequest.user.course',
@@ -118,7 +119,7 @@ class PendingRequestController extends Controller
 
         return back()->with(
             'success',
-            $pendingApprovals->count() . ' pending clearance request(s) approved successfully.'
+            $pendingApprovals->count().' pending clearance request(s) approved successfully.'
         );
     }
 

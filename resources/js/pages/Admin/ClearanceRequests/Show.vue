@@ -55,16 +55,16 @@ defineProps<{
 
 const statusLabel = (status: string) => {
     if (status === 'approved') {
-return 'Approved';
-}
+        return 'Approved';
+    }
 
     if (status === 'rejected') {
-return 'Rejected';
-}
+        return 'Rejected';
+    }
 
     if (status === 'cleared') {
-return 'Cleared';
-}
+        return 'Cleared';
+    }
 
     return 'Pending';
 };
@@ -201,15 +201,15 @@ const officeTypeLabel = (office: Office) => {
                     </div>
 
                     <p class="mt-4 text-sm text-slate-500">
-                        {{
-                            approvedApprovalCount(clearanceRequest)
-                        }}
+                        {{ approvedApprovalCount(clearanceRequest) }}
                         /
                         {{ clearanceRequest.approvals.length }}
                         approvals completed
                     </p>
 
-                    <div class="mt-2 h-3 overflow-hidden rounded-full bg-slate-100">
+                    <div
+                        class="mt-2 h-3 overflow-hidden rounded-full bg-slate-100"
+                    >
                         <div
                             class="h-full rounded-full bg-green-600"
                             :style="{
@@ -249,9 +249,7 @@ const officeTypeLabel = (office: Office) => {
                                 <th class="px-6 py-3 font-semibold">
                                     Acted At
                                 </th>
-                                <th class="px-6 py-3 font-semibold">
-                                    Remarks
-                                </th>
+                                <th class="px-6 py-3 font-semibold">Remarks</th>
                             </tr>
                         </thead>
 

@@ -43,7 +43,7 @@ class AdminReportController extends Controller
             ->latest()
             ->limit(100)
             ->get()
-            ->map(fn(ClearanceRequest $clearanceRequest) => $this->formatReportRequest($clearanceRequest));
+            ->map(fn (ClearanceRequest $clearanceRequest) => $this->formatReportRequest($clearanceRequest));
 
         return Inertia::render('Admin/Reports/Index', [
             'courses' => $courses,
@@ -62,12 +62,12 @@ class AdminReportController extends Controller
     {
         $filters = $this->getFilters($request);
 
-        $fileName = 'clearance-report-' . now()->format('Y-m-d-His') . '.csv';
+        $fileName = 'clearance-report-'.now()->format('Y-m-d-His').'.csv';
 
         $requests = $this->filteredReportQuery($filters)
             ->latest()
             ->get()
-            ->map(fn(ClearanceRequest $clearanceRequest) => $this->formatReportRequest($clearanceRequest));
+            ->map(fn (ClearanceRequest $clearanceRequest) => $this->formatReportRequest($clearanceRequest));
 
         return response()->streamDownload(function () use ($requests) {
             $handle = fopen('php://output', 'w');
@@ -90,7 +90,7 @@ class AdminReportController extends Controller
                     $request['course_code'],
                     $request['semester'],
                     $request['school_year'],
-                    $request['approved_regular_approvals'] . ' / ' . $request['total_regular_approvals'],
+                    $request['approved_regular_approvals'].' / '.$request['total_regular_approvals'],
                     $request['status_label'],
                     $request['cleared_at'] ?? 'Not cleared yet',
                 ]);
@@ -109,7 +109,7 @@ class AdminReportController extends Controller
         $requests = $this->filteredReportQuery($filters)
             ->latest()
             ->get()
-            ->map(fn(ClearanceRequest $clearanceRequest) => $this->formatReportRequest($clearanceRequest));
+            ->map(fn (ClearanceRequest $clearanceRequest) => $this->formatReportRequest($clearanceRequest));
 
         $summary = [
             'totalRequests' => $requests->count(),

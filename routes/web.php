@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AdminClearanceRequestController;
 use App\Http\Controllers\Admin\AdminCourseModuleController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminReportController;
+use App\Http\Controllers\Admin\AdminSettingController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\ClearanceReceipt\ClearanceReceiptController;
 use App\Http\Controllers\ClearanceReceipt\ClearanceVerificationController;
@@ -11,13 +12,13 @@ use App\Http\Controllers\Notifications\NotificationController;
 use App\Http\Controllers\President\FinalApprovalController;
 use App\Http\Controllers\Staff\PendingRequestController;
 use App\Http\Controllers\Student\ClearanceRequestController;
+use App\Models\AppSetting;
 use App\Models\ClearanceRequest;
 use App\Models\Office;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
-
 
 Route::inertia('/', 'Welcome', [
     'canRegister' => Features::enabled(Features::registration()),
@@ -58,8 +59,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->merge($finalApproverOffices)
             ->values();
 
-        $semester = \App\Models\AppSetting::get('active_semester', '1st Semester');
-        $schoolYear = \App\Models\AppSetting::get('active_school_year', '2026-2027');
+        $semester = AppSetting::get('active_semester', '1st Semester');
+        $schoolYear = AppSetting::get('active_school_year', '2026-2027');
 
         $clearanceRequest = ClearanceRequest::query()
             ->where('user_id', $user->id)
@@ -153,7 +154,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/admin/reports/print', [AdminReportController::class, 'printReport'])
             ->name('admin.reports.print');
 
-        Route::patch('/admin/settings', [\App\Http\Controllers\Admin\AdminSettingController::class, 'update'])
+        Route::patch('/admin/settings', [AdminSettingController::class, 'update'])
             ->name('admin.settings.update');
     });
 
@@ -168,4 +169,3 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->name('president.final-approvals.approve-all');
     });
 });
-

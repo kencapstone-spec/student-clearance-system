@@ -66,7 +66,7 @@ class FinalApprovalController extends Controller
 
         return back()->with(
             'success',
-            $clearanceRequests->count() . ' clearance request(s) have been automatically approved.'
+            $clearanceRequests->count().' clearance request(s) have been automatically approved.'
         );
     }
 

@@ -43,7 +43,10 @@ defineProps<{
     >
         <div class="grid gap-5">
             <div class="grid gap-2">
-                <Label for="student_id" class="text-sm font-black text-slate-800">
+                <Label
+                    for="student_id"
+                    class="text-sm font-black text-slate-800"
+                >
                     Account ID
                 </Label>
 
@@ -64,7 +67,10 @@ defineProps<{
 
             <div class="grid gap-2">
                 <div class="flex items-center justify-between">
-                    <Label for="password" class="text-sm font-black text-slate-800">
+                    <Label
+                        for="password"
+                        class="text-sm font-black text-slate-800"
+                    >
                         Password
                     </Label>
 
@@ -92,7 +98,10 @@ defineProps<{
             </div>
 
             <div class="flex items-center justify-between">
-                <Label for="remember" class="flex items-center space-x-3 text-sm font-bold text-slate-700">
+                <Label
+                    for="remember"
+                    class="flex items-center space-x-3 text-sm font-bold text-slate-700"
+                >
                     <Checkbox id="remember" name="remember" :tabindex="3" />
                     <span>Remember me</span>
                 </Label>

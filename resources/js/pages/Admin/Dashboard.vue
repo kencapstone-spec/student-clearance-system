@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
 import {
     AlertTriangle,
     BarChart3,
@@ -17,6 +16,7 @@ import {
     X,
     XCircle,
 } from 'lucide-vue-next';
+import { ref } from 'vue';
 
 type Stats = {
     students: number;
@@ -40,6 +40,13 @@ type Student = {
     name: string;
     student_id: string;
     course?: Course | null;
+};
+
+type ClearanceRequest = {
+    id: number;
+    user: Student;
+    semester: string;
+    school_year: string;
 };
 
 type SystemSettings = {
@@ -76,7 +83,9 @@ const closeTermModal = () => {
 };
 
 const submitTermChange = () => {
-    if (confirmText.value !== 'RESET CLEARANCES') return;
+    if (confirmText.value !== 'RESET CLEARANCES') {
+        return;
+    }
 
     termForm.patch('/admin/settings', {
         onSuccess: () => {
@@ -135,8 +144,8 @@ const closeAdminMobileMoreMenu = () => {
                         >
                             You are logged in as the system administrator. Use
                             this panel to manage users, monitor clearance
-                            progress, review reports, and maintain
-                            course-office module assignments.
+                            progress, review reports, and maintain course-office
+                            module assignments.
                         </div>
 
                         <div
@@ -504,14 +513,28 @@ const closeAdminMobileMoreMenu = () => {
                     </button>
                 </div>
 
-                <div class="grid gap-0 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-slate-100">
+                <div
+                    class="grid gap-0 divide-y divide-slate-100 sm:grid-cols-2 sm:divide-x sm:divide-y-0"
+                >
                     <div class="p-6">
-                        <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Current Semester</p>
-                        <p class="mt-2 text-3xl font-black text-blue-950">{{ settings.active_semester }}</p>
+                        <p
+                            class="text-xs font-bold tracking-wider text-slate-400 uppercase"
+                        >
+                            Current Semester
+                        </p>
+                        <p class="mt-2 text-3xl font-black text-blue-950">
+                            {{ settings.active_semester }}
+                        </p>
                     </div>
                     <div class="p-6">
-                        <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Current School Year</p>
-                        <p class="mt-2 text-3xl font-black text-blue-950">{{ settings.active_school_year }}</p>
+                        <p
+                            class="text-xs font-bold tracking-wider text-slate-400 uppercase"
+                        >
+                            Current School Year
+                        </p>
+                        <p class="mt-2 text-3xl font-black text-blue-950">
+                            {{ settings.active_school_year }}
+                        </p>
                     </div>
                 </div>
             </section>
@@ -549,7 +572,10 @@ const closeAdminMobileMoreMenu = () => {
                     </Link>
                 </div>
 
-                <div v-if="recentRequests.length === 0" class="p-8 text-center sm:p-10">
+                <div
+                    v-if="recentRequests.length === 0"
+                    class="p-8 text-center sm:p-10"
+                >
                     <div
                         class="mx-auto grid h-16 w-16 place-items-center rounded-3xl bg-blue-50 text-blue-700"
                     >
@@ -683,8 +709,9 @@ const closeAdminMobileMoreMenu = () => {
                                             <p
                                                 class="mt-1 text-xs font-medium text-slate-500"
                                             >
-                                                Clearance request
-                                                #{{ request.id }}
+                                                Clearance request #{{
+                                                    request.id
+                                                }}
                                             </p>
                                         </div>
                                     </td>
@@ -838,39 +865,61 @@ const closeAdminMobileMoreMenu = () => {
             >
                 <div class="border-b border-slate-100 bg-amber-50 px-6 py-5">
                     <div class="flex items-center gap-3">
-                        <div class="grid size-10 shrink-0 place-items-center rounded-full bg-amber-100 text-amber-600">
+                        <div
+                            class="grid size-10 shrink-0 place-items-center rounded-full bg-amber-100 text-amber-600"
+                        >
                             <AlertTriangle class="size-5" />
                         </div>
                         <div>
-                            <h3 class="text-lg font-black text-amber-950">Change Academic Term</h3>
-                            <p class="text-sm font-medium text-amber-700">DANGER: This action will reset clearances.</p>
+                            <h3 class="text-lg font-black text-amber-950">
+                                Change Academic Term
+                            </h3>
+                            <p class="text-sm font-medium text-amber-700">
+                                DANGER: This action will reset clearances.
+                            </p>
                         </div>
                     </div>
                 </div>
 
                 <form @submit.prevent="submitTermChange" class="p-6">
-                    <div class="rounded-2xl border border-red-100 bg-red-50 p-4 mb-6">
+                    <div
+                        class="mb-6 rounded-2xl border border-red-100 bg-red-50 p-4"
+                    >
                         <p class="text-sm font-bold text-red-800">
-                            Warning: Updating the academic term will force all students to submit new clearance requests for the new term. Old clearance requests will remain in the database for historical purposes but will no longer be considered active.
+                            Warning: Updating the academic term will force all
+                            students to submit new clearance requests for the
+                            new term. Old clearance requests will remain in the
+                            database for historical purposes but will no longer
+                            be considered active.
                         </p>
                     </div>
 
                     <div class="grid gap-5">
                         <div>
-                            <label class="mb-2 block text-sm font-bold text-slate-700">New Semester</label>
+                            <label
+                                class="mb-2 block text-sm font-bold text-slate-700"
+                                >New Semester</label
+                            >
                             <select
                                 v-model="termForm.active_semester"
                                 class="w-full rounded-xl border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 focus:border-amber-500 focus:ring-amber-500"
                                 required
                             >
-                                <option value="1st Semester">1st Semester</option>
-                                <option value="2nd Semester">2nd Semester</option>
+                                <option value="1st Semester">
+                                    1st Semester
+                                </option>
+                                <option value="2nd Semester">
+                                    2nd Semester
+                                </option>
                                 <option value="Summer">Summer</option>
                             </select>
                         </div>
 
                         <div>
-                            <label class="mb-2 block text-sm font-bold text-slate-700">New School Year</label>
+                            <label
+                                class="mb-2 block text-sm font-bold text-slate-700"
+                                >New School Year</label
+                            >
                             <input
                                 v-model="termForm.active_school_year"
                                 type="text"
@@ -881,8 +930,15 @@ const closeAdminMobileMoreMenu = () => {
                         </div>
 
                         <div class="mt-4 border-t border-slate-100 pt-5">
-                            <label class="mb-2 block text-sm font-bold text-slate-700">
-                                Type <span class="rounded bg-slate-200 px-1.5 py-0.5 font-mono text-red-600">RESET CLEARANCES</span> to confirm:
+                            <label
+                                class="mb-2 block text-sm font-bold text-slate-700"
+                            >
+                                Type
+                                <span
+                                    class="rounded bg-slate-200 px-1.5 py-0.5 font-mono text-red-600"
+                                    >RESET CLEARANCES</span
+                                >
+                                to confirm:
                             </label>
                             <input
                                 v-model="confirmText"
@@ -905,9 +961,16 @@ const closeAdminMobileMoreMenu = () => {
                         <button
                             type="submit"
                             class="inline-flex min-h-12 items-center justify-center rounded-xl bg-red-600 px-6 py-3 text-sm font-black text-white shadow-lg shadow-red-600/20 transition hover:-translate-y-0.5 hover:bg-red-700 hover:shadow-xl disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:bg-red-600 disabled:hover:shadow-none"
-                            :disabled="confirmText !== 'RESET CLEARANCES' || termForm.processing"
+                            :disabled="
+                                confirmText !== 'RESET CLEARANCES' ||
+                                termForm.processing
+                            "
                         >
-                            {{ termForm.processing ? 'Saving...' : 'Save & Reset Clearances' }}
+                            {{
+                                termForm.processing
+                                    ? 'Saving...'
+                                    : 'Save & Reset Clearances'
+                            }}
                         </button>
                     </div>
                 </form>

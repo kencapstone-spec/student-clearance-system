@@ -57,7 +57,9 @@ const removedOffices = computed(() => {
     }
 
     return selectedCourse.value.offices.filter((office) => {
-        return !office.is_final_approver && !form.office_ids.includes(office.id);
+        return (
+            !office.is_final_approver && !form.office_ids.includes(office.id)
+        );
     });
 });
 
@@ -249,7 +251,7 @@ const closeAdminMobileMoreMenu = () => {
                                 </p>
 
                                 <h2
-                                    class="mt-2 text-xl font-black leading-tight text-blue-950 sm:text-2xl"
+                                    class="mt-2 text-xl leading-tight font-black text-blue-950 sm:text-2xl"
                                 >
                                     {{ course.name }}
                                 </h2>
@@ -322,9 +324,7 @@ const closeAdminMobileMoreMenu = () => {
                                     </div>
 
                                     <div class="min-w-0">
-                                        <p
-                                            class="font-black text-blue-950"
-                                        >
+                                        <p class="font-black text-blue-950">
                                             {{ office.name }}
                                         </p>
 
@@ -376,7 +376,7 @@ const closeAdminMobileMoreMenu = () => {
                             </p>
 
                             <h2
-                                class="mt-1 text-lg font-black leading-tight text-blue-950 sm:text-2xl"
+                                class="mt-1 text-lg leading-tight font-black text-blue-950 sm:text-2xl"
                             >
                                 {{ selectedCourse.code }} -
                                 {{ selectedCourse.name }}
@@ -404,10 +404,10 @@ const closeAdminMobileMoreMenu = () => {
                 <div
                     class="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 font-medium text-amber-900"
                 >
-                    Removing an office from a course module will not delete
-                    the office and will not change old clearance records. It
-                    only affects future or newly created clearance requests
-                    for this course.
+                    Removing an office from a course module will not delete the
+                    office and will not change old clearance records. It only
+                    affects future or newly created clearance requests for this
+                    course.
                 </div>
 
                 <div
@@ -466,9 +466,7 @@ const closeAdminMobileMoreMenu = () => {
                 </div>
             </div>
 
-            <div
-                class="shrink-0 border-t border-slate-200 bg-white p-4 sm:p-6"
-            >
+            <div class="shrink-0 border-t border-slate-200 bg-white p-4 sm:p-6">
                 <div class="grid grid-cols-2 gap-3 sm:flex sm:justify-end">
                     <button
                         type="button"
@@ -487,11 +485,7 @@ const closeAdminMobileMoreMenu = () => {
                         @click="submitAssignments"
                     >
                         <Save class="size-4" />
-                        {{
-                            form.processing
-                                ? 'Saving...'
-                                : 'Save Assignments'
-                        }}
+                        {{ form.processing ? 'Saving...' : 'Save Assignments' }}
                     </button>
                 </div>
             </div>
@@ -549,9 +543,7 @@ const closeAdminMobileMoreMenu = () => {
                 </div>
             </div>
 
-            <div
-                class="shrink-0 border-t border-slate-200 bg-white p-4 sm:p-6"
-            >
+            <div class="shrink-0 border-t border-slate-200 bg-white p-4 sm:p-6">
                 <div class="grid grid-cols-2 gap-3 sm:flex sm:justify-end">
                     <button
                         type="button"
@@ -570,9 +562,7 @@ const closeAdminMobileMoreMenu = () => {
                         @click="saveAssignments"
                     >
                         <CheckCircle2 class="size-4" />
-                        {{
-                            form.processing ? 'Saving...' : 'Continue Save'
-                        }}
+                        {{ form.processing ? 'Saving...' : 'Continue Save' }}
                     </button>
                 </div>
             </div>

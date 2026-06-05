@@ -333,9 +333,7 @@ const scrollToTop = () => {
                             </span>
                         </div>
 
-                        <div
-                            class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2"
-                        >
+                        <div class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
                             <button
                                 type="button"
                                 class="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-green-700 px-5 py-3 text-sm font-black text-white shadow-lg shadow-green-700/20 transition hover:-translate-y-0.5 hover:bg-green-800 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50"
@@ -621,8 +619,7 @@ const scrollToTop = () => {
                                         class="truncate text-base font-black text-blue-950"
                                     >
                                         {{
-                                            approval.clearance_request.user
-                                                .name
+                                            approval.clearance_request.user.name
                                         }}
                                     </h3>
 
@@ -665,12 +662,8 @@ const scrollToTop = () => {
                                 <span
                                     class="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-black text-slate-600"
                                 >
-                                    {{
-                                        approval.clearance_request.semester
-                                    }},
-                                    {{
-                                        approval.clearance_request.school_year
-                                    }}
+                                    {{ approval.clearance_request.semester }},
+                                    {{ approval.clearance_request.school_year }}
                                 </span>
                             </div>
 
@@ -814,7 +807,9 @@ const scrollToTop = () => {
                                     <td
                                         class="px-6 py-4 font-semibold text-slate-700"
                                     >
-                                        {{ approval.clearance_request.semester }},
+                                        {{
+                                            approval.clearance_request.semester
+                                        }},
                                         {{
                                             approval.clearance_request
                                                 .school_year
@@ -930,9 +925,7 @@ const scrollToTop = () => {
                 </div>
             </div>
 
-            <div
-                class="shrink-0 border-t border-slate-200 bg-white p-4 sm:p-6"
-            >
+            <div class="shrink-0 border-t border-slate-200 bg-white p-4 sm:p-6">
                 <div class="grid grid-cols-2 gap-3 sm:flex sm:justify-end">
                     <button
                         type="button"
@@ -1020,9 +1013,7 @@ const scrollToTop = () => {
                 </p>
             </div>
 
-            <div
-                class="shrink-0 border-t border-slate-200 bg-white p-4 sm:p-6"
-            >
+            <div class="shrink-0 border-t border-slate-200 bg-white p-4 sm:p-6">
                 <div class="grid grid-cols-2 gap-3 sm:flex sm:justify-end">
                     <button
                         type="button"
@@ -1115,9 +1106,7 @@ const scrollToTop = () => {
                 </div>
             </div>
 
-            <div
-                class="shrink-0 border-t border-slate-200 bg-white p-4 sm:p-6"
-            >
+            <div class="shrink-0 border-t border-slate-200 bg-white p-4 sm:p-6">
                 <div class="grid grid-cols-2 gap-3 sm:flex sm:justify-end">
                     <button
                         type="button"

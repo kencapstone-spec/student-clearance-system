@@ -1,10 +1,6 @@
 <script setup lang="ts">
 import { Link, router, usePage } from '@inertiajs/vue3';
-import {
-    Bell,
-    LayoutGrid,
-    Menu,
-} from 'lucide-vue-next';
+import { Bell, LayoutGrid, Menu } from 'lucide-vue-next';
 import { computed } from 'vue';
 import AppLogo from '@/components/AppLogo.vue';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
@@ -124,7 +120,9 @@ const mainNavItems: NavItem[] = [
                                 />
                             </SheetHeader>
 
-                            <div class="flex h-full flex-1 flex-col justify-between space-y-4 py-6">
+                            <div
+                                class="flex h-full flex-1 flex-col justify-between space-y-4 py-6"
+                            >
                                 <nav class="-mx-3 space-y-1">
                                     <Link
                                         v-for="item in mainNavItems"
@@ -158,7 +156,9 @@ const mainNavItems: NavItem[] = [
                 <!-- Desktop Menu -->
                 <div class="hidden h-full lg:flex lg:flex-1">
                     <NavigationMenu class="ml-10 flex h-full items-stretch">
-                        <NavigationMenuList class="flex h-full items-stretch space-x-2">
+                        <NavigationMenuList
+                            class="flex h-full items-stretch space-x-2"
+                        >
                             <NavigationMenuItem
                                 v-for="(item, index) in mainNavItems"
                                 :key="index"
@@ -220,7 +220,9 @@ const mainNavItems: NavItem[] = [
                         </DropdownMenuTrigger>
 
                         <DropdownMenuContent align="end" class="w-80 p-0">
-                            <div class="flex items-center justify-between border-b px-4 py-3">
+                            <div
+                                class="flex items-center justify-between border-b px-4 py-3"
+                            >
                                 <div>
                                     <p class="text-sm font-semibold">
                                         Notifications
@@ -275,15 +277,21 @@ const mainNavItems: NavItem[] = [
                                                 {{ notification.title }}
                                             </p>
 
-                                            <p class="mt-1 line-clamp-2 text-xs text-muted-foreground">
+                                            <p
+                                                class="mt-1 line-clamp-2 text-xs text-muted-foreground"
+                                            >
                                                 {{ notification.message }}
                                             </p>
 
                                             <p
-                                                v-if="notification.created_at_human"
+                                                v-if="
+                                                    notification.created_at_human
+                                                "
                                                 class="mt-1 text-xs text-muted-foreground"
                                             >
-                                                {{ notification.created_at_human }}
+                                                {{
+                                                    notification.created_at_human
+                                                }}
                                             </p>
                                         </div>
                                     </div>
@@ -299,7 +307,9 @@ const mainNavItems: NavItem[] = [
                                 size="icon"
                                 class="relative size-10 w-auto rounded-full p-1 focus-within:ring-2 focus-within:ring-primary"
                             >
-                                <Avatar class="size-8 overflow-hidden rounded-full">
+                                <Avatar
+                                    class="size-8 overflow-hidden rounded-full"
+                                >
                                     <AvatarImage
                                         v-if="auth.user.avatar"
                                         :src="auth.user.avatar"

@@ -2,8 +2,9 @@
 
 use App\Models\AppSetting;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
-uses(Tests\TestCase::class, RefreshDatabase::class);
+uses(TestCase::class, RefreshDatabase::class);
 
 test('it can set and get an app setting', function () {
     AppSetting::set('test_key', 'test_value');

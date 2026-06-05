@@ -80,7 +80,8 @@ export const courseThemes: Record<string, CourseTheme> = {
         selectedCheckClass: 'border-yellow-500 bg-yellow-500 text-white',
         mobileNavClass:
             'border-yellow-200 bg-yellow-600/95 shadow-yellow-900/20',
-        mobileNavActiveClass: 'bg-white/20 text-white ring-1 ring-yellow-100/50',
+        mobileNavActiveClass:
+            'bg-white/20 text-white ring-1 ring-yellow-100/50',
     },
     BAPS: {
         label: 'BAPS Theme',
@@ -114,8 +115,7 @@ export const courseThemes: Record<string, CourseTheme> = {
         selectedOfficeClass: 'border-green-600 bg-green-50 text-green-900',
         selectedCheckClass: 'border-green-600 bg-green-600 text-white',
         mobileNavClass: 'border-green-200 bg-green-800/95 shadow-green-950/20',
-        mobileNavActiveClass:
-            'bg-white/15 text-white ring-1 ring-green-100/40',
+        mobileNavActiveClass: 'bg-white/15 text-white ring-1 ring-green-100/40',
     },
     BSAIS: {
         label: 'BSAIS Theme',
@@ -177,9 +177,12 @@ export const courseThemes: Record<string, CourseTheme> = {
  * Falls back to the neutral 'default' theme if the code is unknown,
  * rather than incorrectly assuming BSIS.
  */
-export function resolveCourseTheme(courseCode: string | null | undefined): CourseTheme {
+export function resolveCourseTheme(
+    courseCode: string | null | undefined,
+): CourseTheme {
     if (courseCode && courseCode in courseThemes) {
         return courseThemes[courseCode];
     }
+
     return courseThemes.default;
 }

@@ -10,7 +10,7 @@ import AppLogoIcon from '@/components/AppLogoIcon.vue';
     </div>
 
     <div class="ml-2 grid min-w-0 flex-1 text-left text-sm">
-        <span class="truncate text-sm font-black leading-tight text-slate-950">
+        <span class="truncate text-sm leading-tight font-black text-slate-950">
             Student Clearance
         </span>
 
