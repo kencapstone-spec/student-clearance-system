@@ -53,7 +53,7 @@ defineOptions({
                     :tabindex="1"
                     autocomplete="username"
                     name="student_id"
-                    placeholder="Example: 20240001"
+                    placeholder="Example: 202610001"
                     minlength="8"
                     maxlength="10"
                     pattern="[0-9]{8,10}"
