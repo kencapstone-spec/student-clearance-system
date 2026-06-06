@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref, onMounted, onUnmounted } from 'vue';
 import { Head, Link } from '@inertiajs/vue3';
 import {
     ArrowRight,
@@ -26,6 +27,20 @@ withDefaults(
         canRegister: true,
     },
 );
+
+const isScrolled = ref(false);
+
+const handleScroll = () => {
+    isScrolled.value = window.scrollY > 10;
+};
+
+onMounted(() => {
+    window.addEventListener('scroll', handleScroll);
+});
+
+onUnmounted(() => {
+    window.removeEventListener('scroll', handleScroll);
+});
 </script>
 
 <template>
@@ -54,7 +69,12 @@ withDefaults(
 
             <!-- Header -->
             <header
-                class="relative z-20 border-b border-white/10 bg-slate-950/75 backdrop-blur-xl"
+                :class="[
+                    'fixed inset-x-0 top-0 z-50 transition-all duration-300',
+                    isScrolled
+                        ? 'border-b border-white/10 bg-slate-950/85 backdrop-blur-xl shadow-xl shadow-black/10'
+                        : 'border-b border-transparent bg-transparent'
+                ]"
             >
                 <div
                     class="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6 sm:py-4"
@@ -113,7 +133,7 @@ withDefaults(
 
             <!-- Hero -->
             <div
-                class="relative z-10 mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 sm:py-14 lg:min-h-[calc(100vh-80px)] lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-12 lg:py-20"
+                class="relative z-10 mx-auto grid max-w-7xl gap-8 px-4 pb-10 pt-24 sm:px-6 sm:pb-14 sm:pt-28 lg:min-h-[calc(100vh-80px)] lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-12 lg:pb-20 lg:pt-32"
             >
                 <div>
                     <div
