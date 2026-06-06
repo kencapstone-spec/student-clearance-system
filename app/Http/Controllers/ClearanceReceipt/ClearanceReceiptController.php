@@ -228,7 +228,7 @@ class ClearanceReceiptController extends Controller
                             margin: 0;
                             padding: 0;
                             color: #111827;
-                            font-family: DejaVu Sans, Arial, sans-serif;
+                            font-family: Arial, Helvetica, sans-serif;
                             font-size: 9px;
                             line-height: 1.12;
                         }
@@ -380,7 +380,7 @@ class ClearanceReceiptController extends Controller
 
                         .mono {
                             margin: 2px 0 6px;
-                            font-family: DejaVu Sans Mono, monospace;
+                            font-family: "Courier New", Courier, monospace;
                             font-size: 8px;
                             word-break: break-all;
                         }
