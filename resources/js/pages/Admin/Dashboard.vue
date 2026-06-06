@@ -8,7 +8,6 @@ import {
     FileText,
     GraduationCap,
     LayoutDashboard,
-    Settings,
     ShieldCheck,
     UserRoundCog,
     Users,
@@ -134,14 +133,6 @@ const closeAdminMobileMoreMenu = () => {
                             >
                                 <FileText class="size-4" />
                                 View Reports
-                            </Link>
-
-                            <Link
-                                href="/admin/course-modules"
-                                class="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-indigo-700 px-5 py-3 text-sm font-black text-white shadow-lg shadow-indigo-700/20 transition hover:-translate-y-0.5 hover:bg-indigo-800 hover:shadow-xl"
-                            >
-                                <Settings class="size-4" />
-                                Course Modules
                             </Link>
                         </div>
                     </div>
@@ -664,7 +655,7 @@ const closeAdminMobileMoreMenu = () => {
                 <p class="text-sm font-black text-blue-950">Admin Tools</p>
 
                 <p class="mt-1 text-xs font-semibold text-slate-500">
-                    Quick access to reports and course modules.
+                    Quick access to reports.
                 </p>
             </div>
 
@@ -683,14 +674,6 @@ const closeAdminMobileMoreMenu = () => {
                 class="flex min-h-12 items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-black text-slate-700"
             >
                 <span>Reports</span>
-                <span>→</span>
-            </Link>
-
-            <Link
-                href="/admin/course-modules"
-                class="flex min-h-12 items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-black text-slate-700"
-            >
-                <span>Course Modules</span>
                 <span>→</span>
             </Link>
         </div>
