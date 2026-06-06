@@ -168,16 +168,7 @@ const officeStatuses = computed(() => {
         };
     });
 
-    return statuses.sort((a, b) => {
-        const aCount = a.prerequisites?.length || 0;
-        const bCount = b.prerequisites?.length || 0;
-
-        if (aCount !== bCount) {
-            return aCount - bCount;
-        }
-
-        return a.sort_order - b.sort_order;
-    });
+    return statuses;
 });
 
 const progressMessage = computed(() => {
@@ -1168,17 +1159,33 @@ const confirmMobileLogout = () => {
                                             {{ office.group }}
                                         </p>
 
-                                        <p
+                                        <div
                                             v-if="!isOfficeRequestable(office)"
-                                            class="mt-2 text-xs font-bold tracking-wide text-orange-600/80 uppercase"
+                                            class="mt-2.5"
                                         >
-                                            Requires:
-                                            {{
-                                                unmetPrerequisites(office).join(
-                                                    ', ',
-                                                )
-                                            }}
-                                        </p>
+                                            <p
+                                                class="text-[0.65rem] font-bold tracking-[0.05em] text-orange-600/90 uppercase"
+                                            >
+                                                Requires:
+                                            </p>
+                                            <ul
+                                                class="mt-1 flex flex-col gap-0.5 pl-0.5"
+                                            >
+                                                <li
+                                                    v-for="prereq in unmetPrerequisites(
+                                                        office,
+                                                    )"
+                                                    :key="prereq"
+                                                    class="flex text-xs font-medium text-orange-600/80"
+                                                >
+                                                    <span
+                                                        class="mr-1.5 opacity-60"
+                                                        >-</span
+                                                    >
+                                                    <span>{{ prereq }}</span>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
                             </button>

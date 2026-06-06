@@ -17,7 +17,11 @@ class RejectAllClearances extends Command
     {
         $studentId = $this->argument('student_id');
 
-        $query = ClearanceApproval::query()->where('status', 'pending');
+        $query = ClearanceApproval::query()
+            ->where('status', 'pending')
+            ->whereHas('office', function ($q) {
+                $q->where('is_final_approver', false);
+            });
 
         if ($studentId) {
             $query->whereHas('clearanceRequest.user', function ($q) use ($studentId) {
@@ -36,11 +40,6 @@ class RejectAllClearances extends Command
         foreach ($pendingApprovals as $approval) {
             // Failsafe in case there are no staff users
             $dummyStaffId = User::where('role', 'staff')->first()?->id ?? 1;
-
-            // If it's the president office, use president ID
-            if ($approval->office?->is_final_approver) {
-                $dummyStaffId = User::where('role', 'president')->first()?->id ?? 1;
-            }
 
             $approval->update([
                 'status' => 'rejected',

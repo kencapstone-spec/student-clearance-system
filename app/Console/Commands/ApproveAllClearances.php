@@ -3,11 +3,9 @@
 namespace App\Console\Commands;
 
 use App\Models\ClearanceApproval;
-use App\Models\ClearanceRequest;
 use App\Models\User;
 use App\Services\NotificationService;
 use Illuminate\Console\Command;
-use Illuminate\Support\Str;
 
 class ApproveAllClearances extends Command
 {
@@ -19,7 +17,11 @@ class ApproveAllClearances extends Command
     {
         $studentId = $this->argument('student_id');
 
-        $query = ClearanceApproval::query()->where('status', 'pending');
+        $query = ClearanceApproval::query()
+            ->where('status', 'pending')
+            ->whereHas('office', function ($q) {
+                $q->where('is_final_approver', false);
+            });
 
         if ($studentId) {
             $query->whereHas('clearanceRequest.user', function ($q) use ($studentId) {
@@ -38,11 +40,6 @@ class ApproveAllClearances extends Command
         foreach ($pendingApprovals as $approval) {
             // Failsafe in case there are no staff users
             $dummyStaffId = User::where('role', 'staff')->first()?->id ?? 1;
-
-            // If it's the president office, use president ID
-            if ($approval->office?->is_final_approver) {
-                $dummyStaffId = User::where('role', 'president')->first()?->id ?? 1;
-            }
 
             $approval->update([
                 'status' => 'approved',
@@ -65,67 +62,7 @@ class ApproveAllClearances extends Command
             }
         }
 
-        // Check if final approval was just opened, and if we should auto-approve that too.
-        $this->approvePresidentPendings($studentId);
-
         $this->info("Successfully auto-approved {$pendingApprovals->count()} clearance requests.");
-    }
-
-    private function approvePresidentPendings($studentId)
-    {
-        $query = ClearanceApproval::query()
-            ->where('status', 'pending')
-            ->whereHas('office', function ($q) {
-                $q->where('is_final_approver', true);
-            });
-
-        if ($studentId) {
-            $query->whereHas('clearanceRequest.user', function ($q) use ($studentId) {
-                $q->where('student_id', $studentId);
-            });
-        }
-
-        $presidentApprovals = $query->get();
-
-        foreach ($presidentApprovals as $approval) {
-            $dummyPresidentId = User::where('role', 'president')->first()?->id ?? 1;
-
-            $approval->update([
-                'status' => 'approved',
-                'approved_by' => $dummyPresidentId,
-                'remarks' => null,
-                'acted_at' => now(),
-            ]);
-
-            $receiptNumber = $approval->clearanceRequest->receipt_number
-                ?: sprintf('TPC-CLR-%s-%06d', now()->format('Y'), $approval->clearanceRequest->id);
-
-            $verificationCode = $approval->clearanceRequest->verification_code;
-
-            if (! $verificationCode) {
-                do {
-                    $verificationCode = Str::upper(Str::random(32));
-                } while (ClearanceRequest::where('verification_code', $verificationCode)->exists());
-            }
-
-            $approval->clearanceRequest->update([
-                'status' => 'cleared',
-                'cleared_at' => now(),
-                'receipt_number' => $receiptNumber,
-                'verification_code' => $verificationCode,
-            ]);
-
-            if ($approval->clearanceRequest && $approval->clearanceRequest->user) {
-                NotificationService::send(
-                    $approval->clearanceRequest->user,
-                    'Clearance Fully Approved',
-                    'Your clearance request has been fully approved by the College President.',
-                    '/dashboard'
-                );
-            }
-
-            $this->info('Automatically granted Final Approval from the College President.');
-        }
     }
 
     private function notifyPresidentIfReadyForFinalApproval(ClearanceApproval $approval): void
@@ -157,5 +94,17 @@ class ApproveAllClearances extends Command
         $presidentApproval->update([
             'status' => 'pending',
         ]);
+
+        User::where('role', 'president')
+            ->where('is_active', true)
+            ->get()
+            ->each(function (User $president) use ($clearanceRequest) {
+                NotificationService::send(
+                    $president,
+                    'Clearance ready for final approval',
+                    "{$clearanceRequest->user->name}'s clearance request is ready for final approval.",
+                    '/president/final-approvals'
+                );
+            });
     }
 }
