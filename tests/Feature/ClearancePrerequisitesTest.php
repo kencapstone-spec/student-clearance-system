@@ -16,7 +16,9 @@ class ClearancePrerequisitesTest extends TestCase
     use RefreshDatabase;
 
     private User $student;
+
     private Office $library;
+
     private Office $dean;
 
     protected function setUp(): void

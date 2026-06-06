@@ -2,18 +2,22 @@
 
 namespace App\Console\Commands;
 
+use App\Models\ClearanceApproval;
+use App\Models\User;
+use App\Services\NotificationService;
 use Illuminate\Console\Command;
 
 class RejectAllClearances extends Command
 {
     protected $signature = 'clearance:reject-all {student_id?}';
+
     protected $description = 'Automatically reject all pending clearance requests for all offices.';
 
     public function handle()
     {
         $studentId = $this->argument('student_id');
 
-        $query = \App\Models\ClearanceApproval::query()->where('status', 'pending');
+        $query = ClearanceApproval::query()->where('status', 'pending');
 
         if ($studentId) {
             $query->whereHas('clearanceRequest.user', function ($q) use ($studentId) {
@@ -25,16 +29,17 @@ class RejectAllClearances extends Command
 
         if ($pendingApprovals->isEmpty()) {
             $this->info('No pending approvals found.');
+
             return;
         }
 
         foreach ($pendingApprovals as $approval) {
             // Failsafe in case there are no staff users
-            $dummyStaffId = \App\Models\User::where('role', 'staff')->first()?->id ?? 1;
+            $dummyStaffId = User::where('role', 'staff')->first()?->id ?? 1;
 
             // If it's the president office, use president ID
             if ($approval->office?->is_final_approver) {
-                $dummyStaffId = \App\Models\User::where('role', 'president')->first()?->id ?? 1;
+                $dummyStaffId = User::where('role', 'president')->first()?->id ?? 1;
             }
 
             $approval->update([
@@ -43,6 +48,15 @@ class RejectAllClearances extends Command
                 'remarks' => 'Incomplete requirements.',
                 'acted_at' => now(),
             ]);
+
+            if ($approval->clearanceRequest && $approval->clearanceRequest->user && $approval->office) {
+                NotificationService::send(
+                    $approval->clearanceRequest->user,
+                    'Clearance request auto-rejected',
+                    "Your {$approval->office->name} clearance request has been automatically rejected. Remarks: Incomplete requirements.",
+                    '/dashboard'
+                );
+            }
         }
 
         $this->info("Successfully auto-rejected {$pendingApprovals->count()} clearance requests.");

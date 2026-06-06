@@ -35,10 +35,7 @@ const inputEmail = ref(props.email);
     >
         <div class="grid gap-6">
             <div class="grid gap-2">
-                <Label
-                    for="email"
-                    class="text-sm font-black text-slate-800"
-                >
+                <Label for="email" class="text-sm font-black text-slate-800">
                     Email Address
                 </Label>
                 <Input
@@ -47,17 +44,14 @@ const inputEmail = ref(props.email);
                     name="email"
                     autocomplete="email"
                     v-model="inputEmail"
-                    class="!h-12 !rounded-2xl !border-slate-200 !bg-slate-100 !px-4 !text-sm !font-semibold !text-slate-500 !shadow-sm cursor-not-allowed"
+                    class="!h-12 cursor-not-allowed !rounded-2xl !border-slate-200 !bg-slate-100 !px-4 !text-sm !font-semibold !text-slate-500 !shadow-sm"
                     readonly
                 />
                 <InputError :message="errors.email" />
             </div>
 
             <div class="grid gap-2">
-                <Label
-                    for="password"
-                    class="text-sm font-black text-slate-800"
-                >
+                <Label for="password" class="text-sm font-black text-slate-800">
                     New Password
                 </Label>
                 <PasswordInput

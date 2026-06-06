@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import {
-    AlertTriangle,
     BarChart3,
     Building2,
     CheckCircle2,
@@ -441,8 +440,6 @@ const closeAdminMobileMoreMenu = () => {
                 </div>
             </section>
 
-
-
             <!-- Recent Requests -->
             <section
                 class="overflow-hidden rounded-3xl border border-slate-200 bg-white/95 shadow-sm shadow-slate-200/70"
@@ -506,7 +503,7 @@ const closeAdminMobileMoreMenu = () => {
                             <div class="flex items-start justify-between gap-3">
                                 <div class="min-w-0 flex-1">
                                     <h3
-                                        class="line-clamp-2 break-words text-base font-black leading-tight text-blue-950"
+                                        class="line-clamp-2 text-base leading-tight font-black break-words text-blue-950"
                                     >
                                         {{ request.user.name }}
                                     </h3>
@@ -743,6 +740,4 @@ const closeAdminMobileMoreMenu = () => {
             </button>
         </div>
     </nav>
-
-
 </template>

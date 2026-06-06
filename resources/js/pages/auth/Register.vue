@@ -63,8 +63,8 @@ defineOptions({
                 />
 
                 <p class="text-xs font-medium text-slate-500">
-                    Student ID must be between 8 to 10 characters and can contain
-                    numbers only.
+                    Student ID must be between 8 to 10 characters and can
+                    contain numbers only.
                 </p>
 
                 <InputError :message="errors.student_id" />

@@ -171,9 +171,11 @@ const officeStatuses = computed(() => {
     return statuses.sort((a, b) => {
         const aCount = a.prerequisites?.length || 0;
         const bCount = b.prerequisites?.length || 0;
+
         if (aCount !== bCount) {
             return aCount - bCount;
         }
+
         return a.sort_order - b.sort_order;
     });
 });
@@ -288,20 +290,25 @@ const regularOffices = computed(() => {
 
 const requestableOffices = computed(() => {
     let offices = [];
+
     if (!props.clearanceRequest) {
         offices = regularOffices.value;
     } else {
         offices = officeStatuses.value.filter((office) => {
-            return !office.is_final_approver && office.status === 'not_requested';
+            return (
+                !office.is_final_approver && office.status === 'not_requested'
+            );
         });
     }
 
     return [...offices].sort((a, b) => {
         const aCount = a.prerequisites?.length || 0;
         const bCount = b.prerequisites?.length || 0;
+
         if (aCount !== bCount) {
             return aCount - bCount;
         }
+
         // Fallback to sort_order if they have the same number of prerequisites
         return a.sort_order - b.sort_order;
     });
@@ -311,13 +318,16 @@ const isOfficeRequestable = (office: Office) => {
     if (!office.prerequisites || office.prerequisites.length === 0) {
         return true;
     }
-    
+
     if (!props.clearanceRequest) {
         return false;
     }
-    
-    return office.prerequisites.every(prereq => {
-        const approval = props.clearanceRequest!.approvals.find(a => a.office_id === prereq.id);
+
+    return office.prerequisites.every((prereq) => {
+        const approval = props.clearanceRequest!.approvals.find(
+            (a) => a.office_id === prereq.id,
+        );
+
         return approval?.status === 'approved';
     });
 };
@@ -326,15 +336,20 @@ const unmetPrerequisites = (office: Office) => {
     if (!office.prerequisites || office.prerequisites.length === 0) {
         return [];
     }
-    
+
     if (!props.clearanceRequest) {
-        return office.prerequisites.map(p => p.name);
+        return office.prerequisites.map((p) => p.name);
     }
-    
-    return office.prerequisites.filter(prereq => {
-        const approval = props.clearanceRequest!.approvals.find(a => a.office_id === prereq.id);
-        return approval?.status !== 'approved';
-    }).map(p => p.name);
+
+    return office.prerequisites
+        .filter((prereq) => {
+            const approval = props.clearanceRequest!.approvals.find(
+                (a) => a.office_id === prereq.id,
+            );
+
+            return approval?.status !== 'approved';
+        })
+        .map((p) => p.name);
 };
 
 const openSubmitRequestModal = () => {
@@ -350,8 +365,11 @@ const closeSubmitRequestModal = () => {
 };
 
 const toggleOfficeSelection = (officeId: number) => {
-    const office = props.offices.find(o => o.id === officeId);
-    if (!office || !isOfficeRequestable(office)) return;
+    const office = props.offices.find((o) => o.id === officeId);
+
+    if (!office || !isOfficeRequestable(office)) {
+        return;
+    }
 
     if (selectedOfficeIds.value.includes(officeId)) {
         selectedOfficeIds.value = selectedOfficeIds.value.filter(
@@ -1096,29 +1114,37 @@ const confirmMobileLogout = () => {
                                 :key="office.id"
                                 type="button"
                                 :disabled="!isOfficeRequestable(office)"
-                                class="min-h-16 rounded-xl border p-4 text-left transition relative overflow-hidden"
+                                class="relative min-h-16 overflow-hidden rounded-xl border p-4 text-left transition"
                                 :class="
                                     !isOfficeRequestable(office)
-                                        ? 'border-slate-100 bg-slate-50 text-slate-400 cursor-not-allowed opacity-75'
+                                        ? 'cursor-not-allowed border-slate-100 bg-slate-50 text-slate-400 opacity-75'
                                         : selectedOfficeIds.includes(office.id)
-                                            ? courseTheme.selectedOfficeClass
-                                            : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                                          ? courseTheme.selectedOfficeClass
+                                          : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
                                 "
                                 @click="toggleOfficeSelection(office.id)"
                             >
-                                <div class="flex items-start gap-3 relative z-10">
+                                <div
+                                    class="relative z-10 flex items-start gap-3"
+                                >
                                     <div
                                         class="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded border"
                                         :class="
                                             !isOfficeRequestable(office)
                                                 ? 'border-slate-200 bg-slate-100'
-                                                : selectedOfficeIds.includes(office.id)
-                                                    ? courseTheme.selectedCheckClass
-                                                    : 'border-slate-300 bg-white'
+                                                : selectedOfficeIds.includes(
+                                                        office.id,
+                                                    )
+                                                  ? courseTheme.selectedCheckClass
+                                                  : 'border-slate-300 bg-white'
                                         "
                                     >
                                         <span
-                                            v-if="selectedOfficeIds.includes(office.id)"
+                                            v-if="
+                                                selectedOfficeIds.includes(
+                                                    office.id,
+                                                )
+                                            "
                                             class="text-xs font-bold"
                                         >
                                             ✓
@@ -1126,16 +1152,32 @@ const confirmMobileLogout = () => {
                                     </div>
 
                                     <div>
-                                        <p class="font-semibold" :class="{ 'text-slate-500': !isOfficeRequestable(office) }">
+                                        <p
+                                            class="font-semibold"
+                                            :class="{
+                                                'text-slate-500':
+                                                    !isOfficeRequestable(
+                                                        office,
+                                                    ),
+                                            }"
+                                        >
                                             {{ office.name }}
                                         </p>
 
                                         <p class="mt-1 text-xs text-slate-500">
                                             {{ office.group }}
                                         </p>
-                                        
-                                        <p v-if="!isOfficeRequestable(office)" class="mt-2 text-xs font-bold text-orange-600/80 uppercase tracking-wide">
-                                            Requires: {{ unmetPrerequisites(office).join(', ') }}
+
+                                        <p
+                                            v-if="!isOfficeRequestable(office)"
+                                            class="mt-2 text-xs font-bold tracking-wide text-orange-600/80 uppercase"
+                                        >
+                                            Requires:
+                                            {{
+                                                unmetPrerequisites(office).join(
+                                                    ', ',
+                                                )
+                                            }}
                                         </p>
                                     </div>
                                 </div>

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdminClearanceRequestController;
 use App\Http\Controllers\Admin\AdminCourseModuleController;
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminOfficePrerequisiteController;
 use App\Http\Controllers\Admin\AdminReportController;
 use App\Http\Controllers\Admin\AdminSettingController;
 use App\Http\Controllers\Admin\AdminUserController;
@@ -122,10 +123,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('/admin/course-modules/{course}', [AdminCourseModuleController::class, 'update'])
             ->name('admin.course-modules.update');
 
-        Route::get('/admin/office-prerequisites', [\App\Http\Controllers\Admin\AdminOfficePrerequisiteController::class, 'index'])
+        Route::get('/admin/office-prerequisites', [AdminOfficePrerequisiteController::class, 'index'])
             ->name('admin.office-prerequisites.index');
 
-        Route::patch('/admin/office-prerequisites/{office}', [\App\Http\Controllers\Admin\AdminOfficePrerequisiteController::class, 'update'])
+        Route::patch('/admin/office-prerequisites/{office}', [AdminOfficePrerequisiteController::class, 'update'])
             ->name('admin.office-prerequisites.update');
 
         Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])

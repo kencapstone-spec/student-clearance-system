@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('office_prerequisites', function (Blueprint $table) {
             $table->foreignId('office_id')->constrained('offices')->cascadeOnDelete();
             $table->foreignId('prerequisite_office_id')->constrained('offices')->cascadeOnDelete();
-            
+
             $table->primary(['office_id', 'prerequisite_office_id']);
         });
     }

@@ -1,11 +1,6 @@
 <script setup lang="ts">
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import {
-    AlertTriangle,
-    ArrowLeft,
-    CalendarDays,
-    Settings,
-} from 'lucide-vue-next';
+import { AlertTriangle, ArrowLeft, CalendarDays } from 'lucide-vue-next';
 import { ref } from 'vue';
 
 type SystemSettings = {
@@ -89,7 +84,7 @@ const submitTermChange = () => {
                         class="flex flex-col gap-4 border-b border-blue-100 bg-linear-to-r from-blue-50 to-white px-6 py-6 sm:px-8 md:flex-row md:items-center md:justify-between"
                     >
                         <div>
-                            <div class="flex items-center gap-2 mb-2">
+                            <div class="mb-2 flex items-center gap-2">
                                 <CalendarDays class="size-5 text-blue-600" />
                                 <p
                                     class="text-xs font-black tracking-[0.18em] text-blue-600 uppercase"
@@ -102,9 +97,12 @@ const submitTermChange = () => {
                                 Active Academic Term
                             </h2>
 
-                            <p class="mt-1 text-sm font-medium text-slate-500 max-w-2xl">
+                            <p
+                                class="mt-1 max-w-2xl text-sm font-medium text-slate-500"
+                            >
                                 The current semester and school year for all new
-                                clearance requests. Changing the term will reset the clearance cycle.
+                                clearance requests. Changing the term will reset
+                                the clearance cycle.
                             </p>
                         </div>
 
