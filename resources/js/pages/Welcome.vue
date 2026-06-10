@@ -364,7 +364,7 @@ onUnmounted(() => {
                                     <p
                                         class="mt-1 text-sm leading-6 text-slate-400"
                                     >
-                                        Cleared students print QR-verified
+                                        Approved students print QR-verified
                                         clearance receipts.
                                     </p>
                                 </div>
@@ -525,7 +525,7 @@ onUnmounted(() => {
                         </h3>
 
                         <p class="mt-2 text-sm leading-6 text-slate-600">
-                            Fully cleared students receive a printable receipt
+                            Fully approved students receive a printable receipt
                             with public QR-based validation.
                         </p>
                     </div>
@@ -755,7 +755,7 @@ onUnmounted(() => {
 
                             <p class="mt-2 text-sm leading-6 text-slate-400">
                                 Give final approval after all required offices
-                                have cleared the student.
+                                have approved the student.
                             </p>
                         </div>
                     </div>

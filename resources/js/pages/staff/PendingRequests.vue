@@ -1060,7 +1060,7 @@ const scrollToTop = () => {
 
                         <p class="mt-2 text-sm leading-6 text-slate-600">
                             Are you sure you want to approve this clearance
-                            request? This will mark the student as cleared for
+                            request? This will mark the student as approved for
                             your assigned office.
                         </p>
                     </div>

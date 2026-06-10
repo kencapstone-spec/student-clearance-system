@@ -710,7 +710,7 @@ const scrollToQueue = () => {
                 <div
                     class="mt-4 rounded-2xl border border-green-200 bg-green-50 p-4 text-sm leading-6 font-medium text-green-800"
                 >
-                    This action will mark the request as cleared and enable the
+                    This action will mark the request as approved and enable the
                     student's clearance receipt and public QR verification.
                 </div>
             </div>
@@ -790,7 +790,7 @@ const scrollToQueue = () => {
                     </p>
 
                     <p class="mt-2 text-sm leading-6 text-green-800">
-                        Each request will be marked as cleared, assigned a
+                        Each request will be marked as approved, assigned a
                         receipt number, assigned a verification code, and the
                         student will receive a notification.
                     </p>

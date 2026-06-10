@@ -38,12 +38,13 @@ class ApproveAllClearances extends Command
         }
 
         foreach ($pendingApprovals as $approval) {
-            // Failsafe in case there are no staff users
-            $dummyStaffId = User::where('role', 'staff')->first()?->id ?? 1;
+            $officeStaffId = User::where('role', 'staff')
+                ->where('office_id', $approval->office_id)
+                ->first()?->id;
 
             $approval->update([
                 'status' => 'approved',
-                'approved_by' => $dummyStaffId,
+                'approved_by' => $officeStaffId,
                 'remarks' => null,
                 'acted_at' => now(),
             ]);
@@ -56,55 +57,9 @@ class ApproveAllClearances extends Command
                     '/dashboard'
                 );
             }
-
-            if ($approval->office && ! $approval->office->is_final_approver) {
-                $this->notifyPresidentIfReadyForFinalApproval($approval);
-            }
         }
 
         $this->info("Successfully auto-approved {$pendingApprovals->count()} clearance requests.");
     }
 
-    private function notifyPresidentIfReadyForFinalApproval(ClearanceApproval $approval): void
-    {
-        $clearanceRequest = $approval->clearanceRequest;
-        $clearanceRequest->load(['user', 'approvals.office']);
-
-        $regularApprovals = $clearanceRequest->approvals->filter(function ($app) {
-            return ! $app->office?->is_final_approver;
-        });
-
-        $allRegularOfficesApproved = $regularApprovals->isNotEmpty()
-            && $regularApprovals->every(function ($app) {
-                return $app->status === 'approved';
-            });
-
-        if (! $allRegularOfficesApproved) {
-            return;
-        }
-
-        $presidentApproval = $clearanceRequest->approvals->first(function ($app) {
-            return $app->office?->is_final_approver;
-        });
-
-        if (! $presidentApproval || $presidentApproval->status !== 'not_requested') {
-            return;
-        }
-
-        $presidentApproval->update([
-            'status' => 'pending',
-        ]);
-
-        User::where('role', 'president')
-            ->where('is_active', true)
-            ->get()
-            ->each(function (User $president) use ($clearanceRequest) {
-                NotificationService::send(
-                    $president,
-                    'Clearance ready for final approval',
-                    "{$clearanceRequest->user->name}'s clearance request is ready for final approval.",
-                    '/president/final-approvals'
-                );
-            });
-    }
 }

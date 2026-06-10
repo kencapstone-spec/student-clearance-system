@@ -118,28 +118,39 @@ class ClearanceRequestController extends Controller
             return back()->with('error', 'Please submit a clearance request first.');
         }
 
-        $courseRegularOfficeIds = $this->courseRegularOfficeIds($user);
+        $allowedOfficeIds = $this->courseApprovalOfficeIds($user);
 
-        if ($courseRegularOfficeIds->isEmpty()) {
+        if ($allowedOfficeIds->isEmpty()) {
             return back()->with('error', 'No clearance offices are configured for your course yet.');
         }
 
         $selectedOfficeIds = collect($validated['office_ids'])
             ->unique()
-            ->intersect($courseRegularOfficeIds)
+            ->intersect($allowedOfficeIds)
             ->values();
 
         if ($selectedOfficeIds->isEmpty()) {
-            return back()->with('error', 'Please select at least one office assigned to your course.');
+            return back()->with('error', 'Please select at least one valid office.');
         }
 
         $approvedOfficeIds = $clearanceRequest->approvals->where('status', 'approved')->pluck('office_id');
         $selectedOffices = Office::with('prerequisites')->whereIn('id', $selectedOfficeIds)->get();
 
         foreach ($selectedOffices as $office) {
-            foreach ($office->prerequisites as $prerequisite) {
-                if (! $approvedOfficeIds->contains($prerequisite->id)) {
-                    return back()->with('error', "You must clear {$prerequisite->name} before requesting {$office->name}.");
+            if ($office->is_final_approver) {
+                $courseRegularOfficeIds = $this->courseRegularOfficeIds($user);
+                $hasClearedAllRegular = $courseRegularOfficeIds->every(function ($officeId) use ($approvedOfficeIds) {
+                    return $approvedOfficeIds->contains($officeId);
+                });
+
+                if (!$hasClearedAllRegular || $courseRegularOfficeIds->isEmpty()) {
+                    return back()->with('error', 'You must clear all regular offices before requesting final approval.');
+                }
+            } else {
+                foreach ($office->prerequisites as $prerequisite) {
+                    if (! $approvedOfficeIds->contains($prerequisite->id)) {
+                        return back()->with('error', "You must clear {$prerequisite->name} before requesting {$office->name}.");
+                    }
                 }
             }
         }
@@ -228,12 +239,27 @@ class ClearanceRequestController extends Controller
 
     private function notifyOfficeStaff(Collection $officeIds, string $title, string $message, string $link): void
     {
-        User::where('role', 'staff')
-            ->where('is_active', true)
-            ->whereIn('office_id', $officeIds)
-            ->get()
-            ->each(function (User $staff) use ($title, $message, $link) {
-                NotificationService::send($staff, $title, $message, $link);
-            });
+        $finalApproverOfficeIds = Office::where('is_final_approver', true)->pluck('id');
+        $hasFinalApprover = $officeIds->intersect($finalApproverOfficeIds)->isNotEmpty();
+        $regularOfficeIds = $officeIds->diff($finalApproverOfficeIds);
+
+        if ($regularOfficeIds->isNotEmpty()) {
+            User::where('role', 'staff')
+                ->where('is_active', true)
+                ->whereIn('office_id', $regularOfficeIds)
+                ->get()
+                ->each(function (User $staff) use ($title, $message, $link) {
+                    NotificationService::send($staff, $title, $message, $link);
+                });
+        }
+
+        if ($hasFinalApprover) {
+            User::where('role', 'president')
+                ->where('is_active', true)
+                ->get()
+                ->each(function (User $president) use ($title, $message) {
+                    NotificationService::send($president, $title, $message, '/president/final-approvals');
+                });
+        }
     }
 }

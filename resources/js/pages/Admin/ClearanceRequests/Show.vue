@@ -63,7 +63,7 @@ const statusLabel = (status: string) => {
     }
 
     if (status === 'cleared') {
-        return 'Cleared';
+        return 'Approved';
     }
 
     return 'Pending';
@@ -181,7 +181,7 @@ const officeTypeLabel = (office: Office) => {
                     </p>
 
                     <p class="mt-2 text-sm text-slate-600">
-                        Cleared At:
+                        Approved At:
                         <span class="font-semibold text-blue-950">
                             {{ clearanceRequest.cleared_at ?? 'N/A' }}
                         </span>

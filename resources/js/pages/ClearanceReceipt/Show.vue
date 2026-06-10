@@ -573,7 +573,7 @@ const goBack = () => {
 
                     <div>
                         <p class="label font-semibold text-gray-500 uppercase">
-                            Cleared At
+                            Approved At
                         </p>
                         <p class="value font-medium">
                             {{ clearanceRequest.cleared_at ?? 'N/A' }}
@@ -820,7 +820,7 @@ const goBack = () => {
                             >
                                 This receipt is valid only if the QR
                                 verification page confirms that the clearance
-                                request is cleared.
+                                request is approved.
                             </p>
                         </div>
                     </div>

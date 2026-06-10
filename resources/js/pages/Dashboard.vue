@@ -132,7 +132,7 @@ const isFullyCleared = computed(() => {
 
 const finalClearanceLabel = computed(() => {
     if (isFullyCleared.value) {
-        return 'Fully Cleared';
+        return 'Fully Approved';
     }
 
     if (props.clearanceRequest) {
@@ -177,7 +177,7 @@ const progressMessage = computed(() => {
     }
 
     if (isFullyCleared.value) {
-        return 'Your clearance is fully cleared and approved by the College President.';
+        return 'Your clearance is fully approved by the College President.';
     }
 
     if (progressPercentage.value === 100) {
@@ -189,7 +189,7 @@ const progressMessage = computed(() => {
 
 const statusLabel = (status: string) => {
     if (status === 'approved') {
-        return 'Cleared';
+        return 'Approved';
     }
 
     if (status === 'pending') {
@@ -197,7 +197,7 @@ const statusLabel = (status: string) => {
     }
 
     if (status === 'rejected') {
-        return 'Not Cleared';
+        return 'Not Approved';
     }
 
     if (status === 'not_requested') {
@@ -285,10 +285,22 @@ const requestableOffices = computed(() => {
     if (!props.clearanceRequest) {
         offices = regularOffices.value;
     } else {
-        offices = officeStatuses.value.filter((office) => {
-            return (
-                !office.is_final_approver && office.status === 'not_requested'
+        const allRegularApproved = regularOffices.value.every((ro) => {
+            const approval = props.clearanceRequest!.approvals.find(
+                (a) => a.office_id === ro.id,
             );
+            return approval?.status === 'approved';
+        });
+
+        offices = officeStatuses.value.filter((office) => {
+            if (office.is_final_approver) {
+                return (
+                    office.status === 'not_requested' &&
+                    allRegularApproved &&
+                    regularOffices.value.length > 0
+                );
+            }
+            return office.status === 'not_requested';
         });
     }
 
@@ -306,6 +318,20 @@ const requestableOffices = computed(() => {
 });
 
 const isOfficeRequestable = (office: Office) => {
+    if (office.is_final_approver) {
+        if (!props.clearanceRequest) {
+            return false;
+        }
+
+        const allRegularApproved = regularOffices.value.every((ro) => {
+            const approval = props.clearanceRequest!.approvals.find(
+                (a) => a.office_id === ro.id,
+            );
+            return approval?.status === 'approved';
+        });
+
+        return allRegularApproved && regularOffices.value.length > 0;
+    }
     if (!office.prerequisites || office.prerequisites.length === 0) {
         return true;
     }
@@ -324,6 +350,20 @@ const isOfficeRequestable = (office: Office) => {
 };
 
 const unmetPrerequisites = (office: Office) => {
+    if (office.is_final_approver) {
+        if (!props.clearanceRequest) {
+            return regularOffices.value.map((o) => o.name);
+        }
+
+        const unapprovedRegularOffices = regularOffices.value.filter((ro) => {
+            const approval = props.clearanceRequest!.approvals.find(
+                (a) => a.office_id === ro.id,
+            );
+            return approval?.status !== 'approved';
+        });
+
+        return unapprovedRegularOffices.map((o) => o.name);
+    }
     if (!office.prerequisites || office.prerequisites.length === 0) {
         return [];
     }
@@ -610,7 +650,7 @@ const confirmMobileLogout = () => {
                                         class="text-xl font-black tracking-tight"
                                         :class="courseTheme.headingTextClass"
                                     >
-                                        Fully Cleared!
+                                        Fully Approved!
                                     </span>
                                 </div>
                             </div>
@@ -710,7 +750,7 @@ const confirmMobileLogout = () => {
                                 class="text-[0.65rem] leading-tight font-black tracking-wide uppercase md:text-sm"
                                 :class="courseTheme.accentTextClass"
                             >
-                                Total Cleared
+                                Total Approved
                             </p>
                             <p
                                 class="mt-1 text-2xl font-black md:text-3xl"
@@ -800,7 +840,7 @@ const confirmMobileLogout = () => {
                             <p
                                 class="text-[0.65rem] leading-tight font-black tracking-wide text-red-600 uppercase md:text-sm"
                             >
-                                Not Cleared
+                                Not Approved
                             </p>
                             <p
                                 class="mt-1 text-2xl font-black md:text-3xl"

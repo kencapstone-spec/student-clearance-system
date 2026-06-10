@@ -70,8 +70,6 @@ class PendingRequestController extends Controller
             '/dashboard'
         );
 
-        $this->notifyPresidentIfReadyForFinalApproval($approval);
-
         return back()->with('success', 'Clearance request approved successfully.');
     }
 
@@ -113,8 +111,6 @@ class PendingRequestController extends Controller
                 "Your {$approval->office->name} clearance request has been approved.",
                 '/dashboard'
             );
-
-            $this->notifyPresidentIfReadyForFinalApproval($approval);
         }
 
         return back()->with(
@@ -158,48 +154,4 @@ class PendingRequestController extends Controller
         return back()->with('success', 'Clearance request rejected successfully.');
     }
 
-    private function notifyPresidentIfReadyForFinalApproval(ClearanceApproval $approval): void
-    {
-        $clearanceRequest = $approval->clearanceRequest;
-
-        $clearanceRequest->load(['user', 'approvals.office']);
-
-        $regularApprovals = $clearanceRequest->approvals->filter(function ($approval) {
-            // Use null-safe operator: skip approvals whose office was deleted
-            return ! $approval->office?->is_final_approver;
-        });
-
-        $allRegularOfficesApproved = $regularApprovals->isNotEmpty()
-            && $regularApprovals->every(function ($approval) {
-                return $approval->status === 'approved';
-            });
-
-        if (! $allRegularOfficesApproved) {
-            return;
-        }
-
-        $presidentApproval = $clearanceRequest->approvals->first(function ($approval) {
-            return $approval->office?->is_final_approver;
-        });
-
-        if (! $presidentApproval || $presidentApproval->status !== 'not_requested') {
-            return;
-        }
-
-        $presidentApproval->update([
-            'status' => 'pending',
-        ]);
-
-        User::where('role', 'president')
-            ->where('is_active', true)
-            ->get()
-            ->each(function (User $president) use ($clearanceRequest) {
-                NotificationService::send(
-                    $president,
-                    'Clearance ready for final approval',
-                    "{$clearanceRequest->user->name}'s clearance request is ready for final approval.",
-                    '/president/final-approvals'
-                );
-            });
-    }
 }

@@ -123,7 +123,7 @@ const printPage = () => {
                 </div>
 
                 <div class="rounded-lg border p-3">
-                    <p class="font-semibold text-green-700">Cleared</p>
+                    <p class="font-semibold text-green-700">Approved</p>
                     <p class="mt-1 text-xl font-bold text-blue-950">
                         {{ summary.clearedRequests }}
                     </p>
@@ -175,7 +175,7 @@ const printPage = () => {
                                 <th class="border px-3 py-2">School Year</th>
                                 <th class="border px-3 py-2">Progress</th>
                                 <th class="border px-3 py-2">Status</th>
-                                <th class="border px-3 py-2">Cleared At</th>
+                                <th class="border px-3 py-2">Approved At</th>
                             </tr>
                         </thead>
 
@@ -212,7 +212,7 @@ const printPage = () => {
 
                                 <td class="border px-3 py-2">
                                     {{
-                                        request.cleared_at ?? 'Not cleared yet'
+                                        request.cleared_at ?? 'Not approved yet'
                                     }}
                                 </td>
                             </tr>
