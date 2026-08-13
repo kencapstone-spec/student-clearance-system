@@ -289,6 +289,7 @@ const requestableOffices = computed(() => {
             const approval = props.clearanceRequest!.approvals.find(
                 (a) => a.office_id === ro.id,
             );
+
             return approval?.status === 'approved';
         });
 
@@ -300,6 +301,7 @@ const requestableOffices = computed(() => {
                     regularOffices.value.length > 0
                 );
             }
+
             return office.status === 'not_requested';
         });
     }
@@ -327,11 +329,13 @@ const isOfficeRequestable = (office: Office) => {
             const approval = props.clearanceRequest!.approvals.find(
                 (a) => a.office_id === ro.id,
             );
+
             return approval?.status === 'approved';
         });
 
         return allRegularApproved && regularOffices.value.length > 0;
     }
+
     if (!office.prerequisites || office.prerequisites.length === 0) {
         return true;
     }
@@ -359,11 +363,13 @@ const unmetPrerequisites = (office: Office) => {
             const approval = props.clearanceRequest!.approvals.find(
                 (a) => a.office_id === ro.id,
             );
+
             return approval?.status !== 'approved';
         });
 
         return unapprovedRegularOffices.map((o) => o.name);
     }
+
     if (!office.prerequisites || office.prerequisites.length === 0) {
         return [];
     }

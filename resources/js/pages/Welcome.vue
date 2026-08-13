@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
 import { Head, Link } from '@inertiajs/vue3';
 import {
     ArrowRight,
@@ -17,6 +16,7 @@ import {
     UserCheck,
     Users,
 } from 'lucide-vue-next';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { dashboard, login, register } from '@/routes';
 
 withDefaults(

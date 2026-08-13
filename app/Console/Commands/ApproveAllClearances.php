@@ -61,5 +61,4 @@ class ApproveAllClearances extends Command
 
         $this->info("Successfully auto-approved {$pendingApprovals->count()} clearance requests.");
     }
-
 }

@@ -143,7 +143,7 @@ class ClearanceRequestController extends Controller
                     return $approvedOfficeIds->contains($officeId);
                 });
 
-                if (!$hasClearedAllRegular || $courseRegularOfficeIds->isEmpty()) {
+                if (! $hasClearedAllRegular || $courseRegularOfficeIds->isEmpty()) {
                     return back()->with('error', 'You must clear all regular offices before requesting final approval.');
                 }
             } else {

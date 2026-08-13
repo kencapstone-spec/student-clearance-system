@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Staff;
 use App\Http\Controllers\Controller;
 use App\Models\AppSetting;
 use App\Models\ClearanceApproval;
-use App\Models\User;
 use App\Services\NotificationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -153,5 +152,4 @@ class PendingRequestController extends Controller
 
         return back()->with('success', 'Clearance request rejected successfully.');
     }
-
 }
