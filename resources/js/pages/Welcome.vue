@@ -80,11 +80,11 @@ onUnmounted(() => {
                     class="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6 sm:py-4"
                 >
                     <div class="flex min-w-0 items-center gap-2 sm:gap-3">
-                        <div
-                            class="grid size-9 shrink-0 place-items-center rounded-xl bg-blue-600 text-xs font-black text-white shadow-lg shadow-blue-600/30 sm:size-11 sm:rounded-2xl sm:text-sm"
-                        >
-                            TPC
-                        </div>
+                        <img
+                            src="/images/tpc-logo.webp"
+                            alt="Talibon Polytechnic College Logo"
+                            class="size-9 shrink-0 rounded-full object-cover sm:size-11"
+                        />
 
                         <div class="hidden min-w-0 sm:block">
                             <p

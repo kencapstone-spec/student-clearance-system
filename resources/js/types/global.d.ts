@@ -14,6 +14,13 @@ declare module 'vite/client' {
 }
 
 declare module '@inertiajs/core' {
+    // Augment PageProps so $page.props.auth is typed in Vue templates
+    interface PageProps {
+        auth: Auth;
+        name: string;
+        sidebarOpen: boolean;
+    }
+
     export interface InertiaConfig {
         sharedPageProps: {
             name: string;
