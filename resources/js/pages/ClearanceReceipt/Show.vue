@@ -867,7 +867,7 @@ const goBack = () => {
 @media print {
     @page {
         size: A4 portrait;
-        margin: 0.25in;
+        margin: 0;
     }
 
     html,

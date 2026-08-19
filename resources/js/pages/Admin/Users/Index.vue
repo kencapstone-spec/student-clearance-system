@@ -65,6 +65,7 @@ const activeRoleFilter = ref<RoleFilter>('all');
 
 const form = useForm({
     name: '',
+    email: '',
     student_id: '',
     office_id: '',
     password: '',
@@ -1022,6 +1023,30 @@ const roleFilterButtonClass = (role: RoleFilter) => {
                                 class="mt-2 text-sm font-medium text-red-600"
                             >
                                 {{ form.errors.name }}
+                            </p>
+                        </div>
+
+                        <div>
+                            <label
+                                for="email"
+                                class="text-sm font-black text-slate-700"
+                            >
+                                Email Address
+                            </label>
+
+                            <input
+                                id="email"
+                                v-model="form.email"
+                                type="email"
+                                class="mt-2 min-h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 shadow-sm outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
+                                placeholder="Example: staff@university.edu"
+                            />
+
+                            <p
+                                v-if="form.errors.email"
+                                class="mt-2 text-sm font-medium text-red-600"
+                            >
+                                {{ form.errors.email }}
                             </p>
                         </div>
 

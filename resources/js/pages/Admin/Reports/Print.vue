@@ -230,3 +230,11 @@ const printPage = () => {
         </div>
     </div>
 </template>
+
+<style>
+@media print {
+    @page {
+        margin: 0;
+    }
+}
+</style>
