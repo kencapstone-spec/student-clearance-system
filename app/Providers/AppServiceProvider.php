@@ -28,9 +28,6 @@ class AppServiceProvider extends ServiceProvider
         $this->forceHttpsWhenUsingSecureAppUrl();
     }
 
-    /**
-     * Configure default behaviors for production-ready applications.
-     */
     protected function configureDefaults(): void
     {
         Date::use(CarbonImmutable::class);
@@ -39,20 +36,9 @@ class AppServiceProvider extends ServiceProvider
             app()->isProduction(),
         );
 
-        Password::defaults(fn (): ?Password => app()->isProduction()
-            ? Password::min(12)
-                ->mixedCase()
-                ->letters()
-                ->numbers()
-                ->symbols()
-                ->uncompromised()
-            : null,
-        );
+        Password::defaults(fn (): Password => Password::min(8));
     }
 
-    /**
-     * Force generated URLs to HTTPS when APP_URL uses HTTPS.
-     */
     protected function forceHttpsWhenUsingSecureAppUrl(): void
     {
         if (str_starts_with((string) config('app.url'), 'https://')) {
