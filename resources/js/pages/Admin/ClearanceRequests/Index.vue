@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import {
     AlertTriangle,
     BarChart3,
@@ -15,7 +15,19 @@ import {
     UserRoundCog,
     X,
 } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted, onUnmounted } from 'vue';
+
+let pollingInterval: ReturnType<typeof setInterval>;
+
+onMounted(() => {
+    pollingInterval = setInterval(() => {
+        router.reload();
+    }, 5000);
+});
+
+onUnmounted(() => {
+    clearInterval(pollingInterval);
+});
 
 type Course = {
     id: number;

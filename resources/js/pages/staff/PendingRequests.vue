@@ -11,7 +11,19 @@ import {
     X,
     XCircle,
 } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted, onUnmounted } from 'vue';
+
+let pollingInterval: ReturnType<typeof setInterval>;
+
+onMounted(() => {
+    pollingInterval = setInterval(() => {
+        router.reload();
+    }, 5000);
+});
+
+onUnmounted(() => {
+    clearInterval(pollingInterval);
+});
 
 type Office = {
     id: number;

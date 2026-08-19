@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Head, router } from '@inertiajs/vue3';
 import { CheckCircle2, Download, ChevronRight, LogOut } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted, onUnmounted } from 'vue';
 import { dashboard } from '@/routes';
 import { resolveCourseTheme } from '@/utils/courseThemes';
 import type { CourseTheme } from '@/utils/courseThemes';
@@ -15,6 +15,18 @@ defineOptions({
             },
         ],
     },
+});
+
+let pollingInterval: ReturnType<typeof setInterval>;
+
+onMounted(() => {
+    pollingInterval = setInterval(() => {
+        router.reload();
+    }, 5000);
+});
+
+onUnmounted(() => {
+    clearInterval(pollingInterval);
 });
 
 type Course = {

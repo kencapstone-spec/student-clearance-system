@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import {
     BarChart3,
     Building2,
@@ -14,7 +14,20 @@ import {
     X,
     XCircle,
 } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
+
+let pollingInterval: ReturnType<typeof setInterval>;
+
+onMounted(() => {
+    pollingInterval = setInterval(() => {
+        router.reload();
+    }, 5000);
+});
+
+onUnmounted(() => {
+    clearInterval(pollingInterval);
+});
+
 
 type Stats = {
     students: number;
