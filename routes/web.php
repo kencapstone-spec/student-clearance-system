@@ -180,3 +180,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->name('president.final-approvals.approve-all');
     });
 });
+
+// Routes for triggering Cron Jobs via InfinityFree
+Route::get('/cron/approve-all/{secret}', function ($secret) {
+    if ($secret !== 'my-secret-key-123') {
+        abort(403, 'Unauthorized action.');
+    }
+    \Illuminate\Support\Facades\Artisan::call('clearance:approve-all');
+    return 'Success: ' . \Illuminate\Support\Facades\Artisan::output();
+});
+
+Route::get('/cron/reject-all/{secret}', function ($secret) {
+    if ($secret !== 'my-secret-key-123') {
+        abort(403, 'Unauthorized action.');
+    }
+    \Illuminate\Support\Facades\Artisan::call('clearance:reject-all');
+    return 'Success: ' . \Illuminate\Support\Facades\Artisan::output();
+});
