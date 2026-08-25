@@ -17,7 +17,10 @@ let pollingInterval: ReturnType<typeof setInterval>;
 
 onMounted(() => {
     pollingInterval = setInterval(() => {
-        router.reload();
+        router.reload({
+            data: { _t: Date.now() },
+            only: ['approvals'],
+        });
     }, 5000);
 });
 
