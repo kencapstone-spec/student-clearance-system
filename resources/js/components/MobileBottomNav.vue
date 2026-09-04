@@ -2,7 +2,6 @@
 import { Link, router, usePage } from '@inertiajs/vue3';
 import {
     Bell,
-    CheckCircle2,
     ChevronRight,
     ClipboardCheck,
     FilePlus,
@@ -640,112 +639,6 @@ const handleReceiptClick = () => {
                     </Link>
                 </template>
 
-                <!-- Student Secondary Actions -->
-                <template v-else-if="userRole === 'student'">
-                    <button
-                        v-if="canPrintReceipt"
-                        type="button"
-                        class="flex w-full items-center justify-between rounded-2xl border border-emerald-200 bg-emerald-50/80 p-3.5 text-left shadow-xs transition hover:bg-emerald-100 active:scale-[0.99]"
-                        @click="handleReceiptClick"
-                    >
-                        <div class="flex items-center gap-3">
-                            <div
-                                class="flex size-10 items-center justify-center rounded-xl bg-emerald-600 text-white"
-                            >
-                                <Printer class="size-5" />
-                            </div>
-                            <div>
-                                <p class="text-sm font-bold text-emerald-950">
-                                    Print Clearance Receipt
-                                </p>
-                                <p class="text-xs text-emerald-700">
-                                    Official verified receipt ready to print
-                                </p>
-                            </div>
-                        </div>
-                        <ChevronRight class="size-5 text-emerald-600" />
-                    </button>
-
-                    <button
-                        type="button"
-                        class="flex w-full items-center justify-between rounded-2xl border border-slate-200/80 bg-white p-3.5 text-left shadow-xs transition hover:bg-slate-50 active:scale-[0.99]"
-                        @click="
-                            () => {
-                                closeMoreSheet();
-                                handleStudentStatusClick();
-                            }
-                        "
-                    >
-                        <div class="flex items-center gap-3">
-                            <div
-                                class="flex size-10 items-center justify-center rounded-xl bg-blue-50 text-blue-700"
-                            >
-                                <CheckCircle2 class="size-5" />
-                            </div>
-                            <div>
-                                <p class="text-sm font-bold text-slate-900">
-                                    View Clearance Breakdown
-                                </p>
-                                <p class="text-xs text-slate-500">
-                                    Check approval status per assigned office
-                                </p>
-                            </div>
-                        </div>
-                        <ChevronRight class="size-5 text-slate-400" />
-                    </button>
-                </template>
-
-                <!-- Staff Secondary Actions -->
-                <template v-else-if="userRole === 'staff'">
-                    <Link
-                        href="/staff/pending-requests"
-                        class="flex items-center justify-between rounded-2xl border border-slate-200/80 bg-white p-3.5 shadow-xs transition hover:bg-slate-50 active:scale-[0.99]"
-                        @click="closeMoreSheet"
-                    >
-                        <div class="flex items-center gap-3">
-                            <div
-                                class="flex size-10 items-center justify-center rounded-xl bg-blue-50 text-blue-700"
-                            >
-                                <ClipboardCheck class="size-5" />
-                            </div>
-                            <div>
-                                <p class="text-sm font-bold text-slate-900">
-                                    Office Pending Queue
-                                </p>
-                                <p class="text-xs text-slate-500">
-                                    Review students awaiting office signatures
-                                </p>
-                            </div>
-                        </div>
-                        <ChevronRight class="size-5 text-slate-400" />
-                    </Link>
-                </template>
-
-                <!-- President Secondary Actions -->
-                <template v-else-if="userRole === 'president'">
-                    <Link
-                        href="/president/final-approvals"
-                        class="flex items-center justify-between rounded-2xl border border-slate-200/80 bg-white p-3.5 shadow-xs transition hover:bg-slate-50 active:scale-[0.99]"
-                        @click="closeMoreSheet"
-                    >
-                        <div class="flex items-center gap-3">
-                            <div
-                                class="flex size-10 items-center justify-center rounded-xl bg-blue-50 text-blue-700"
-                            >
-                                <ShieldCheck class="size-5" />
-                            </div>
-                            <div>
-                                <p class="text-sm font-bold text-slate-900">
-                                    Final Clearance Approvals
-                                </p>
-                                <p class="text-xs text-slate-500">
-                                    Grant official completion signatures
-                                </p>
-                            </div>
-                        </div>
-                        <ChevronRight class="size-5 text-slate-400" />
-                    </Link>
-                </template>
 
                 <!-- Account & Logout Action -->
                 <button
