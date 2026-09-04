@@ -15,7 +15,10 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 
 #[Fillable([
     'student_id',
+    'first_name',
+    'last_name',
     'name',
+    'year_level',
     'email',
     'course_id',
     'office_id',

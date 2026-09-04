@@ -37,11 +37,6 @@ class AdminDashboardController extends Controller
                 ->latest()
                 ->take(5)
                 ->get(),
-
-            'settings' => [
-                'active_semester' => AppSetting::get('active_semester', '1st Semester'),
-                'active_school_year' => AppSetting::get('active_school_year', '2026-2027'),
-            ],
         ]);
     }
 }

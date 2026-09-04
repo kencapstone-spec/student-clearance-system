@@ -40,6 +40,7 @@ type User = {
     student_id: string;
     role: UserRole;
     is_active: boolean;
+    email: string | null;
     deactivated_at: string | null;
     course: Course | null;
     office: Office | null;
@@ -64,6 +65,7 @@ const activeRoleFilter = ref<RoleFilter>('all');
 
 const form = useForm({
     name: '',
+    email: '',
     student_id: '',
     office_id: '',
     password: '',
@@ -72,6 +74,7 @@ const form = useForm({
 
 const editForm = useForm<{
     name: string;
+    email: string;
     role: UserRole;
     course_id: string | number;
     office_id: string | number;
@@ -79,6 +82,7 @@ const editForm = useForm<{
     password_confirmation: string;
 }>({
     name: '',
+    email: '',
     role: 'student',
     course_id: '',
     office_id: '',
@@ -202,6 +206,7 @@ const openEditUserModal = (user: User) => {
 
     editForm.clearErrors();
     editForm.name = user.name;
+    editForm.email = user.email || '';
     editForm.role = user.role;
     editForm.course_id = user.course ? user.course.id : '';
     editForm.office_id = user.office ? user.office.id : '';
@@ -722,7 +727,7 @@ const roleFilterButtonClass = (role: RoleFilter) => {
                             <div class="flex items-start justify-between gap-3">
                                 <div class="min-w-0">
                                     <h3
-                                        class="truncate text-base font-black text-blue-950"
+                                        class="line-clamp-2 text-base leading-tight font-black break-words text-blue-950"
                                     >
                                         {{ user.name }}
                                     </h3>
@@ -765,10 +770,12 @@ const roleFilterButtonClass = (role: RoleFilter) => {
                                 {{ user.office ? user.office.name : 'N/A' }}
                             </div>
 
-                            <div class="mt-4 grid grid-cols-2 gap-2">
+                            <div
+                                class="mt-4 flex flex-col gap-2 sm:grid sm:grid-cols-2"
+                            >
                                 <button
                                     type="button"
-                                    class="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-blue-700 px-4 py-3 text-sm font-black text-white shadow-md shadow-blue-700/20 transition hover:bg-blue-800"
+                                    class="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-blue-700 px-3 py-2.5 text-xs font-black text-white shadow-md shadow-blue-700/20 transition hover:bg-blue-800 sm:px-4 sm:py-3 sm:text-sm"
                                     @click="openEditUserModal(user)"
                                 >
                                     <Pencil class="size-4" />
@@ -777,7 +784,7 @@ const roleFilterButtonClass = (role: RoleFilter) => {
 
                                 <button
                                     type="button"
-                                    class="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-black text-white shadow-md transition"
+                                    class="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl px-3 py-2.5 text-xs font-black text-white shadow-md transition sm:px-4 sm:py-3 sm:text-sm"
                                     :class="
                                         user.is_active
                                             ? 'bg-red-600 shadow-red-600/20 hover:bg-red-700'
@@ -1021,6 +1028,30 @@ const roleFilterButtonClass = (role: RoleFilter) => {
 
                         <div>
                             <label
+                                for="email"
+                                class="text-sm font-black text-slate-700"
+                            >
+                                Email Address
+                            </label>
+
+                            <input
+                                id="email"
+                                v-model="form.email"
+                                type="email"
+                                class="mt-2 min-h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 shadow-sm outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
+                                placeholder="Example: staff@university.edu"
+                            />
+
+                            <p
+                                v-if="form.errors.email"
+                                class="mt-2 text-sm font-medium text-red-600"
+                            >
+                                {{ form.errors.email }}
+                            </p>
+                        </div>
+
+                        <div>
+                            <label
                                 for="student_id"
                                 class="text-sm font-black text-slate-700"
                             >
@@ -1227,6 +1258,29 @@ const roleFilterButtonClass = (role: RoleFilter) => {
                                 class="mt-2 text-sm font-medium text-red-600"
                             >
                                 {{ editForm.errors.name }}
+                            </p>
+                        </div>
+
+                        <div>
+                            <label
+                                for="edit_email"
+                                class="text-sm font-black text-slate-700"
+                            >
+                                Email Address
+                            </label>
+
+                            <input
+                                id="edit_email"
+                                v-model="editForm.email"
+                                type="email"
+                                class="mt-2 min-h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 shadow-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
+                            />
+
+                            <p
+                                v-if="editForm.errors.email"
+                                class="mt-2 text-sm font-medium text-red-600"
+                            >
+                                {{ editForm.errors.email }}
                             </p>
                         </div>
 
@@ -1521,91 +1575,4 @@ const roleFilterButtonClass = (role: RoleFilter) => {
             </div>
         </div>
     </div>
-
-    <!-- Admin Mobile More Sheet -->
-    <div
-        v-if="showAdminMobileMoreMenu"
-        class="fixed inset-x-3 bottom-24 z-40 rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl shadow-slate-900/20 md:hidden"
-    >
-        <div class="flex items-start justify-between gap-3">
-            <div>
-                <p class="text-sm font-black text-blue-950">Admin Tools</p>
-
-                <p class="mt-1 text-xs font-semibold text-slate-500">
-                    Quick access to reports and course modules.
-                </p>
-            </div>
-
-            <button
-                type="button"
-                class="grid size-10 place-items-center rounded-xl border border-slate-200 text-slate-500"
-                @click="closeAdminMobileMoreMenu"
-            >
-                <X class="size-5" />
-            </button>
-        </div>
-
-        <div class="mt-4 grid gap-2">
-            <Link
-                href="/admin/reports"
-                class="flex min-h-12 items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-black text-slate-700"
-            >
-                <span>Reports</span>
-                <span>→</span>
-            </Link>
-
-            <Link
-                href="/admin/course-modules"
-                class="flex min-h-12 items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-black text-slate-700"
-            >
-                <span>Course Modules</span>
-                <span>→</span>
-            </Link>
-        </div>
-    </div>
-
-    <!-- Admin Mobile Thumb Navigation -->
-    <nav
-        class="fixed inset-x-3 bottom-3 z-30 rounded-2xl border border-blue-200 bg-blue-950/95 p-2 shadow-2xl shadow-blue-950/25 backdrop-blur md:hidden"
-    >
-        <div class="grid grid-cols-4 gap-1">
-            <Link
-                href="/admin/dashboard"
-                class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
-            >
-                <LayoutDashboard class="size-4" />
-                <span>Home</span>
-            </Link>
-
-            <Link
-                href="/admin/users"
-                class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl bg-white/15 px-2 py-2 text-[0.65rem] font-black text-white ring-1 ring-blue-200/40 transition hover:bg-white/10"
-            >
-                <Users class="size-4" />
-                <span>Users</span>
-            </Link>
-
-            <Link
-                href="/admin/clearance-requests"
-                class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
-            >
-                <ShieldCheck class="size-4" />
-                <span>Requests</span>
-            </Link>
-
-            <button
-                type="button"
-                class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
-                :class="
-                    showAdminMobileMoreMenu
-                        ? 'bg-white/15 ring-1 ring-blue-200/40'
-                        : ''
-                "
-                @click="toggleAdminMobileMoreMenu"
-            >
-                <span class="text-base leading-none">•••</span>
-                <span>More</span>
-            </button>
-        </div>
-    </nav>
 </template>

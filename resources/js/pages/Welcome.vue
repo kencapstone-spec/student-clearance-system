@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, usePage } from '@inertiajs/vue3';
+import type { PageProps } from '@inertiajs/core';
 import {
     ArrowRight,
     BarChart3,
@@ -16,6 +17,7 @@ import {
     UserCheck,
     Users,
 } from 'lucide-vue-next';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { dashboard, login, register } from '@/routes';
 
 withDefaults(
@@ -26,6 +28,21 @@ withDefaults(
         canRegister: true,
     },
 );
+
+const isScrolled = ref(false);
+const page = usePage<PageProps>();
+
+const handleScroll = () => {
+    isScrolled.value = window.scrollY > 10;
+};
+
+onMounted(() => {
+    window.addEventListener('scroll', handleScroll);
+});
+
+onUnmounted(() => {
+    window.removeEventListener('scroll', handleScroll);
+});
 </script>
 
 <template>
@@ -54,17 +71,22 @@ withDefaults(
 
             <!-- Header -->
             <header
-                class="relative z-20 border-b border-white/10 bg-slate-950/75 backdrop-blur-xl"
+                :class="[
+                    'fixed inset-x-0 top-0 z-50 transition-all duration-300',
+                    isScrolled
+                        ? 'border-b border-white/10 bg-slate-950/85 backdrop-blur-xl shadow-xl shadow-black/10'
+                        : 'border-b border-transparent bg-transparent'
+                ]"
             >
                 <div
                     class="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6 sm:py-4"
                 >
                     <div class="flex min-w-0 items-center gap-2 sm:gap-3">
-                        <div
-                            class="grid size-9 shrink-0 place-items-center rounded-xl bg-blue-600 text-xs font-black text-white shadow-lg shadow-blue-600/30 sm:size-11 sm:rounded-2xl sm:text-sm"
-                        >
-                            TPC
-                        </div>
+                        <img
+                            src="/images/tpc-logo.webp"
+                            alt="Talibon Polytechnic College Logo"
+                            class="size-9 shrink-0 rounded-full object-cover sm:size-11"
+                        />
 
                         <div class="hidden min-w-0 sm:block">
                             <p
@@ -83,7 +105,7 @@ withDefaults(
 
                     <nav class="flex shrink-0 items-center gap-2 sm:gap-3">
                         <Link
-                            v-if="$page.props.auth.user"
+                            v-if="page.props.auth.user"
                             :href="dashboard()"
                             class="inline-flex items-center gap-2 rounded-2xl bg-blue-600 px-3.5 py-2.5 text-sm font-black text-white shadow-lg shadow-blue-600/25 transition hover:-translate-y-0.5 hover:bg-blue-500 sm:px-4"
                         >
@@ -113,7 +135,7 @@ withDefaults(
 
             <!-- Hero -->
             <div
-                class="relative z-10 mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 sm:py-14 lg:min-h-[calc(100vh-80px)] lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-12 lg:py-20"
+                class="relative z-10 mx-auto grid max-w-7xl gap-8 px-4 pb-10 pt-24 sm:px-6 sm:pb-14 sm:pt-28 lg:min-h-[calc(100vh-80px)] lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-12 lg:pb-20 lg:pt-32"
             >
                 <div>
                     <div
@@ -144,7 +166,7 @@ withDefaults(
 
                     <div class="mt-7 flex flex-col gap-3 sm:mt-8 sm:flex-row">
                         <Link
-                            v-if="$page.props.auth.user"
+                            v-if="page.props.auth.user"
                             :href="dashboard()"
                             class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-blue-600 px-6 py-3.5 text-sm font-black text-white shadow-xl shadow-blue-600/30 transition hover:-translate-y-1 hover:bg-blue-500 hover:shadow-2xl sm:w-auto sm:px-7 sm:py-4"
                         >
@@ -344,7 +366,7 @@ withDefaults(
                                     <p
                                         class="mt-1 text-sm leading-6 text-slate-400"
                                     >
-                                        Cleared students print QR-verified
+                                        Approved students print QR-verified
                                         clearance receipts.
                                     </p>
                                 </div>
@@ -505,7 +527,7 @@ withDefaults(
                         </h3>
 
                         <p class="mt-2 text-sm leading-6 text-slate-600">
-                            Fully cleared students receive a printable receipt
+                            Fully approved students receive a printable receipt
                             with public QR-based validation.
                         </p>
                     </div>
@@ -735,7 +757,7 @@ withDefaults(
 
                             <p class="mt-2 text-sm leading-6 text-slate-400">
                                 Give final approval after all required offices
-                                have cleared the student.
+                                have approved the student.
                             </p>
                         </div>
                     </div>

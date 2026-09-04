@@ -9,7 +9,22 @@ import {
     Users,
     X,
 } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted, onUnmounted } from 'vue';
+
+let pollingInterval: ReturnType<typeof setInterval>;
+
+onMounted(() => {
+    pollingInterval = setInterval(() => {
+        router.reload({
+            data: { _t: Date.now() },
+            only: ['clearanceRequests'],
+        });
+    }, 5000);
+});
+
+onUnmounted(() => {
+    clearInterval(pollingInterval);
+});
 
 type Course = {
     id: number;
@@ -20,7 +35,10 @@ type Course = {
 type Student = {
     id: number;
     name: string;
+    first_name?: string | null;
+    last_name?: string | null;
     student_id: string;
+    year_level?: string | null;
     course: Course | null;
 };
 
@@ -65,6 +83,29 @@ const showFinalApproveModal = ref(false);
 const showAutoApproveModal = ref(false);
 const successMessage = ref('');
 const errorMessage = ref('');
+
+const formatStudentName = (user?: Student | null) => {
+    if (!user) return 'N/A';
+    if (user.last_name && user.first_name) {
+        return `${user.last_name}, ${user.first_name}`;
+    }
+    if (user.last_name) {
+        return user.last_name;
+    }
+    if (user.name) {
+        if (user.name.includes(',')) {
+            return user.name;
+        }
+        const parts = user.name.trim().split(/\s+/);
+        if (parts.length > 1) {
+            const lastName = parts.pop();
+            const firstName = parts.join(' ');
+            return `${lastName}, ${firstName}`;
+        }
+        return user.name;
+    }
+    return 'N/A';
+};
 
 const clearMessages = () => {
     successMessage.value = '';
@@ -431,9 +472,9 @@ const scrollToQueue = () => {
                             <div class="flex items-start justify-between gap-3">
                                 <div class="min-w-0">
                                     <h3
-                                        class="truncate text-base font-black text-blue-950"
+                                        class="line-clamp-2 text-base leading-tight font-black break-words text-blue-950"
                                     >
-                                        {{ request.user.name }}
+                                        {{ formatStudentName(request.user) }}
                                     </h3>
 
                                     <p
@@ -558,7 +599,7 @@ const scrollToQueue = () => {
                                     <td class="px-6 py-4">
                                         <div>
                                             <p class="font-black text-blue-950">
-                                                {{ request.user.name }}
+                                                {{ formatStudentName(request.user) }}
                                             </p>
 
                                             <p
@@ -678,7 +719,7 @@ const scrollToQueue = () => {
                     <div class="grid gap-3">
                         <p>
                             <span class="font-black">Student:</span>
-                            {{ selectedRequest.user.name }}
+                            {{ formatStudentName(selectedRequest.user) }}
                         </p>
 
                         <p>
@@ -710,7 +751,7 @@ const scrollToQueue = () => {
                 <div
                     class="mt-4 rounded-2xl border border-green-200 bg-green-50 p-4 text-sm leading-6 font-medium text-green-800"
                 >
-                    This action will mark the request as cleared and enable the
+                    This action will mark the request as approved and enable the
                     student's clearance receipt and public QR verification.
                 </div>
             </div>
@@ -790,7 +831,7 @@ const scrollToQueue = () => {
                     </p>
 
                     <p class="mt-2 text-sm leading-6 text-green-800">
-                        Each request will be marked as cleared, assigned a
+                        Each request will be marked as approved, assigned a
                         receipt number, assigned a verification code, and the
                         student will receive a notification.
                     </p>
@@ -825,39 +866,4 @@ const scrollToQueue = () => {
             </div>
         </div>
     </div>
-
-    <!-- President Mobile Thumb Navigation -->
-    <nav
-        class="fixed inset-x-3 bottom-3 z-30 rounded-2xl border border-blue-200 bg-blue-950/95 p-2 shadow-2xl shadow-blue-950/25 backdrop-blur md:hidden"
-    >
-        <div class="grid grid-cols-3 gap-1">
-            <button
-                type="button"
-                class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
-                @click="scrollToTop"
-            >
-                <ShieldCheck class="size-4" />
-                <span>Top</span>
-            </button>
-
-            <button
-                type="button"
-                class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
-                @click="scrollToQueue"
-            >
-                <ClipboardCheck class="size-4" />
-                <span>Queue</span>
-            </button>
-
-            <button
-                type="button"
-                class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
-                :disabled="readyApprovalCount === 0"
-                @click="openAutoApproveModal"
-            >
-                <Sparkles class="size-4" />
-                <span>Auto All</span>
-            </button>
-        </div>
-    </nav>
 </template>

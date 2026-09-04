@@ -18,7 +18,7 @@ class ReadyForPresidentApprovalSeeder extends Seeder
      */
     public function run(): void
     {
-        $studentsToCreate = 5;
+        $studentsToCreate = 3;
 
         $course = Course::firstOrCreate(
             ['code' => 'BSIS'],
@@ -42,7 +42,7 @@ class ReadyForPresidentApprovalSeeder extends Seeder
             $student = User::create([
                 'student_id' => $studentId,
                 'name' => 'Final Approval Test Student '.$studentId,
-                'email' => null,
+                'email' => 'student' . $studentId . '@university.edu',
                 'course_id' => $course->id,
                 'office_id' => null,
                 'role' => 'student',

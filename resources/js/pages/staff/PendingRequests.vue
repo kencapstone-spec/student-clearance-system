@@ -6,12 +6,29 @@ import {
     ClipboardCheck,
     Clock3,
     Filter,
+    GraduationCap,
     Inbox,
+    Search,
     ShieldCheck,
     X,
     XCircle,
 } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted, onUnmounted } from 'vue';
+
+let pollingInterval: ReturnType<typeof setInterval>;
+
+onMounted(() => {
+    pollingInterval = setInterval(() => {
+        router.reload({
+            data: { _t: Date.now() },
+            only: ['approvals'],
+        });
+    }, 5000);
+});
+
+onUnmounted(() => {
+    clearInterval(pollingInterval);
+});
 
 type Office = {
     id: number;
@@ -28,7 +45,10 @@ type Course = {
 type Student = {
     id: number;
     name: string;
+    first_name?: string | null;
+    last_name?: string | null;
     student_id: string;
+    year_level?: string | null;
     course?: Course | null;
 };
 
@@ -60,9 +80,13 @@ type FilterStatus = 'all' | 'pending' | 'approved' | 'rejected';
 const props = defineProps<{
     staff: Staff;
     approvals: Approval[];
+    courses?: Course[];
 }>();
 
 const activeFilter = ref<FilterStatus>('pending');
+const searchQuery = ref('');
+const selectedYearLevel = ref('all');
+const selectedDepartment = ref('all');
 
 const successMessage = ref('');
 const errorMessage = ref('');
@@ -98,21 +122,134 @@ const rejectedApprovals = computed(() => {
     return props.approvals.filter((approval) => approval.status === 'rejected');
 });
 
-const filteredApprovals = computed(() => {
-    if (activeFilter.value === 'pending') {
-        return pendingApprovals.value;
+const formatStudentName = (user?: Student | null) => {
+    if (!user) return 'N/A';
+    if (user.last_name && user.first_name) {
+        return `${user.last_name}, ${user.first_name}`;
     }
-
-    if (activeFilter.value === 'approved') {
-        return approvedApprovals.value;
+    if (user.last_name) {
+        return user.last_name;
     }
-
-    if (activeFilter.value === 'rejected') {
-        return rejectedApprovals.value;
+    if (user.name) {
+        if (user.name.includes(',')) {
+            return user.name;
+        }
+        const parts = user.name.trim().split(/\s+/);
+        if (parts.length > 1) {
+            const lastName = parts.pop();
+            const firstName = parts.join(' ');
+            return `${lastName}, ${firstName}`;
+        }
+        return user.name;
     }
+    return 'N/A';
+};
 
-    return props.approvals;
+const availableYearLevels = computed(() => {
+    const levels = new Set<string>();
+    props.approvals.forEach((approval) => {
+        if (approval.clearance_request?.user?.year_level) {
+            levels.add(approval.clearance_request.user.year_level);
+        }
+    });
+    const standard = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
+    return Array.from(new Set([...standard, ...Array.from(levels)]));
 });
+
+const availableDepartments = computed(() => {
+    if (props.courses && props.courses.length > 0) {
+        return props.courses.map((c) => ({
+            code: c.code,
+            name: c.name,
+        }));
+    }
+
+    const map = new Map<string, string>();
+    props.approvals.forEach((approval) => {
+        const course = approval.clearance_request?.user?.course;
+        if (course?.code) {
+            map.set(course.code, course.name || course.code);
+        }
+    });
+
+    return Array.from(map.entries()).map(([code, name]) => ({ code, name }));
+});
+
+const filteredApprovals = computed(() => {
+    return props.approvals.filter((approval) => {
+        // Status filter
+        if (activeFilter.value !== 'all' && approval.status !== activeFilter.value) {
+            return false;
+        }
+
+        // Year Level filter
+        if (selectedYearLevel.value !== 'all') {
+            const studentYear = approval.clearance_request?.user?.year_level;
+            if (studentYear !== selectedYearLevel.value) {
+                return false;
+            }
+        }
+
+        // Department / Course filter
+        if (selectedDepartment.value !== 'all') {
+            const courseCode = approval.clearance_request?.user?.course?.code;
+            if (courseCode !== selectedDepartment.value) {
+                return false;
+            }
+        }
+
+        // Search query filter (matches Name, Student ID, Course Code, Course Name, or Year Level)
+        if (searchQuery.value.trim()) {
+            const query = searchQuery.value.toLowerCase().trim();
+            const student = approval.clearance_request?.user;
+            if (!student) return false;
+
+            const formattedName = formatStudentName(student).toLowerCase();
+            const matchesName =
+                student.name?.toLowerCase().includes(query) ||
+                formattedName.includes(query);
+            const matchesFirst = student.first_name?.toLowerCase().includes(query);
+            const matchesLast = student.last_name?.toLowerCase().includes(query);
+            const matchesId = student.student_id?.toLowerCase().includes(query);
+            const matchesCourseCode = student.course?.code?.toLowerCase().includes(query);
+            const matchesCourseName = student.course?.name?.toLowerCase().includes(query);
+            const matchesYear = student.year_level?.toLowerCase().includes(query);
+
+            if (
+                !matchesName &&
+                !matchesFirst &&
+                !matchesLast &&
+                !matchesId &&
+                !matchesCourseCode &&
+                !matchesCourseName &&
+                !matchesYear
+            ) {
+                return false;
+            }
+        }
+
+        return true;
+    });
+});
+
+const selectedApprovalForReject = computed(() => {
+    if (selectedRejectApprovalId.value === null) {
+        return null;
+    }
+
+    return (
+        props.approvals.find(
+            (a) => a.id === selectedRejectApprovalId.value,
+        ) ?? null
+    );
+});
+
+const resetFilters = () => {
+    searchQuery.value = '';
+    selectedYearLevel.value = 'all';
+    selectedDepartment.value = 'all';
+    activeFilter.value = 'pending';
+};
 
 const openApproveModal = (approval: Approval) => {
     clearMessages();
@@ -526,63 +663,203 @@ const scrollToTop = () => {
             <section
                 class="overflow-hidden rounded-3xl border border-slate-200 bg-white/95 shadow-sm shadow-slate-200/70"
             >
-                <div
-                    class="flex flex-col gap-4 border-b border-slate-200 bg-white px-4 py-5 sm:px-6 md:flex-row md:items-center md:justify-between"
-                >
-                    <div>
-                        <p
-                            class="text-xs font-black tracking-[0.18em] text-slate-400 uppercase"
-                        >
-                            Office Queue
-                        </p>
+                <div class="border-b border-slate-200 bg-white px-4 py-5 sm:px-6">
+                    <div
+                        class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
+                    >
+                        <div>
+                            <p
+                                class="text-xs font-black tracking-[0.18em] text-slate-400 uppercase"
+                            >
+                                Office Queue
+                            </p>
 
-                        <h2 class="mt-1 text-xl font-black text-blue-950">
-                            Office Clearance Records
-                        </h2>
+                            <h2 class="mt-1 text-xl font-black text-blue-950">
+                                Office Clearance Records
+                            </h2>
 
-                        <p class="mt-1 text-sm font-medium text-slate-500">
-                            Filter pending, approved, and rejected requests
-                            assigned to your office.
-                        </p>
+                            <p class="mt-1 text-sm font-medium text-slate-500">
+                                Filter pending, approved, and rejected requests
+                                assigned to your office.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+                            <button
+                                type="button"
+                                class="inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-2xl border px-4 py-2.5 text-sm font-black transition"
+                                :class="filterButtonClass('all')"
+                                @click.prevent.stop="setFilter('all')"
+                            >
+                                <Filter class="size-4" />
+                                All
+                                <span
+                                    class="ml-1 rounded-full px-2 py-0.5 text-[0.7rem] font-black"
+                                    :class="activeFilter === 'all' ? 'bg-white/25 text-white' : 'bg-slate-100 text-slate-600'"
+                                >
+                                    {{ props.approvals.length }}
+                                </span>
+                            </button>
+
+                            <button
+                                type="button"
+                                class="inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-2xl border px-4 py-2.5 text-sm font-black transition"
+                                :class="filterButtonClass('pending')"
+                                @click.prevent.stop="setFilter('pending')"
+                            >
+                                Pending
+                                <span
+                                    class="ml-1 rounded-full px-2 py-0.5 text-[0.7rem] font-black"
+                                    :class="activeFilter === 'pending' ? 'bg-white/25 text-white' : 'bg-orange-100 text-orange-700'"
+                                >
+                                    {{ pendingApprovals.length }}
+                                </span>
+                            </button>
+
+                            <button
+                                type="button"
+                                class="inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-2xl border px-4 py-2.5 text-sm font-black transition"
+                                :class="filterButtonClass('approved')"
+                                @click.prevent.stop="setFilter('approved')"
+                            >
+                                Approved
+                                <span
+                                    class="ml-1 rounded-full px-2 py-0.5 text-[0.7rem] font-black"
+                                    :class="activeFilter === 'approved' ? 'bg-white/25 text-white' : 'bg-green-100 text-green-700'"
+                                >
+                                    {{ approvedApprovals.length }}
+                                </span>
+                            </button>
+
+                            <button
+                                type="button"
+                                class="inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-2xl border px-4 py-2.5 text-sm font-black transition"
+                                :class="filterButtonClass('rejected')"
+                                @click.prevent.stop="setFilter('rejected')"
+                            >
+                                Rejected
+                                <span
+                                    class="ml-1 rounded-full px-2 py-0.5 text-[0.7rem] font-black"
+                                    :class="activeFilter === 'rejected' ? 'bg-white/25 text-white' : 'bg-red-100 text-red-700'"
+                                >
+                                    {{ rejectedApprovals.length }}
+                                </span>
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
-                        <button
-                            type="button"
-                            class="inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-2xl border px-4 py-2.5 text-sm font-black transition"
-                            :class="filterButtonClass('all')"
-                            @click.prevent.stop="setFilter('all')"
-                        >
-                            <Filter class="size-4" />
-                            All
-                        </button>
+                    <!-- Secondary Bar: Search, Department & Year Level Filters -->
+                    <div
+                        class="mt-4 flex flex-col gap-3 border-t border-slate-100 pt-4 lg:flex-row lg:items-center lg:justify-between"
+                    >
+                        <!-- Search Box -->
+                        <div class="relative flex-1 min-w-[200px]">
+                            <Search
+                                class="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-400"
+                            />
+                            <input
+                                v-model="searchQuery"
+                                type="text"
+                                placeholder="Search by student name, ID, course, or year..."
+                                class="h-11 w-full rounded-2xl border border-slate-200 bg-slate-50/70 pl-10 pr-10 text-sm font-semibold text-slate-900 shadow-inner placeholder:font-medium placeholder:text-slate-400 transition focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:outline-none"
+                            />
+                            <button
+                                v-if="searchQuery"
+                                type="button"
+                                class="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-slate-400 transition hover:bg-slate-200 hover:text-slate-700"
+                                @click="searchQuery = ''"
+                            >
+                                <X class="size-3.5" />
+                            </button>
+                        </div>
 
-                        <button
-                            type="button"
-                            class="inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-2xl border px-4 py-2.5 text-sm font-black transition"
-                            :class="filterButtonClass('pending')"
-                            @click.prevent.stop="setFilter('pending')"
-                        >
-                            Pending
-                        </button>
+                        <!-- Dropdowns Container -->
+                        <div class="flex flex-wrap items-center gap-2 shrink-0">
+                            <!-- Department Selector -->
+                            <div class="relative min-w-[160px] sm:min-w-[185px]">
+                                <Building2
+                                    class="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-blue-600"
+                                />
+                                <select
+                                    v-model="selectedDepartment"
+                                    class="h-11 w-full cursor-pointer appearance-none rounded-2xl border border-slate-200 bg-slate-50/70 pl-10 pr-9 text-sm font-semibold text-slate-900 shadow-inner transition focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:outline-none"
+                                >
+                                    <option value="all">All Departments</option>
+                                    <option
+                                        v-for="dept in availableDepartments"
+                                        :key="dept.code"
+                                        :value="dept.code"
+                                    >
+                                        {{ dept.code }} - {{ dept.name }}
+                                    </option>
+                                </select>
+                                <div
+                                    class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+                                >
+                                    <svg
+                                        class="size-4"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M19 9l-7 7-7-7"
+                                        />
+                                    </svg>
+                                </div>
+                            </div>
 
-                        <button
-                            type="button"
-                            class="inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-2xl border px-4 py-2.5 text-sm font-black transition"
-                            :class="filterButtonClass('approved')"
-                            @click.prevent.stop="setFilter('approved')"
-                        >
-                            Approved
-                        </button>
+                            <!-- Year Level Selector -->
+                            <div class="relative min-w-[150px] sm:min-w-[170px]">
+                                <GraduationCap
+                                    class="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-indigo-600"
+                                />
+                                <select
+                                    v-model="selectedYearLevel"
+                                    class="h-11 w-full cursor-pointer appearance-none rounded-2xl border border-slate-200 bg-slate-50/70 pl-10 pr-9 text-sm font-semibold text-slate-900 shadow-inner transition focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:outline-none"
+                                >
+                                    <option value="all">All Year Levels</option>
+                                    <option
+                                        v-for="year in availableYearLevels"
+                                        :key="year"
+                                        :value="year"
+                                    >
+                                        {{ year }}
+                                    </option>
+                                </select>
+                                <div
+                                    class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+                                >
+                                    <svg
+                                        class="size-4"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M19 9l-7 7-7-7"
+                                        />
+                                    </svg>
+                                </div>
+                            </div>
 
-                        <button
-                            type="button"
-                            class="inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-2xl border px-4 py-2.5 text-sm font-black transition"
-                            :class="filterButtonClass('rejected')"
-                            @click.prevent.stop="setFilter('rejected')"
-                        >
-                            Rejected
-                        </button>
+                            <button
+                                v-if="searchQuery || selectedYearLevel !== 'all' || selectedDepartment !== 'all'"
+                                type="button"
+                                class="inline-flex h-11 items-center gap-1.5 rounded-2xl border border-slate-200 bg-white px-3.5 text-xs font-bold text-slate-600 shadow-sm transition hover:bg-slate-100 hover:text-slate-900"
+                                @click="searchQuery = ''; selectedYearLevel = 'all'; selectedDepartment = 'all'"
+                                title="Clear search and filters"
+                            >
+                                <X class="size-3.5" />
+                                <span class="hidden sm:inline">Clear</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -601,8 +878,22 @@ const scrollToTop = () => {
                     </p>
 
                     <p class="mt-1 text-sm font-medium text-slate-500">
-                        Records will appear here based on the selected filter.
+                        <span v-if="searchQuery || selectedYearLevel !== 'all' || selectedDepartment !== 'all'">
+                            No requests match your current search, department, or year level filter.
+                        </span>
+                        <span v-else>
+                            Records will appear here based on the selected filter.
+                        </span>
                     </p>
+
+                    <button
+                        v-if="searchQuery || selectedYearLevel !== 'all' || selectedDepartment !== 'all' || activeFilter !== 'pending'"
+                        type="button"
+                        class="mt-4 inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-black text-blue-700 shadow-sm transition hover:bg-slate-50"
+                        @click="resetFilters"
+                    >
+                        Reset All Filters
+                    </button>
                 </div>
 
                 <div v-else>
@@ -616,10 +907,12 @@ const scrollToTop = () => {
                             <div class="flex items-start justify-between gap-3">
                                 <div class="min-w-0">
                                     <h3
-                                        class="truncate text-base font-black text-blue-950"
+                                        class="line-clamp-2 text-base leading-tight font-black break-words text-blue-950"
                                     >
                                         {{
-                                            approval.clearance_request.user.name
+                                            formatStudentName(
+                                                approval.clearance_request.user,
+                                            )
                                         }}
                                     </h3>
 
@@ -657,6 +950,14 @@ const scrollToTop = () => {
                                         approval.clearance_request.user.course
                                             ?.code ?? 'N/A'
                                     }}
+                                </span>
+
+                                <span
+                                    v-if="approval.clearance_request.user.year_level"
+                                    class="inline-flex items-center gap-1 rounded-full border border-indigo-100 bg-indigo-50 px-3 py-1 text-xs font-black text-indigo-700"
+                                >
+                                    <GraduationCap class="size-3" />
+                                    {{ approval.clearance_request.user.year_level }}
                                 </span>
 
                                 <span
@@ -729,7 +1030,13 @@ const scrollToTop = () => {
                                     <th
                                         class="px-6 py-4 text-xs font-black tracking-wide uppercase"
                                     >
-                                        Course
+                                        Department / Course
+                                    </th>
+
+                                    <th
+                                        class="px-6 py-4 text-xs font-black tracking-wide uppercase"
+                                    >
+                                        Year Level
                                     </th>
 
                                     <th
@@ -768,8 +1075,10 @@ const scrollToTop = () => {
                                         <div>
                                             <p class="font-black text-blue-950">
                                                 {{
-                                                    approval.clearance_request
-                                                        .user.name
+                                                    formatStudentName(
+                                                        approval.clearance_request
+                                                            .user,
+                                                    )
                                                 }}
                                             </p>
 
@@ -801,6 +1110,22 @@ const scrollToTop = () => {
                                                 approval.clearance_request.user
                                                     .course?.code ?? 'N/A'
                                             }}
+                                        </span>
+                                    </td>
+
+                                    <td class="px-6 py-4">
+                                        <span
+                                            v-if="approval.clearance_request.user.year_level"
+                                            class="inline-flex items-center gap-1.5 rounded-full border border-indigo-100 bg-indigo-50 px-3 py-1 text-xs font-black text-indigo-700 shadow-xs"
+                                        >
+                                            <GraduationCap class="size-3" />
+                                            {{ approval.clearance_request.user.year_level }}
+                                        </span>
+                                        <span
+                                            v-else
+                                            class="text-xs font-medium text-slate-400"
+                                        >
+                                            Not specified
                                         </span>
                                     </td>
 
@@ -993,6 +1318,33 @@ const scrollToTop = () => {
             </div>
 
             <div class="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6">
+                <!-- Selected student preview in reject modal -->
+                <div
+                    v-if="selectedApprovalForReject"
+                    class="mb-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700"
+                >
+                    <div class="grid gap-2">
+                        <p>
+                            <span class="font-black">Student:</span>
+                            {{ formatStudentName(selectedApprovalForReject.clearance_request.user) }}
+                            <span class="text-xs font-semibold text-slate-500">
+                                ({{ selectedApprovalForReject.clearance_request.user.student_id }})
+                            </span>
+                        </p>
+                        <p>
+                            <span class="font-black">Course & Year:</span>
+                            {{ selectedApprovalForReject.clearance_request.user.course?.code ?? 'N/A' }}
+                            <span
+                                v-if="selectedApprovalForReject.clearance_request.user.year_level"
+                                class="ml-1.5 inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-black text-indigo-700"
+                            >
+                                <GraduationCap class="size-3" />
+                                {{ selectedApprovalForReject.clearance_request.user.year_level }}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+
                 <label
                     for="reject-remarks"
                     class="text-sm font-black text-slate-700"
@@ -1060,7 +1412,7 @@ const scrollToTop = () => {
 
                         <p class="mt-2 text-sm leading-6 text-slate-600">
                             Are you sure you want to approve this clearance
-                            request? This will mark the student as cleared for
+                            request? This will mark the student as approved for
                             your assigned office.
                         </p>
                     </div>
@@ -1074,8 +1426,10 @@ const scrollToTop = () => {
                         <p>
                             <span class="font-black">Student:</span>
                             {{
-                                selectedApprovalForApproval.clearance_request
-                                    .user.name
+                                formatStudentName(
+                                    selectedApprovalForApproval
+                                        .clearance_request.user,
+                                )
                             }}
                         </p>
 
@@ -1085,6 +1439,27 @@ const scrollToTop = () => {
                                 selectedApprovalForApproval.clearance_request
                                     .user.student_id
                             }}
+                        </p>
+
+                        <p>
+                            <span class="font-black">Course:</span>
+                            {{
+                                selectedApprovalForApproval.clearance_request
+                                    .user.course?.code ?? 'N/A'
+                            }}
+                        </p>
+
+                        <p>
+                            <span class="font-black">Year Level:</span>
+                            <span
+                                class="ml-1 inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-black text-indigo-700"
+                            >
+                                <GraduationCap class="size-3" />
+                                {{
+                                    selectedApprovalForApproval.clearance_request
+                                        .user.year_level ?? 'Not specified'
+                                }}
+                            </span>
                         </p>
 
                         <p>
@@ -1127,50 +1502,4 @@ const scrollToTop = () => {
             </div>
         </div>
     </div>
-
-    <!-- Staff Mobile Thumb Navigation -->
-    <nav
-        class="fixed inset-x-3 bottom-3 z-30 rounded-2xl border border-blue-200 bg-blue-950/95 p-2 shadow-2xl shadow-blue-950/25 backdrop-blur md:hidden"
-    >
-        <div class="grid grid-cols-4 gap-1">
-            <button
-                type="button"
-                class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
-                @click="scrollToTop"
-            >
-                <ShieldCheck class="size-4" />
-                <span>Top</span>
-            </button>
-
-            <button
-                type="button"
-                class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
-                :class="thumbButtonClass('pending')"
-                @click="setFilter('pending')"
-            >
-                <Clock3 class="size-4" />
-                <span>Pending</span>
-            </button>
-
-            <button
-                type="button"
-                class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
-                :class="thumbButtonClass('approved')"
-                @click="setFilter('approved')"
-            >
-                <CheckCircle2 class="size-4" />
-                <span>Approved</span>
-            </button>
-
-            <button
-                type="button"
-                class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
-                :class="thumbButtonClass('rejected')"
-                @click="setFilter('rejected')"
-            >
-                <XCircle class="size-4" />
-                <span>Rejected</span>
-            </button>
-        </div>
-    </nav>
 </template>

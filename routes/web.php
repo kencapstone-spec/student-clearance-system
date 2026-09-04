@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdminClearanceRequestController;
 use App\Http\Controllers\Admin\AdminCourseModuleController;
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminOfficePrerequisiteController;
 use App\Http\Controllers\Admin\AdminReportController;
 use App\Http\Controllers\Admin\AdminSettingController;
 use App\Http\Controllers\Admin\AdminUserController;
@@ -29,7 +30,7 @@ Route::get('/verify-clearance/{verificationCode}', [ClearanceVerificationControl
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function (Request $request) {
-        $user = $request->user()->load('course.offices');
+        $user = $request->user()->load('course.offices.prerequisites:id,name');
 
         if ($user->role === 'admin') {
             return redirect()->route('admin.dashboard');
@@ -51,6 +52,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->values();
 
         $finalApproverOffices = Office::query()
+            ->with('prerequisites:id,name')
             ->where('is_final_approver', true)
             ->orderBy('sort_order')
             ->get(['id', 'name', 'group', 'sort_order', 'is_final_approver']);
@@ -121,6 +123,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('/admin/course-modules/{course}', [AdminCourseModuleController::class, 'update'])
             ->name('admin.course-modules.update');
 
+        Route::get('/admin/office-prerequisites', [AdminOfficePrerequisiteController::class, 'index'])
+            ->name('admin.office-prerequisites.index');
+
+        Route::patch('/admin/office-prerequisites/{office}', [AdminOfficePrerequisiteController::class, 'update'])
+            ->name('admin.office-prerequisites.update');
+
         Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])
             ->name('admin.dashboard');
 
@@ -154,6 +162,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/admin/reports/print', [AdminReportController::class, 'printReport'])
             ->name('admin.reports.print');
 
+        Route::get('/admin/settings', [AdminSettingController::class, 'index'])
+            ->name('admin.settings.index');
+
         Route::patch('/admin/settings', [AdminSettingController::class, 'update'])
             ->name('admin.settings.update');
     });
@@ -168,4 +179,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('/president/final-approvals/approve-all', [FinalApprovalController::class, 'approveAll'])
             ->name('president.final-approvals.approve-all');
     });
+});
+
+// Routes for triggering Cron Jobs via InfinityFree
+Route::get('/cron/approve-all/{secret}', function ($secret) {
+    if ($secret !== 'my-secret-key-123') {
+        abort(403, 'Unauthorized action.');
+    }
+    \Illuminate\Support\Facades\Artisan::call('clearance:approve-all');
+    return 'Success: ' . \Illuminate\Support\Facades\Artisan::output();
+});
+
+Route::get('/cron/reject-all/{secret}', function ($secret) {
+    if ($secret !== 'my-secret-key-123') {
+        abort(403, 'Unauthorized action.');
+    }
+    \Illuminate\Support\Facades\Artisan::call('clearance:reject-all');
+    return 'Success: ' . \Illuminate\Support\Facades\Artisan::output();
 });

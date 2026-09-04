@@ -1,17 +1,12 @@
 <script setup lang="ts">
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import {
-    AlertTriangle,
-    ArrowLeft,
-    Building2,
-    CheckCircle2,
-    FileCog,
     LayoutDashboard,
+    Network,
     Pencil,
     RotateCcw,
     Save,
     ShieldCheck,
-    UserRoundCog,
     X,
 } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
@@ -22,58 +17,46 @@ type Office = {
     group: string;
     sort_order: number;
     is_final_approver: boolean;
+    prerequisites?: { id: number; name: string }[];
 };
 
-type Course = {
-    id: number;
-    code: string;
-    name: string;
-    offices: Office[];
-};
-
-defineProps<{
-    courses: Course[];
+const props = defineProps<{
     offices: Office[];
 }>();
 
-const selectedCourse = ref<Course | null>(null);
+const selectedOffice = ref<Office | null>(null);
 const showEditModal = ref(false);
-const showRemoveConfirmModal = ref(false);
-const showAdminMobileMoreMenu = ref(false);
 const successMessage = ref('');
 const errorMessage = ref('');
 
 const form = useForm<{
-    office_ids: number[];
+    prerequisite_office_ids: number[];
 }>({
-    office_ids: [],
+    prerequisite_office_ids: [],
 });
 
-const selectedOfficeCount = computed(() => form.office_ids.length);
+const selectedPrerequisiteCount = computed(
+    () => form.prerequisite_office_ids.length,
+);
 
-const removedOffices = computed(() => {
-    if (!selectedCourse.value) {
+const availablePrerequisites = computed(() => {
+    if (!selectedOffice.value) {
         return [];
     }
 
-    return selectedCourse.value.offices.filter((office) => {
-        return (
-            !office.is_final_approver && !form.office_ids.includes(office.id)
-        );
-    });
+    // An office cannot be a prerequisite of itself
+    return props.offices.filter((o) => o.id !== selectedOffice.value?.id);
 });
 
-const openEditModal = (course: Course) => {
-    selectedCourse.value = course;
-    form.office_ids = course.offices
-        .filter((office) => !office.is_final_approver)
-        .map((office) => office.id);
+const openEditModal = (office: Office) => {
+    selectedOffice.value = office;
+    form.prerequisite_office_ids = (office.prerequisites || []).map(
+        (p) => p.id,
+    );
 
     form.clearErrors();
     errorMessage.value = '';
     successMessage.value = '';
-    showAdminMobileMoreMenu.value = false;
-    showRemoveConfirmModal.value = false;
     showEditModal.value = true;
 };
 
@@ -82,72 +65,36 @@ const closeEditModal = (force = false) => {
         return;
     }
 
-    selectedCourse.value = null;
+    selectedOffice.value = null;
     form.reset();
     form.clearErrors();
     errorMessage.value = '';
     showEditModal.value = false;
-    showRemoveConfirmModal.value = false;
 };
 
-const submitAssignments = () => {
-    if (!selectedCourse.value) {
+const savePrerequisites = () => {
+    if (!selectedOffice.value) {
         return;
     }
 
-    errorMessage.value = '';
-    successMessage.value = '';
-    form.clearErrors();
+    const officeName = selectedOffice.value.name;
 
-    if (form.office_ids.length === 0) {
-        errorMessage.value =
-            'Select at least one regular office for this course module.';
-
-        return;
-    }
-
-    if (removedOffices.value.length > 0) {
-        showRemoveConfirmModal.value = true;
-
-        return;
-    }
-
-    saveAssignments();
-};
-
-const saveAssignments = () => {
-    if (!selectedCourse.value) {
-        return;
-    }
-
-    const courseCode = selectedCourse.value.code;
-
-    showRemoveConfirmModal.value = false;
-
-    form.patch(`/admin/course-modules/${selectedCourse.value.id}`, {
+    form.patch(`/admin/office-prerequisites/${selectedOffice.value.id}`, {
         preserveScroll: true,
         onSuccess: () => {
-            successMessage.value = `${courseCode} office assignments updated successfully.`;
+            successMessage.value = `Prerequisites for ${officeName} updated successfully.`;
             closeEditModal(true);
         },
         onError: () => {
             errorMessage.value =
-                'Unable to update course module offices. Please check the selected offices.';
+                'Unable to update prerequisites. Please check your selections.';
         },
     });
-};
-
-const toggleAdminMobileMoreMenu = () => {
-    showAdminMobileMoreMenu.value = !showAdminMobileMoreMenu.value;
-};
-
-const closeAdminMobileMoreMenu = () => {
-    showAdminMobileMoreMenu.value = false;
 };
 </script>
 
 <template>
-    <Head title="Course Modules" />
+    <Head title="Office Prerequisites" />
 
     <div
         class="min-h-screen bg-linear-to-br from-slate-50 via-white to-blue-50/40 p-3 pb-28 text-slate-900 sm:p-4 sm:pb-28 md:p-6 md:pb-6"
@@ -175,16 +122,16 @@ const closeAdminMobileMoreMenu = () => {
                                 <h1
                                     class="text-3xl font-black tracking-tight text-blue-950 sm:text-4xl"
                                 >
-                                    Course Modules
+                                    Office Prerequisites
                                 </h1>
 
                                 <p
                                     class="mt-3 max-w-3xl text-sm leading-6 text-slate-600 sm:text-base sm:leading-7"
                                 >
-                                    View and configure the clearance offices
-                                    assigned to each course module. These
-                                    assignments control which offices students
-                                    must clear for future requests.
+                                    Configure which offices must be cleared
+                                    before a student can request clearance from
+                                    another office. This enforces a strict
+                                    built-in order for the clearance process.
                                 </p>
                             </div>
 
@@ -195,15 +142,6 @@ const closeAdminMobileMoreMenu = () => {
                                 <LayoutDashboard class="size-4" />
                                 Back to Dashboard
                             </Link>
-                        </div>
-
-                        <div
-                            class="mt-5 rounded-2xl border border-amber-200 bg-amber-50/90 p-4 text-sm leading-6 font-medium text-amber-900"
-                        >
-                            Changes made here apply only to future or newly
-                            created clearance requests. Existing clearance
-                            records, receipts, reports, QR verification,
-                            remarks, and approval history must remain unchanged.
                         </div>
 
                         <div
@@ -221,24 +159,24 @@ const closeAdminMobileMoreMenu = () => {
                             <div
                                 class="grid h-20 w-20 place-items-center rounded-3xl bg-blue-700 text-white shadow-xl shadow-blue-700/25"
                             >
-                                <FileCog class="size-10" />
+                                <Network class="size-10" />
                             </div>
 
                             <p
                                 class="text-center text-sm font-black tracking-[0.18em] text-blue-700 uppercase"
                             >
-                                Module Center
+                                Flow Control
                             </p>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Course Cards -->
+            <!-- Office Cards -->
             <section class="grid gap-4 xl:grid-cols-2 xl:gap-5">
                 <div
-                    v-for="course in courses"
-                    :key="course.id"
+                    v-for="office in offices"
+                    :key="office.id"
                     class="overflow-hidden rounded-3xl border border-slate-200 bg-white/95 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-4xl"
                 >
                     <div class="border-b border-slate-200 p-4 sm:p-6">
@@ -247,20 +185,21 @@ const closeAdminMobileMoreMenu = () => {
                                 <p
                                     class="text-xs font-black tracking-[0.18em] text-blue-700 uppercase"
                                 >
-                                    {{ course.code }} Module
+                                    {{ office.group }}
                                 </p>
 
                                 <h2
                                     class="mt-2 text-xl leading-tight font-black text-blue-950 sm:text-2xl"
                                 >
-                                    {{ course.name }}
+                                    {{ office.name }}
                                 </h2>
                             </div>
 
                             <span
                                 class="shrink-0 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-black text-blue-700"
                             >
-                                {{ course.offices.length }} Offices
+                                {{ (office.prerequisites || []).length }}
+                                Prerequisites
                             </span>
                         </div>
 
@@ -268,10 +207,10 @@ const closeAdminMobileMoreMenu = () => {
                             <button
                                 type="button"
                                 class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl bg-blue-700 px-4 py-3 text-sm font-black text-white shadow-md shadow-blue-700/20 transition hover:-translate-y-0.5 hover:bg-blue-800 hover:shadow-lg sm:w-auto"
-                                @click="openEditModal(course)"
+                                @click="openEditModal(office)"
                             >
                                 <Pencil class="size-4" />
-                                Edit Offices
+                                Edit Prerequisites
                             </button>
                         </div>
                     </div>
@@ -280,68 +219,54 @@ const closeAdminMobileMoreMenu = () => {
                         <div class="mb-4 flex items-center justify-between">
                             <div>
                                 <p class="text-sm font-black text-blue-950">
-                                    Assigned Clearance Offices
+                                    Required Before This Office
                                 </p>
-
                                 <p
                                     class="mt-1 text-sm font-medium text-slate-500"
                                 >
-                                    Offices currently required for this course.
+                                    Students must clear these offices first.
                                 </p>
                             </div>
                         </div>
 
                         <div
-                            v-if="course.offices.length === 0"
+                            v-if="
+                                !office.prerequisites ||
+                                office.prerequisites.length === 0
+                            "
                             class="rounded-3xl border border-dashed border-slate-300 bg-slate-50 p-6 text-center"
                         >
                             <div
                                 class="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-blue-50 text-blue-700"
                             >
-                                <Building2 class="size-7" />
+                                <Network class="size-7" />
                             </div>
-
                             <p class="mt-3 font-black text-slate-700">
-                                No offices assigned yet.
+                                No prerequisites set.
                             </p>
-
                             <p class="mt-1 text-sm font-medium text-slate-500">
-                                Edit this module to assign required offices.
+                                Students can request this office immediately.
                             </p>
                         </div>
 
                         <ul v-else class="space-y-3">
                             <li
-                                v-for="office in course.offices"
-                                :key="office.id"
+                                v-for="prereq in office.prerequisites"
+                                :key="prereq.id"
                                 class="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3 text-sm transition hover:border-blue-200 hover:bg-blue-50/70 sm:gap-4 sm:px-4"
                             >
                                 <div class="flex min-w-0 items-center gap-3">
                                     <div
                                         class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-white text-blue-700 shadow-sm"
                                     >
-                                        <Building2 class="size-5" />
+                                        <ShieldCheck class="size-5" />
                                     </div>
-
                                     <div class="min-w-0">
                                         <p class="font-black text-blue-950">
-                                            {{ office.name }}
-                                        </p>
-
-                                        <p
-                                            class="text-xs font-medium text-slate-500"
-                                        >
-                                            {{ office.group }}
+                                            {{ prereq.name }}
                                         </p>
                                     </div>
                                 </div>
-
-                                <span
-                                    v-if="office.is_final_approver"
-                                    class="shrink-0 rounded-full border border-green-200 bg-green-50 px-3 py-1 text-xs font-black text-green-700"
-                                >
-                                    Final
-                                </span>
                             </li>
                         </ul>
                     </div>
@@ -352,7 +277,7 @@ const closeAdminMobileMoreMenu = () => {
 
     <!-- Edit Modal -->
     <div
-        v-if="showEditModal && selectedCourse"
+        v-if="showEditModal && selectedOffice"
         class="fixed inset-0 z-40 flex items-end justify-center bg-slate-950/50 p-3 backdrop-blur-sm sm:items-center sm:p-4"
         @click.self="closeEditModal()"
     >
@@ -365,31 +290,26 @@ const closeAdminMobileMoreMenu = () => {
                         <div
                             class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-blue-50 text-blue-700 sm:h-12 sm:w-12"
                         >
-                            <FileCog class="size-6" />
+                            <Network class="size-6" />
                         </div>
-
                         <div class="min-w-0">
                             <p
                                 class="text-xs font-black tracking-[0.18em] text-blue-700 uppercase"
                             >
-                                Edit Course Module
+                                Edit Prerequisites
                             </p>
-
                             <h2
                                 class="mt-1 text-lg leading-tight font-black text-blue-950 sm:text-2xl"
                             >
-                                {{ selectedCourse.code }} -
-                                {{ selectedCourse.name }}
+                                {{ selectedOffice.name }}
                             </h2>
-
                             <p class="mt-2 text-sm leading-6 text-slate-600">
-                                Select the regular offices required for this
-                                course. The President final approval is handled
-                                separately and is not editable here.
+                                Select the offices that a student must clear
+                                before they can request clearance from
+                                {{ selectedOffice.name }}.
                             </p>
                         </div>
                     </div>
-
                     <button
                         type="button"
                         class="grid size-10 shrink-0 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:bg-slate-50 hover:text-slate-900"
@@ -402,65 +322,45 @@ const closeAdminMobileMoreMenu = () => {
 
             <div class="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6">
                 <div
-                    class="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 font-medium text-amber-900"
+                    v-if="errorMessage || form.errors.prerequisite_office_ids"
+                    class="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-black text-red-700"
                 >
-                    Removing an office from a course module will not delete the
-                    office and will not change old clearance records. It only
-                    affects future or newly created clearance requests for this
-                    course.
+                    {{ errorMessage || form.errors.prerequisite_office_ids }}
                 </div>
 
                 <div
-                    v-if="errorMessage || form.errors.office_ids"
-                    class="mt-4 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-black text-red-700"
+                    class="mt-2 flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm"
                 >
-                    {{ errorMessage || form.errors.office_ids }}
-                </div>
-
-                <div
-                    class="mt-5 flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm"
-                >
-                    <span class="font-black text-slate-700">
-                        Selected Offices
-                    </span>
-
+                    <span class="font-black text-slate-700"
+                        >Selected Prerequisites</span
+                    >
                     <span
                         class="rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-black text-blue-700"
                     >
-                        {{ selectedOfficeCount }} selected
+                        {{ selectedPrerequisiteCount }} selected
                     </span>
                 </div>
 
                 <div class="mt-4 grid gap-2 sm:grid-cols-2">
                     <label
-                        v-for="office in offices"
+                        v-for="office in availablePrerequisites"
                         :key="office.id"
                         class="flex min-h-16 cursor-pointer items-start gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm transition hover:border-blue-200 hover:bg-blue-50/60"
                     >
                         <input
-                            v-model="form.office_ids"
+                            v-model="form.prerequisite_office_ids"
                             type="checkbox"
                             :value="office.id"
                             class="mt-1 h-5 w-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                         />
-
                         <span class="min-w-0 flex-1">
-                            <span class="block font-black text-blue-950">
-                                {{ office.name }}
-                            </span>
-
+                            <span class="block font-black text-blue-950">{{
+                                office.name
+                            }}</span>
                             <span
                                 class="mt-0.5 block text-xs font-medium text-slate-500"
+                                >{{ office.group }}</span
                             >
-                                {{ office.group }}
-                            </span>
-                        </span>
-
-                        <span
-                            v-if="office.is_final_approver"
-                            class="shrink-0 rounded-full border border-green-200 bg-green-50 px-3 py-1 text-xs font-black text-green-700"
-                        >
-                            Final
                         </span>
                     </label>
                 </div>
@@ -477,92 +377,16 @@ const closeAdminMobileMoreMenu = () => {
                         <RotateCcw class="size-4" />
                         Cancel
                     </button>
-
                     <button
                         type="button"
                         class="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-blue-700 px-4 py-3 text-sm font-black text-white shadow-md shadow-blue-700/20 transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-blue-300"
                         :disabled="form.processing"
-                        @click="submitAssignments"
+                        @click="savePrerequisites"
                     >
                         <Save class="size-4" />
-                        {{ form.processing ? 'Saving...' : 'Save Assignments' }}
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Remove Confirmation Modal -->
-    <div
-        v-if="showRemoveConfirmModal && selectedCourse"
-        class="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/60 p-3 backdrop-blur-sm sm:items-center sm:p-4"
-    >
-        <div
-            class="flex max-h-[92dvh] w-full max-w-lg flex-col overflow-hidden rounded-t-4xl border border-slate-200 bg-white shadow-2xl shadow-slate-900/20 sm:max-h-[90vh] sm:rounded-4xl"
-        >
-            <div class="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6">
-                <div class="flex items-start gap-4">
-                    <div
-                        class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-red-50 text-red-600"
-                    >
-                        <AlertTriangle class="size-6" />
-                    </div>
-
-                    <div>
-                        <h2 class="text-xl font-black text-red-700">
-                            Confirm Office Removal
-                        </h2>
-
-                        <p class="mt-3 text-sm leading-6 text-slate-700">
-                            You are removing the following office assignment(s)
-                            from
-                            <span class="font-black">
-                                {{ selectedCourse.code }}
-                            </span>
-                            .
-                        </p>
-                    </div>
-                </div>
-
-                <ul class="mt-4 space-y-2">
-                    <li
-                        v-for="office in removedOffices"
-                        :key="office.id"
-                        class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-black text-red-800"
-                    >
-                        {{ office.name }}
-                    </li>
-                </ul>
-
-                <div
-                    class="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 font-medium text-amber-900"
-                >
-                    This will only update the course module assignment. It will
-                    not delete existing clearance approvals, student history,
-                    receipts, reports, or QR verification records.
-                </div>
-            </div>
-
-            <div class="shrink-0 border-t border-slate-200 bg-white p-4 sm:p-6">
-                <div class="grid grid-cols-2 gap-3 sm:flex sm:justify-end">
-                    <button
-                        type="button"
-                        class="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-black text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
-                        :disabled="form.processing"
-                        @click="showRemoveConfirmModal = false"
-                    >
-                        <ArrowLeft class="size-4" />
-                        Go Back
-                    </button>
-
-                    <button
-                        type="button"
-                        class="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-red-600 px-4 py-3 text-sm font-black text-white shadow-md shadow-red-600/20 transition hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-red-300"
-                        :disabled="form.processing"
-                        @click="saveAssignments"
-                    >
-                        <CheckCircle2 class="size-4" />
-                        {{ form.processing ? 'Saving...' : 'Continue Save' }}
+                        {{
+                            form.processing ? 'Saving...' : 'Save Prerequisites'
+                        }}
                     </button>
                 </div>
             </div>

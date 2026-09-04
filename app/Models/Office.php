@@ -36,4 +36,9 @@ class Office extends Model
     {
         return $this->belongsToMany(Course::class);
     }
+
+    public function prerequisites(): BelongsToMany
+    {
+        return $this->belongsToMany(Office::class, 'office_prerequisites', 'office_id', 'prerequisite_office_id');
+    }
 }

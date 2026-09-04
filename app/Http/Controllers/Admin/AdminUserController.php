@@ -43,6 +43,7 @@ class AdminUserController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'student_id' => ['required', 'string', 'max:255', 'unique:users,student_id'],
             'office_id' => ['required', 'exists:offices,id'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
@@ -50,6 +51,7 @@ class AdminUserController extends Controller
 
         User::create([
             'name' => $validated['name'],
+            'email' => $validated['email'],
             'student_id' => $validated['student_id'],
             'role' => 'staff',
             'office_id' => $validated['office_id'],
@@ -66,6 +68,13 @@ class AdminUserController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                Rule::unique('users')->ignore($user->id),
+            ],
 
             'role' => [
                 'required',
@@ -91,6 +100,7 @@ class AdminUserController extends Controller
 
         $updateData = [
             'name' => $validated['name'],
+            'email' => $validated['email'],
             'role' => $role,
             'course_id' => $role === 'student'
                 ? $validated['course_id']

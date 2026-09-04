@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Head, router } from '@inertiajs/vue3';
 import { CheckCircle2, Download, ChevronRight, LogOut } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted, onUnmounted } from 'vue';
 import { dashboard } from '@/routes';
 import { resolveCourseTheme } from '@/utils/courseThemes';
 import type { CourseTheme } from '@/utils/courseThemes';
@@ -17,6 +17,41 @@ defineOptions({
     },
 });
 
+let pollingInterval: ReturnType<typeof setInterval>;
+
+const handleOpenClearanceStatus = () => {
+    openClearanceDetailsModal();
+};
+
+const handleOpenSubmitRequest = () => {
+    openSubmitRequestModal();
+};
+
+onMounted(() => {
+    window.addEventListener('open-clearance-status', handleOpenClearanceStatus);
+    window.addEventListener('open-submit-request', handleOpenSubmitRequest);
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('view') === 'status') {
+        openClearanceDetailsModal();
+    } else if (params.get('view') === 'request') {
+        openSubmitRequestModal();
+    }
+
+    pollingInterval = setInterval(() => {
+        router.reload({
+            data: { _t: Date.now() },
+            only: ['clearanceRequest', 'offices'],
+        });
+    }, 5000);
+});
+
+onUnmounted(() => {
+    window.removeEventListener('open-clearance-status', handleOpenClearanceStatus);
+    window.removeEventListener('open-submit-request', handleOpenSubmitRequest);
+    clearInterval(pollingInterval);
+});
+
 type Course = {
     id: number;
     code: string;
@@ -28,6 +63,9 @@ type Student = {
     name: string;
     student_id: string;
     role: string;
+    year_level?: string | null;
+    first_name?: string | null;
+    last_name?: string | null;
     course?: Course | null;
 };
 
@@ -37,6 +75,7 @@ type Office = {
     group: string;
     sort_order: number;
     is_final_approver: boolean;
+    prerequisites?: { id: number; name: string }[];
 };
 
 type Approval = {
@@ -131,7 +170,7 @@ const isFullyCleared = computed(() => {
 
 const finalClearanceLabel = computed(() => {
     if (isFullyCleared.value) {
-        return 'Fully Cleared';
+        return 'Fully Approved';
     }
 
     if (props.clearanceRequest) {
@@ -154,7 +193,7 @@ const progressPercentage = computed(() => {
 });
 
 const officeStatuses = computed(() => {
-    return props.offices.map((office) => {
+    const statuses = props.offices.map((office) => {
         const approval = approvals.value.find(
             (item) => item.office_id === office.id,
         );
@@ -166,6 +205,8 @@ const officeStatuses = computed(() => {
             remarks: approval?.remarks ?? null,
         };
     });
+
+    return statuses;
 });
 
 const progressMessage = computed(() => {
@@ -174,7 +215,7 @@ const progressMessage = computed(() => {
     }
 
     if (isFullyCleared.value) {
-        return 'Your clearance is fully cleared and approved by the College President.';
+        return 'Your clearance is fully approved by the College President.';
     }
 
     if (progressPercentage.value === 100) {
@@ -186,7 +227,7 @@ const progressMessage = computed(() => {
 
 const statusLabel = (status: string) => {
     if (status === 'approved') {
-        return 'Cleared';
+        return 'Approved';
     }
 
     if (status === 'pending') {
@@ -194,7 +235,7 @@ const statusLabel = (status: string) => {
     }
 
     if (status === 'rejected') {
-        return 'Not Cleared';
+        return 'Not Approved';
     }
 
     if (status === 'not_requested') {
@@ -277,14 +318,114 @@ const regularOffices = computed(() => {
 });
 
 const requestableOffices = computed(() => {
+    let offices = [];
+
     if (!props.clearanceRequest) {
-        return regularOffices.value;
+        offices = regularOffices.value;
+    } else {
+        const allRegularApproved = regularOffices.value.every((ro) => {
+            const approval = props.clearanceRequest!.approvals.find(
+                (a) => a.office_id === ro.id,
+            );
+
+            return approval?.status === 'approved';
+        });
+
+        offices = officeStatuses.value.filter((office) => {
+            if (office.is_final_approver) {
+                return (
+                    office.status === 'not_requested' &&
+                    allRegularApproved &&
+                    regularOffices.value.length > 0
+                );
+            }
+
+            return office.status === 'not_requested';
+        });
     }
 
-    return officeStatuses.value.filter((office) => {
-        return !office.is_final_approver && office.status === 'not_requested';
+    return [...offices].sort((a, b) => {
+        const aCount = a.prerequisites?.length || 0;
+        const bCount = b.prerequisites?.length || 0;
+
+        if (aCount !== bCount) {
+            return aCount - bCount;
+        }
+
+        // Fallback to sort_order if they have the same number of prerequisites
+        return a.sort_order - b.sort_order;
     });
 });
+
+const isOfficeRequestable = (office: Office) => {
+    if (office.is_final_approver) {
+        if (!props.clearanceRequest) {
+            return false;
+        }
+
+        const allRegularApproved = regularOffices.value.every((ro) => {
+            const approval = props.clearanceRequest!.approvals.find(
+                (a) => a.office_id === ro.id,
+            );
+
+            return approval?.status === 'approved';
+        });
+
+        return allRegularApproved && regularOffices.value.length > 0;
+    }
+
+    if (!office.prerequisites || office.prerequisites.length === 0) {
+        return true;
+    }
+
+    if (!props.clearanceRequest) {
+        return false;
+    }
+
+    return office.prerequisites.every((prereq) => {
+        const approval = props.clearanceRequest!.approvals.find(
+            (a) => a.office_id === prereq.id,
+        );
+
+        return approval?.status === 'approved';
+    });
+};
+
+const unmetPrerequisites = (office: Office) => {
+    if (office.is_final_approver) {
+        if (!props.clearanceRequest) {
+            return regularOffices.value.map((o) => o.name);
+        }
+
+        const unapprovedRegularOffices = regularOffices.value.filter((ro) => {
+            const approval = props.clearanceRequest!.approvals.find(
+                (a) => a.office_id === ro.id,
+            );
+
+            return approval?.status !== 'approved';
+        });
+
+        return unapprovedRegularOffices.map((o) => o.name);
+    }
+
+    if (!office.prerequisites || office.prerequisites.length === 0) {
+        return [];
+    }
+
+    if (!props.clearanceRequest) {
+        return office.prerequisites.map((p) => p.name);
+    }
+
+    return office.prerequisites
+        .filter((prereq) => {
+            const approval = props.clearanceRequest!.approvals.find(
+                (a) => a.office_id === prereq.id,
+            );
+
+            return approval?.status !== 'approved';
+        })
+        .map((p) => p.name);
+};
 
 const openSubmitRequestModal = () => {
     selectedOfficeIds.value = [];
@@ -299,6 +440,12 @@ const closeSubmitRequestModal = () => {
 };
 
 const toggleOfficeSelection = (officeId: number) => {
+    const office = props.offices.find((o) => o.id === officeId);
+
+    if (!office || !isOfficeRequestable(office)) {
+        return;
+    }
+
     if (selectedOfficeIds.value.includes(officeId)) {
         selectedOfficeIds.value = selectedOfficeIds.value.filter(
             (id) => id !== officeId,
@@ -477,6 +624,14 @@ const confirmMobileLogout = () => {
                                 >
                                     {{ student.course.code }} Course Theme
                                 </span>
+
+                                <span
+                                    v-if="student.year_level"
+                                    class="inline-flex rounded-full bg-white/85 px-3 py-1 text-xs font-black shadow-sm"
+                                    :class="courseTheme.accentTextClass"
+                                >
+                                    {{ student.year_level }}
+                                </span>
                             </div>
                         </div>
 
@@ -547,7 +702,7 @@ const confirmMobileLogout = () => {
                                         class="text-xl font-black tracking-tight"
                                         :class="courseTheme.headingTextClass"
                                     >
-                                        Fully Cleared!
+                                        Fully Approved!
                                     </span>
                                 </div>
                             </div>
@@ -647,7 +802,7 @@ const confirmMobileLogout = () => {
                                 class="text-[0.65rem] leading-tight font-black tracking-wide uppercase md:text-sm"
                                 :class="courseTheme.accentTextClass"
                             >
-                                Total Cleared
+                                Total Approved
                             </p>
                             <p
                                 class="mt-1 text-2xl font-black md:text-3xl"
@@ -737,7 +892,7 @@ const confirmMobileLogout = () => {
                             <p
                                 class="text-[0.65rem] leading-tight font-black tracking-wide text-red-600 uppercase md:text-sm"
                             >
-                                Not Cleared
+                                Not Approved
                             </p>
                             <p
                                 class="mt-1 text-2xl font-black md:text-3xl"
@@ -992,13 +1147,13 @@ const confirmMobileLogout = () => {
             <!-- Submit Clearance Request Office Selection Modal -->
             <div
                 v-if="showSubmitRequestModal"
-                class="fixed inset-0 z-50 flex items-end justify-center bg-black/50 px-3 py-4 sm:items-center sm:px-4 sm:py-6"
+                class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-3 sm:p-4"
             >
                 <div
-                    class="max-h-[88vh] w-full max-w-3xl overflow-y-auto rounded-t-2xl bg-white shadow-xl sm:max-h-[90vh] sm:rounded-2xl"
+                    class="flex max-h-[85dvh] w-full max-w-3xl flex-col rounded-2xl bg-white shadow-xl sm:max-h-[90dvh]"
                 >
                     <div
-                        class="flex items-start justify-between gap-3 border-b border-slate-200 px-4 py-4 sm:px-6"
+                        class="shrink-0 flex items-start justify-between gap-3 border-b border-slate-200 px-4 py-3 sm:px-6 sm:py-4"
                     >
                         <div>
                             <h2
@@ -1024,9 +1179,9 @@ const confirmMobileLogout = () => {
                         </button>
                     </div>
 
-                    <div class="space-y-4 px-4 py-5 sm:px-6">
+                    <div class="flex-1 overflow-y-auto space-y-3 px-4 py-4 sm:px-6">
                         <div
-                            class="rounded-xl border p-4 text-sm"
+                            class="rounded-xl border p-3 text-sm leading-snug"
                             :class="courseTheme.statusBoxClass"
                         >
                             Select at least one office. Selected offices will
@@ -1041,23 +1196,30 @@ const confirmMobileLogout = () => {
                                 v-for="office in requestableOffices"
                                 :key="office.id"
                                 type="button"
-                                class="min-h-16 rounded-xl border p-4 text-left transition"
+                                :disabled="!isOfficeRequestable(office)"
+                                class="relative min-h-12 overflow-hidden rounded-xl border p-3 text-left transition"
                                 :class="
-                                    selectedOfficeIds.includes(office.id)
-                                        ? courseTheme.selectedOfficeClass
-                                        : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                                    !isOfficeRequestable(office)
+                                        ? 'cursor-not-allowed border-slate-100 bg-slate-50 text-slate-400 opacity-75'
+                                        : selectedOfficeIds.includes(office.id)
+                                          ? courseTheme.selectedOfficeClass
+                                          : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
                                 "
                                 @click="toggleOfficeSelection(office.id)"
                             >
-                                <div class="flex items-start gap-3">
+                                <div
+                                    class="relative z-10 flex items-start gap-3"
+                                >
                                     <div
-                                        class="mt-1 flex h-5 w-5 items-center justify-center rounded border"
+                                        class="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded border"
                                         :class="
-                                            selectedOfficeIds.includes(
-                                                office.id,
-                                            )
-                                                ? courseTheme.selectedCheckClass
-                                                : 'border-slate-300 bg-white'
+                                            !isOfficeRequestable(office)
+                                                ? 'border-slate-200 bg-slate-100'
+                                                : selectedOfficeIds.includes(
+                                                        office.id,
+                                                    )
+                                                  ? courseTheme.selectedCheckClass
+                                                  : 'border-slate-300 bg-white'
                                         "
                                     >
                                         <span
@@ -1073,13 +1235,49 @@ const confirmMobileLogout = () => {
                                     </div>
 
                                     <div>
-                                        <p class="font-semibold">
+                                        <p
+                                            class="font-semibold"
+                                            :class="{
+                                                'text-slate-500':
+                                                    !isOfficeRequestable(
+                                                        office,
+                                                    ),
+                                            }"
+                                        >
                                             {{ office.name }}
                                         </p>
 
                                         <p class="mt-1 text-xs text-slate-500">
                                             {{ office.group }}
                                         </p>
+
+                                        <div
+                                            v-if="!isOfficeRequestable(office)"
+                                            class="mt-2.5"
+                                        >
+                                            <p
+                                                class="text-[0.65rem] font-bold tracking-[0.05em] text-orange-600/90 uppercase"
+                                            >
+                                                Requires:
+                                            </p>
+                                            <ul
+                                                class="mt-1 flex flex-col gap-0.5 pl-0.5"
+                                            >
+                                                <li
+                                                    v-for="prereq in unmetPrerequisites(
+                                                        office,
+                                                    )"
+                                                    :key="prereq"
+                                                    class="flex text-xs font-medium text-orange-600/80"
+                                                >
+                                                    <span
+                                                        class="mr-1.5 opacity-60"
+                                                        >-</span
+                                                    >
+                                                    <span>{{ prereq }}</span>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
                             </button>
@@ -1087,7 +1285,7 @@ const confirmMobileLogout = () => {
                     </div>
 
                     <div
-                        class="flex flex-col gap-3 border-t border-slate-200 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6"
+                        class="shrink-0 flex flex-col gap-3 border-t border-slate-200 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6"
                     >
                         <p class="text-sm text-slate-500">
                             Selected offices:
@@ -1104,7 +1302,7 @@ const confirmMobileLogout = () => {
                         >
                             <button
                                 type="button"
-                                class="min-h-11 rounded-xl border border-slate-300 px-4 py-3 font-semibold text-slate-700 transition hover:bg-slate-100"
+                                class="min-h-10 rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
                                 @click="closeSubmitRequestModal"
                             >
                                 Cancel
@@ -1112,7 +1310,7 @@ const confirmMobileLogout = () => {
 
                             <button
                                 type="button"
-                                class="min-h-11 rounded-xl px-4 py-3 font-semibold text-white transition"
+                                class="min-h-10 rounded-lg px-3 py-2 text-sm font-semibold text-white transition"
                                 :class="
                                     selectedOfficeIds.length === 0
                                         ? 'cursor-not-allowed bg-slate-400'
@@ -1134,13 +1332,13 @@ const confirmMobileLogout = () => {
             <!-- Clearance Details Modal -->
             <div
                 v-if="showClearanceDetailsModal"
-                class="fixed inset-0 z-50 flex items-end justify-center bg-black/50 px-3 py-4 sm:items-center sm:px-4 sm:py-6"
+                class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-3 sm:p-4"
             >
                 <div
-                    class="max-h-[88vh] w-full max-w-5xl overflow-y-auto rounded-t-2xl bg-white shadow-xl sm:max-h-[90vh] sm:rounded-2xl"
+                    class="flex max-h-[85dvh] w-full max-w-5xl flex-col rounded-2xl bg-white shadow-xl sm:max-h-[90dvh]"
                 >
                     <div
-                        class="flex items-start justify-between gap-3 border-b border-slate-200 px-4 py-4 sm:px-6"
+                        class="shrink-0 flex items-start justify-between gap-3 border-b border-slate-200 px-4 py-3 sm:px-6 sm:py-4"
                     >
                         <div>
                             <h2
@@ -1164,7 +1362,7 @@ const confirmMobileLogout = () => {
                         </button>
                     </div>
 
-                    <div class="space-y-6 px-4 py-5 sm:px-6">
+                    <div class="flex-1 overflow-y-auto space-y-5 px-4 py-4 sm:px-6">
                         <!-- Student Information -->
                         <div class="grid grid-cols-2 gap-3 md:grid-cols-3">
                             <div
@@ -1295,12 +1493,12 @@ const confirmMobileLogout = () => {
                             </h3>
 
                             <div
-                                class="grid max-h-[60vh] gap-3 overflow-y-auto px-1 pb-4"
+                                class="grid gap-2 px-1 pb-4"
                             >
                                 <div
                                     v-for="office in officeStatuses"
                                     :key="office.id"
-                                    class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-slate-300"
+                                    class="rounded-xl border border-slate-200 bg-white p-3 shadow-sm transition hover:border-slate-300"
                                 >
                                     <div
                                         class="flex items-start justify-between gap-4"
@@ -1368,11 +1566,11 @@ const confirmMobileLogout = () => {
                     </div>
 
                     <div
-                        class="flex justify-end border-t border-slate-200 px-4 py-4 sm:px-6"
+                        class="shrink-0 flex justify-end border-t border-slate-200 px-4 py-3 sm:px-6"
                     >
                         <button
                             type="button"
-                            class="min-h-11 w-full rounded-xl bg-slate-900 px-5 py-3 font-semibold text-white transition hover:bg-slate-800 sm:w-auto"
+                            class="min-h-10 w-full rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 sm:w-auto"
                             @click="closeClearanceDetailsModal"
                         >
                             Close
@@ -1448,81 +1646,6 @@ const confirmMobileLogout = () => {
                 </div>
             </div>
 
-            <!-- Mobile More / Profile Sheet -->
-            <div
-                v-if="showMobileMoreMenu"
-                class="fixed inset-x-3 bottom-24 z-50 rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl shadow-slate-900/20 md:hidden"
-            >
-                <div class="flex items-start justify-between gap-3">
-                    <div class="flex min-w-0 items-center gap-3">
-                        <div
-                            class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-sm font-black shadow-sm"
-                            :class="courseTheme.iconBgClass"
-                        >
-                            {{ studentInitials }}
-                        </div>
-
-                        <div class="min-w-0">
-                            <p
-                                class="truncate text-sm font-black"
-                                :class="courseTheme.headingTextClass"
-                            >
-                                {{ student.name }}
-                            </p>
-
-                            <p class="text-xs font-semibold text-slate-500">
-                                Student ID: {{ student.student_id }}
-                            </p>
-
-                            <p
-                                class="mt-1 inline-flex rounded-full bg-slate-100 px-2 py-0.5 text-[0.65rem] font-black"
-                                :class="courseTheme.accentTextClass"
-                            >
-                                {{ courseCode }} Course Theme
-                            </p>
-                        </div>
-                    </div>
-
-                    <button
-                        type="button"
-                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-lg font-black text-slate-500 transition hover:bg-slate-100"
-                        @click="closeMobileMoreMenu"
-                    >
-                        ×
-                    </button>
-                </div>
-
-                <div class="mt-4 grid gap-2">
-                    <button
-                        type="button"
-                        class="flex min-h-12 items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-left text-sm font-black text-slate-700 transition hover:bg-slate-100 active:bg-slate-200"
-                        @click="openClearanceDetailsModal"
-                    >
-                        <span>View Clearance Details</span>
-                        <ChevronRight class="size-4 opacity-50" />
-                    </button>
-
-                    <button
-                        v-if="isFullyCleared"
-                        type="button"
-                        class="flex min-h-12 items-center justify-between rounded-xl bg-green-600 px-4 py-3 text-left text-sm font-black text-white shadow-md shadow-green-600/20 transition hover:bg-green-700 active:translate-y-0.5"
-                        @click="openClearanceReceipt"
-                    >
-                        <span>Print Clearance Receipt</span>
-                        <Download class="size-4 opacity-90" />
-                    </button>
-
-                    <button
-                        type="button"
-                        class="flex min-h-12 items-center justify-between rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-left text-sm font-black text-red-700 transition hover:bg-red-100 active:bg-red-200"
-                        @click="openMobileLogoutModal"
-                    >
-                        <span>Logout</span>
-                        <LogOut class="size-4 opacity-70" />
-                    </button>
-                </div>
-            </div>
-
             <!-- Mobile Logout Confirmation Modal -->
             <div
                 v-if="showMobileLogoutModal"
@@ -1566,71 +1689,6 @@ const confirmMobileLogout = () => {
                     </div>
                 </div>
             </div>
-
-            <!-- Mobile Thumb Navigation -->
-            <nav
-                class="fixed inset-x-3 bottom-3 z-40 rounded-2xl border p-2 shadow-2xl backdrop-blur md:hidden"
-                :class="courseTheme.mobileNavClass"
-            >
-                <div class="grid grid-cols-4 gap-1">
-                    <button
-                        type="button"
-                        class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
-                        :class="
-                            activeMobileNav === 'home'
-                                ? courseTheme.mobileNavActiveClass
-                                : ''
-                        "
-                        @click="scrollToDashboardTop"
-                    >
-                        <span class="text-base">⌂</span>
-                        <span>Home</span>
-                    </button>
-
-                    <button
-                        type="button"
-                        class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-45"
-                        :class="
-                            activeMobileNav === 'request'
-                                ? courseTheme.mobileNavActiveClass
-                                : ''
-                        "
-                        :disabled="requestableOffices.length === 0"
-                        @click="openMobileRequests"
-                    >
-                        <span class="text-base">📄</span>
-                        <span>Request</span>
-                    </button>
-
-                    <button
-                        type="button"
-                        class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
-                        :class="
-                            activeMobileNav === 'offices'
-                                ? courseTheme.mobileNavActiveClass
-                                : ''
-                        "
-                        @click="openMobileOffices"
-                    >
-                        <span class="text-base">🏢</span>
-                        <span>Offices</span>
-                    </button>
-
-                    <button
-                        type="button"
-                        class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
-                        :class="
-                            activeMobileNav === 'more' || showMobileMoreMenu
-                                ? courseTheme.mobileNavActiveClass
-                                : ''
-                        "
-                        @click="toggleMobileMoreMenu"
-                    >
-                        <span class="text-base">•••</span>
-                        <span>More</span>
-                    </button>
-                </div>
-            </nav>
         </div>
     </div>
 </template>

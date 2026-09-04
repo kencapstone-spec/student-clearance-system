@@ -75,7 +75,7 @@ defineProps<{
                             {{
                                 isValid
                                     ? 'Valid Clearance Receipt'
-                                    : 'Invalid / Not Cleared'
+                                    : 'Invalid / Not Approved'
                             }}
                         </p>
 
@@ -193,7 +193,7 @@ defineProps<{
                             <p
                                 class="text-xs font-semibold text-slate-500 uppercase"
                             >
-                                Cleared At
+                                Approved At
                             </p>
                             <p class="mt-1 font-bold text-blue-950">
                                 {{ clearanceRequest.cleared_at ?? 'N/A' }}
