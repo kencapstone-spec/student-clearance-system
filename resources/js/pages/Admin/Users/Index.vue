@@ -37,11 +37,14 @@ type RoleFilter = 'all' | UserRole;
 type User = {
     id: number;
     name: string;
+    first_name?: string | null;
+    last_name?: string | null;
     student_id: string;
     role: UserRole;
     is_active: boolean;
     email: string | null;
     deactivated_at: string | null;
+    year_level?: string | null;
     course: Course | null;
     office: Office | null;
 };
@@ -62,6 +65,43 @@ const successMessage = ref('');
 const errorMessage = ref('');
 const userSearchQuery = ref('');
 const activeRoleFilter = ref<RoleFilter>('all');
+const selectedYearLevel = ref('all');
+const availableYearLevels = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
+
+const formatUserName = (user?: User | null) => {
+    if (!user) {
+        return 'N/A';
+    }
+
+    if (user.role === 'student') {
+        if (user.last_name && user.first_name) {
+            return `${user.last_name}, ${user.first_name}`;
+        }
+
+        if (user.last_name) {
+            return user.last_name;
+        }
+
+        if (user.name) {
+            if (user.name.includes(',')) {
+                return user.name;
+            }
+
+            const parts = user.name.trim().split(/\s+/);
+
+            if (parts.length > 1) {
+                const lastName = parts.pop();
+                const firstName = parts.join(' ');
+
+                return `${lastName}, ${firstName}`;
+            }
+
+            return user.name;
+        }
+    }
+
+    return user.name;
+};
 
 const form = useForm({
     name: '',
@@ -118,22 +158,31 @@ const filteredUsers = computed(() => {
         const courseName = user.course?.name ?? '';
         const officeName = user.office?.name ?? '';
         const activeStatus = user.is_active ? 'active' : 'inactive';
+        const formattedName = formatUserName(user).toLowerCase();
 
         const matchesRole =
             activeRoleFilter.value === 'all' ||
             user.role === activeRoleFilter.value;
 
+        const matchesYearLevel =
+            selectedYearLevel.value === 'all' ||
+            user.year_level === selectedYearLevel.value;
+
         const matchesSearch =
             searchValue === '' ||
             user.name.toLowerCase().includes(searchValue) ||
+            formattedName.includes(searchValue) ||
+            user.first_name?.toLowerCase().includes(searchValue) ||
+            user.last_name?.toLowerCase().includes(searchValue) ||
             user.student_id.toLowerCase().includes(searchValue) ||
+            user.year_level?.toLowerCase().includes(searchValue) ||
             roleLabel(user.role).toLowerCase().includes(searchValue) ||
             courseCode.toLowerCase().includes(searchValue) ||
             courseName.toLowerCase().includes(searchValue) ||
             officeName.toLowerCase().includes(searchValue) ||
             activeStatus.includes(searchValue);
 
-        return matchesRole && matchesSearch;
+        return matchesRole && matchesYearLevel && matchesSearch;
     });
 });
 
@@ -159,6 +208,7 @@ const setRoleFilter = (role: RoleFilter) => {
 
 const clearUserFilters = () => {
     activeRoleFilter.value = 'all';
+    selectedYearLevel.value = 'all';
     userSearchQuery.value = '';
 };
 
@@ -669,6 +719,24 @@ const roleFilterButtonClass = (role: RoleFilter) => {
                                 />
                             </div>
 
+                            <select
+                                v-if="
+                                    activeRoleFilter === 'all' ||
+                                    activeRoleFilter === 'student'
+                                "
+                                v-model="selectedYearLevel"
+                                class="min-h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-black text-slate-700 shadow-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 sm:w-auto"
+                            >
+                                <option value="all">All Year Levels</option>
+                                <option
+                                    v-for="yearLevel in availableYearLevels"
+                                    :key="yearLevel"
+                                    :value="yearLevel"
+                                >
+                                    {{ yearLevel }}
+                                </option>
+                            </select>
+
                             <button
                                 type="button"
                                 class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-black text-slate-700 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700 sm:w-auto"
@@ -718,7 +786,7 @@ const roleFilterButtonClass = (role: RoleFilter) => {
                                     <h3
                                         class="line-clamp-2 text-base leading-tight font-black break-words text-blue-950"
                                     >
-                                        {{ user.name }}
+                                        {{ formatUserName(user) }}
                                     </h3>
 
                                     <p
@@ -749,6 +817,17 @@ const roleFilterButtonClass = (role: RoleFilter) => {
                                 >
                                     Course:
                                     {{ user.course ? user.course.code : 'N/A' }}
+                                </span>
+
+                                <span
+                                    v-if="
+                                        user.role === 'student' &&
+                                        user.year_level
+                                    "
+                                    class="inline-flex items-center gap-1 rounded-full border border-purple-200 bg-purple-50 px-2.5 py-1 text-xs font-black text-purple-700"
+                                >
+                                    <GraduationCap class="size-3" />
+                                    {{ user.year_level }}
                                 </span>
                             </div>
 
@@ -852,7 +931,7 @@ const roleFilterButtonClass = (role: RoleFilter) => {
                                 >
                                     <td class="px-6 py-4">
                                         <p class="font-black text-blue-950">
-                                            {{ user.name }}
+                                            {{ formatUserName(user) }}
                                         </p>
                                     </td>
 
@@ -885,11 +964,25 @@ const roleFilterButtonClass = (role: RoleFilter) => {
                                     <td
                                         class="px-6 py-4 font-semibold text-slate-700"
                                     >
-                                        {{
-                                            user.course
-                                                ? user.course.code
-                                                : 'N/A'
-                                        }}
+                                        <div class="flex flex-col gap-1">
+                                            <span>
+                                                {{
+                                                    user.course
+                                                        ? user.course.code
+                                                        : 'N/A'
+                                                }}
+                                            </span>
+                                            <span
+                                                v-if="
+                                                    user.role === 'student' &&
+                                                    user.year_level
+                                                "
+                                                class="inline-flex w-fit items-center gap-1 rounded-full border border-purple-200 bg-purple-50 px-2.5 py-0.5 text-xs font-black text-purple-700"
+                                            >
+                                                <GraduationCap class="size-3" />
+                                                {{ user.year_level }}
+                                            </span>
+                                        </div>
                                     </td>
 
                                     <td

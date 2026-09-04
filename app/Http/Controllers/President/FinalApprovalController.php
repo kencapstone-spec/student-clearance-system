@@ -4,6 +4,7 @@ namespace App\Http\Controllers\President;
 
 use App\Http\Controllers\Controller;
 use App\Models\ClearanceRequest;
+use App\Models\Course;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -17,12 +18,15 @@ class FinalApprovalController extends Controller
     public function index()
     {
         $clearanceRequests = $this->readyClearanceRequests();
+        $courses = Course::orderBy('code')->get(['id', 'code', 'name']);
 
         return Inertia::render('President/FinalApprovals', [
             'clearanceRequests' => $clearanceRequests,
             'readyCount' => $clearanceRequests->count(),
+            'courses' => $courses,
         ]);
     }
+
 
     /**
      * Approve one final clearance request.

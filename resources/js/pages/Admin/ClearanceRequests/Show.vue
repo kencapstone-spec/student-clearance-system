@@ -23,8 +23,44 @@ type Course = {
 type Student = {
     id: number;
     name: string;
+    first_name?: string | null;
+    last_name?: string | null;
     student_id: string;
+    year_level?: string | null;
     course: Course | null;
+};
+
+const formatStudentName = (user?: Student | null) => {
+    if (!user) {
+        return 'N/A';
+    }
+
+    if (user.last_name && user.first_name) {
+        return `${user.last_name}, ${user.first_name}`;
+    }
+
+    if (user.last_name) {
+        return user.last_name;
+    }
+
+    if (user.name) {
+        if (user.name.includes(',')) {
+            return user.name;
+        }
+
+        const parts = user.name.trim().split(/\s+/);
+
+        if (parts.length > 1) {
+            const lastName = parts.pop();
+            const firstName = parts.join(' ');
+
+            return `${lastName}, ${firstName}`;
+        }
+
+        return user.name;
+    }
+
+    return 'N/A';
 };
 
 type Office = {
@@ -159,7 +195,7 @@ const officeTypeLabel = (office: Office) => {
                     <p class="font-semibold text-blue-700">Student</p>
 
                     <p class="mt-2 text-2xl font-bold text-blue-950">
-                        {{ clearanceRequest.user.name }}
+                        {{ formatStudentName(clearanceRequest.user) }}
                     </p>
 
                     <p class="mt-1 text-sm text-slate-500">
@@ -173,6 +209,13 @@ const officeTypeLabel = (office: Office) => {
                                 ? clearanceRequest.user.course.code
                                 : 'N/A'
                         }}
+                    </p>
+
+                    <p
+                        v-if="clearanceRequest.user.year_level"
+                        class="mt-1 text-sm text-slate-500"
+                    >
+                        Year Level: {{ clearanceRequest.user.year_level }}
                     </p>
                 </div>
 

@@ -20,6 +20,7 @@ type ReportRequest = {
     student_name: string;
     student_id: string;
     course_code: string;
+    year_level?: string | null;
     semester: string;
     school_year: string;
     status_label: string;
@@ -171,6 +172,7 @@ const printPage = () => {
                                 <th class="border px-3 py-2">Student</th>
                                 <th class="border px-3 py-2">Student ID</th>
                                 <th class="border px-3 py-2">Course</th>
+                                <th class="border px-3 py-2">Year Level</th>
                                 <th class="border px-3 py-2">Semester</th>
                                 <th class="border px-3 py-2">School Year</th>
                                 <th class="border px-3 py-2">Progress</th>
@@ -191,6 +193,10 @@ const printPage = () => {
 
                                 <td class="border px-3 py-2">
                                     {{ request.course_code }}
+                                </td>
+
+                                <td class="border px-3 py-2">
+                                    {{ request.year_level || 'N/A' }}
                                 </td>
 
                                 <td class="border px-3 py-2">

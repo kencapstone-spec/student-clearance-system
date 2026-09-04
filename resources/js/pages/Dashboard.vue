@@ -295,7 +295,6 @@ const openClearanceReceipt = () => {
         return;
     }
 
-    showMobileMoreMenu.value = false;
     router.visit(`/clearance-receipts/${props.clearanceRequest.id}`);
 };
 

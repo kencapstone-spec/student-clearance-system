@@ -76,6 +76,7 @@ class AdminReportController extends Controller
                 'Student Name',
                 'Student ID',
                 'Course',
+                'Year Level',
                 'Semester',
                 'School Year',
                 'Progress',
@@ -88,6 +89,7 @@ class AdminReportController extends Controller
                     $request['student_name'],
                     $request['student_id'],
                     $request['course_code'],
+                    $request['year_level'],
                     $request['semester'],
                     $request['school_year'],
                     $request['approved_regular_approvals'].' / '.$request['total_regular_approvals'],
@@ -201,9 +203,10 @@ class AdminReportController extends Controller
 
         return [
             'id' => $clearanceRequest->id,
-            'student_name' => $clearanceRequest->user?->name ?? 'Unknown Student',
+            'student_name' => $clearanceRequest->user?->formatted_name ?? $clearanceRequest->user?->name ?? 'Unknown Student',
             'student_id' => $clearanceRequest->user?->student_id ?? 'N/A',
             'course_code' => $clearanceRequest->user?->course?->code ?? 'N/A',
+            'year_level' => $clearanceRequest->user?->year_level ?? 'N/A',
             'semester' => $clearanceRequest->semester,
             'school_year' => $clearanceRequest->school_year,
             'status' => $clearanceRequest->status,

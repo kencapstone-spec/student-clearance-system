@@ -104,7 +104,7 @@ onUnmounted(() => {
 
                     <nav class="flex shrink-0 items-center gap-2 sm:gap-3">
                         <Link
-                            v-if="page.props.auth.user"
+                            v-if="$page.props.auth.user"
                             :href="dashboard()"
                             class="inline-flex items-center gap-2 rounded-2xl bg-blue-600 px-3.5 py-2.5 text-sm font-black text-white shadow-lg shadow-blue-600/25 transition hover:-translate-y-0.5 hover:bg-blue-500 sm:px-4"
                         >
@@ -165,7 +165,7 @@ onUnmounted(() => {
 
                     <div class="mt-7 flex flex-col gap-3 sm:mt-8 sm:flex-row">
                         <Link
-                            v-if="page.props.auth.user"
+                            v-if="$page.props.auth.user"
                             :href="dashboard()"
                             class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-blue-600 px-6 py-3.5 text-sm font-black text-white shadow-xl shadow-blue-600/30 transition hover:-translate-y-1 hover:bg-blue-500 hover:shadow-2xl sm:w-auto sm:px-7 sm:py-4"
                         >

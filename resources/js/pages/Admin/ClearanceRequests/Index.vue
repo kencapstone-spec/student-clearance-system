@@ -8,6 +8,7 @@ import {
     Clock3,
     Eye,
     Filter,
+    GraduationCap,
     LayoutDashboard,
     RotateCcw,
     Search,
@@ -126,9 +127,12 @@ const formatStudentName = (user?: Student | null) => {
 
 const activeFilter = ref<StatusFilter>('all');
 const selectedCourse = ref('all');
+const selectedYearLevel = ref('all');
 const searchQuery = ref('');
 const selectedRequest = ref<ClearanceRequest | null>(null);
 const showDetailsModal = ref(false);
+
+const availableYearLevels = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
 
 const setFilter = (filter: StatusFilter) => {
     activeFilter.value = filter;
@@ -137,6 +141,7 @@ const setFilter = (filter: StatusFilter) => {
 const clearFilters = () => {
     activeFilter.value = 'all';
     selectedCourse.value = 'all';
+    selectedYearLevel.value = 'all';
     searchQuery.value = '';
 };
 
@@ -254,15 +259,26 @@ const filteredRequests = computed(() => {
             selectedCourse.value === 'all' ||
             courseCode === selectedCourse.value;
 
+        const matchesYearLevel =
+            selectedYearLevel.value === 'all' ||
+            request.user.year_level === selectedYearLevel.value;
+
         const searchValue = searchQuery.value.toLowerCase().trim();
 
+        const formattedName = formatStudentName(request.user).toLowerCase();
         const matchesSearch =
             searchValue === '' ||
             request.user.name.toLowerCase().includes(searchValue) ||
+            formattedName.includes(searchValue) ||
+            request.user.first_name?.toLowerCase().includes(searchValue) ||
+            request.user.last_name?.toLowerCase().includes(searchValue) ||
             request.user.student_id.toLowerCase().includes(searchValue) ||
+            request.user.year_level?.toLowerCase().includes(searchValue) ||
             courseCode.toLowerCase().includes(searchValue);
 
-        return matchesStatus && matchesCourse && matchesSearch;
+        return (
+            matchesStatus && matchesCourse && matchesYearLevel && matchesSearch
+        );
     });
 });
 
@@ -692,6 +708,21 @@ const formatDateTime = (value: string | null) => {
                                 </option>
                             </select>
 
+                            <select
+                                v-model="selectedYearLevel"
+                                class="min-h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-black text-slate-700 shadow-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 sm:w-auto"
+                            >
+                                <option value="all">All Year Levels</option>
+
+                                <option
+                                    v-for="yearLevel in availableYearLevels"
+                                    :key="yearLevel"
+                                    :value="yearLevel"
+                                >
+                                    {{ yearLevel }}
+                                </option>
+                            </select>
+
                             <button
                                 type="button"
                                 class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-black text-slate-700 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700 sm:w-auto"
@@ -753,15 +784,27 @@ const formatDateTime = (value: string | null) => {
                                     </p>
                                 </div>
 
-                                <span
-                                    class="shrink-0 rounded-full bg-blue-50 px-3 py-1 text-xs font-black text-blue-700"
+                                <div
+                                    class="flex shrink-0 flex-col items-end gap-1.5"
                                 >
-                                    {{
-                                        request.user.course
-                                            ? request.user.course.code
-                                            : 'N/A'
-                                    }}
-                                </span>
+                                    <span
+                                        class="rounded-full bg-blue-50 px-3 py-1 text-xs font-black text-blue-700"
+                                    >
+                                        {{
+                                            request.user.course
+                                                ? request.user.course.code
+                                                : 'N/A'
+                                        }}
+                                    </span>
+
+                                    <span
+                                        v-if="request.user.year_level"
+                                        class="inline-flex items-center gap-1 rounded-full border border-purple-200 bg-purple-50 px-2.5 py-0.5 text-xs font-black text-purple-700"
+                                    >
+                                        <GraduationCap class="size-3" />
+                                        {{ request.user.year_level }}
+                                    </span>
+                                </div>
                             </div>
 
                             <div class="mt-3 flex flex-wrap gap-2">
@@ -877,6 +920,12 @@ const formatDateTime = (value: string | null) => {
                                     <th
                                         class="px-6 py-4 text-xs font-black tracking-wide uppercase"
                                     >
+                                        Year Level
+                                    </th>
+
+                                    <th
+                                        class="px-6 py-4 text-xs font-black tracking-wide uppercase"
+                                    >
                                         Semester
                                     </th>
 
@@ -951,6 +1000,22 @@ const formatDateTime = (value: string | null) => {
                                                     ? request.user.course.code
                                                     : 'N/A'
                                             }}
+                                        </span>
+                                    </td>
+
+                                    <td class="px-6 py-4">
+                                        <span
+                                            v-if="request.user.year_level"
+                                            class="inline-flex items-center gap-1.5 rounded-full border border-purple-200 bg-purple-50 px-3 py-1 text-xs font-black text-purple-700"
+                                        >
+                                            <GraduationCap class="size-3.5" />
+                                            {{ request.user.year_level }}
+                                        </span>
+                                        <span
+                                            v-else
+                                            class="text-xs font-medium text-slate-400"
+                                        >
+                                            N/A
                                         </span>
                                     </td>
 
@@ -1089,6 +1154,9 @@ const formatDateTime = (value: string | null) => {
                             <span v-if="selectedRequest.user.course">
                                 • {{ selectedRequest.user.course.code }}
                             </span>
+                            <span v-if="selectedRequest.user.year_level">
+                                • {{ selectedRequest.user.year_level }}
+                            </span>
                         </p>
                     </div>
 
@@ -1110,6 +1178,13 @@ const formatDateTime = (value: string | null) => {
                         <p class="font-black text-blue-700">Request Info</p>
 
                         <p class="mt-3 text-sm text-slate-600">
+                            Year Level:
+                            <span class="font-black text-blue-950">
+                                {{ selectedRequest.user.year_level || 'N/A' }}
+                            </span>
+                        </p>
+
+                        <p class="mt-2 text-sm text-slate-600">
                             Semester:
                             <span class="font-black text-blue-950">
                                 {{ selectedRequest.semester }}

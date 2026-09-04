@@ -7,6 +7,7 @@ import {
     ClipboardCheck,
     Download,
     FileText,
+    GraduationCap,
     LayoutDashboard,
     Printer,
     RotateCcw,
@@ -41,6 +42,7 @@ type ReportRequest = {
     student_name: string;
     student_id: string;
     course_code: string;
+    year_level?: string | null;
     semester: string;
     school_year: string;
     status: string;
@@ -547,6 +549,17 @@ const statusClass = (request: ReportRequest) => {
                                 >
                                     {{ request.course_code }}
                                 </span>
+
+                                <span
+                                    v-if="
+                                        request.year_level &&
+                                        request.year_level !== 'N/A'
+                                    "
+                                    class="inline-flex shrink-0 items-center gap-1 rounded-full border border-purple-200 bg-purple-50 px-2.5 py-1 text-xs font-black text-purple-700"
+                                >
+                                    <GraduationCap class="size-3" />
+                                    {{ request.year_level }}
+                                </span>
                             </div>
 
                             <div class="mt-3 flex flex-wrap gap-2">
@@ -649,6 +662,12 @@ const statusClass = (request: ReportRequest) => {
                                     <th
                                         class="px-6 py-4 text-xs font-black tracking-wide uppercase"
                                     >
+                                        Year Level
+                                    </th>
+
+                                    <th
+                                        class="px-6 py-4 text-xs font-black tracking-wide uppercase"
+                                    >
                                         Semester
                                     </th>
 
@@ -701,6 +720,25 @@ const statusClass = (request: ReportRequest) => {
                                             class="inline-flex rounded-full bg-blue-50 px-3 py-1 text-xs font-black text-blue-700"
                                         >
                                             {{ request.course_code }}
+                                        </span>
+                                    </td>
+
+                                    <td class="px-6 py-4">
+                                        <span
+                                            v-if="
+                                                request.year_level &&
+                                                request.year_level !== 'N/A'
+                                            "
+                                            class="inline-flex items-center gap-1.5 rounded-full border border-purple-200 bg-purple-50 px-3 py-1 text-xs font-black text-purple-700"
+                                        >
+                                            <GraduationCap class="size-3.5" />
+                                            {{ request.year_level }}
+                                        </span>
+                                        <span
+                                            v-else
+                                            class="text-xs font-medium text-slate-400"
+                                        >
+                                            N/A
                                         </span>
                                     </td>
 

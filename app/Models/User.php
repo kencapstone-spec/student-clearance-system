@@ -63,6 +63,36 @@ class User extends Authenticatable
         return $this->hasMany(UserNotification::class);
     }
 
+    public function getFormattedNameAttribute(): string
+    {
+        if ($this->last_name && $this->first_name) {
+            return "{$this->last_name}, {$this->first_name}";
+        }
+
+        if ($this->last_name) {
+            return $this->last_name;
+        }
+
+        if ($this->name) {
+            if (str_contains($this->name, ',')) {
+                return $this->name;
+            }
+
+            $parts = preg_split('/\s+/', trim($this->name));
+
+            if (count($parts) > 1) {
+                $lastName = array_pop($parts);
+                $firstName = implode(' ', $parts);
+
+                return "{$lastName}, {$firstName}";
+            }
+
+            return $this->name;
+        }
+
+        return 'N/A';
+    }
+
     /**
      * Get the attributes that should be cast.
      *

@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import { Head, router } from '@inertiajs/vue3';
 import {
+    Building2,
     CheckCircle2,
     ClipboardCheck,
     FileCheck2,
+    GraduationCap,
+    Inbox,
+    Search,
     ShieldCheck,
     Sparkles,
     Users,
@@ -68,6 +72,7 @@ const props = defineProps<{
     clearanceRequests?: ClearanceRequest[];
     requests?: ClearanceRequest[];
     readyCount?: number;
+    courses?: Course[];
 }>();
 
 const approvalRequests = computed(() => {
@@ -83,6 +88,81 @@ const showFinalApproveModal = ref(false);
 const showAutoApproveModal = ref(false);
 const successMessage = ref('');
 const errorMessage = ref('');
+
+const searchQuery = ref('');
+const selectedDepartment = ref('all');
+const selectedYearLevel = ref('all');
+
+const availableYearLevels = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
+
+const availableDepartments = computed(() => {
+    if (props.courses && props.courses.length > 0) {
+        return props.courses.map((c) => ({ code: c.code, name: c.name }));
+    }
+
+    const map = new Map<string, string>();
+
+    approvalRequests.value.forEach((r) => {
+        if (r.user?.course?.code) {
+            map.set(
+                r.user.course.code,
+                r.user.course.name || r.user.course.code,
+            );
+        }
+    });
+
+    return Array.from(map.entries()).map(([code, name]) => ({ code, name }));
+});
+
+const filteredApprovalRequests = computed(() => {
+    return approvalRequests.value.filter((req) => {
+        if (selectedDepartment.value !== 'all') {
+            if (req.user?.course?.code !== selectedDepartment.value) {
+                return false;
+            }
+        }
+
+        if (selectedYearLevel.value !== 'all') {
+            if (req.user?.year_level !== selectedYearLevel.value) {
+                return false;
+            }
+        }
+
+        if (searchQuery.value.trim()) {
+            const q = searchQuery.value.toLowerCase().trim();
+            const student = req.user;
+
+            if (!student) {
+                return false;
+            }
+
+            const formattedName = formatStudentName(student).toLowerCase();
+            const matchesName =
+                student.name?.toLowerCase().includes(q) ||
+                formattedName.includes(q);
+            const matchesFirst = student.first_name?.toLowerCase().includes(q);
+            const matchesLast = student.last_name?.toLowerCase().includes(q);
+            const matchesId = student.student_id?.toLowerCase().includes(q);
+            const matchesCourse =
+                student.course?.code?.toLowerCase().includes(q) ||
+                student.course?.name?.toLowerCase().includes(q);
+            const matchesYear = student.year_level?.toLowerCase().includes(q);
+
+            if (
+                !matchesName &&
+                !matchesFirst &&
+                !matchesLast &&
+                !matchesId &&
+                !matchesCourse &&
+                !matchesYear
+            ) {
+                return false;
+            }
+        }
+
+        return true;
+    });
+});
 
 const formatStudentName = (user?: Student | null) => {
     if (!user) {
@@ -402,39 +482,170 @@ const confirmAutoApproveAll = () => {
                 class="scroll-mt-4 overflow-hidden rounded-3xl border border-slate-200 bg-white/95 shadow-sm shadow-slate-200/70"
             >
                 <div
-                    class="flex flex-col gap-4 border-b border-slate-200 bg-white px-4 py-5 sm:px-6 md:flex-row md:items-center md:justify-between"
+                    class="border-b border-slate-200 bg-white px-4 py-5 sm:px-6"
                 >
-                    <div>
-                        <p
-                            class="text-xs font-black tracking-[0.18em] text-slate-400 uppercase"
+                    <div
+                        class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
+                    >
+                        <div>
+                            <p
+                                class="text-xs font-black tracking-[0.18em] text-slate-400 uppercase"
+                            >
+                                Final Approval Queue
+                            </p>
+
+                            <h2 class="mt-1 text-xl font-black text-blue-950">
+                                Clearance Requests
+                            </h2>
+
+                            <p class="mt-1 text-sm font-medium text-slate-500">
+                                These requests already passed all regular office
+                                approvals.
+                            </p>
+                        </div>
+
+                        <button
+                            type="button"
+                            class="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl px-4 py-2.5 text-sm font-black text-white shadow-md transition disabled:cursor-not-allowed disabled:opacity-60"
+                            :class="
+                                readyApprovalCount === 0
+                                    ? 'bg-slate-400 shadow-slate-400/20'
+                                    : 'bg-green-700 shadow-green-700/20 hover:-translate-y-0.5 hover:bg-green-800 hover:shadow-lg'
+                            "
+                            :disabled="readyApprovalCount === 0"
+                            @click="openAutoApproveModal"
                         >
-                            Final Approval Queue
-                        </p>
-
-                        <h2 class="mt-1 text-xl font-black text-blue-950">
-                            Clearance Requests
-                        </h2>
-
-                        <p class="mt-1 text-sm font-medium text-slate-500">
-                            These requests already passed all regular office
-                            approvals.
-                        </p>
+                            <Sparkles class="size-4" />
+                            Auto Approve All
+                        </button>
                     </div>
 
-                    <button
-                        type="button"
-                        class="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl px-4 py-2.5 text-sm font-black text-white shadow-md transition disabled:cursor-not-allowed disabled:opacity-60"
-                        :class="
-                            readyApprovalCount === 0
-                                ? 'bg-slate-400 shadow-slate-400/20'
-                                : 'bg-green-700 shadow-green-700/20 hover:-translate-y-0.5 hover:bg-green-800 hover:shadow-lg'
-                        "
-                        :disabled="readyApprovalCount === 0"
-                        @click="openAutoApproveModal"
+                    <!-- Secondary Bar: Search, Department & Year Level Filters -->
+                    <div
+                        v-if="approvalRequests.length > 0"
+                        class="mt-4 flex flex-col gap-3 border-t border-slate-100 pt-4 lg:flex-row lg:items-center lg:justify-between"
                     >
-                        <Sparkles class="size-4" />
-                        Auto Approve All
-                    </button>
+                        <!-- Search Box -->
+                        <div class="relative min-w-[200px] flex-1">
+                            <Search
+                                class="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-slate-400"
+                            />
+                            <input
+                                v-model="searchQuery"
+                                type="text"
+                                placeholder="Search by student name, ID, course, or year..."
+                                class="h-11 w-full rounded-2xl border border-slate-200 bg-slate-50/70 pr-10 pl-10 text-sm font-semibold text-slate-900 shadow-inner transition placeholder:font-medium placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:outline-none"
+                            />
+                            <button
+                                v-if="searchQuery"
+                                type="button"
+                                class="absolute top-1/2 right-3 -translate-y-1/2 rounded-full p-1 text-slate-400 transition hover:bg-slate-200 hover:text-slate-700"
+                                @click="searchQuery = ''"
+                            >
+                                <X class="size-3.5" />
+                            </button>
+                        </div>
+
+                        <!-- Dropdowns Container -->
+                        <div class="flex shrink-0 flex-wrap items-center gap-2">
+                            <!-- Department Selector -->
+                            <div
+                                class="relative min-w-[160px] sm:min-w-[185px]"
+                            >
+                                <Building2
+                                    class="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-blue-600"
+                                />
+                                <select
+                                    v-model="selectedDepartment"
+                                    class="h-11 w-full cursor-pointer appearance-none rounded-2xl border border-slate-200 bg-slate-50/70 pr-9 pl-10 text-sm font-semibold text-slate-900 shadow-inner transition focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:outline-none"
+                                >
+                                    <option value="all">All Departments</option>
+                                    <option
+                                        v-for="dept in availableDepartments"
+                                        :key="dept.code"
+                                        :value="dept.code"
+                                    >
+                                        {{ dept.code }} - {{ dept.name }}
+                                    </option>
+                                </select>
+                                <div
+                                    class="pointer-events-none absolute top-1/2 right-3.5 -translate-y-1/2 text-slate-400"
+                                >
+                                    <svg
+                                        class="size-4"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M19 9l-7 7-7-7"
+                                        />
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <!-- Year Level Selector -->
+                            <div
+                                class="relative min-w-[150px] sm:min-w-[170px]"
+                            >
+                                <GraduationCap
+                                    class="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-indigo-600"
+                                />
+                                <select
+                                    v-model="selectedYearLevel"
+                                    class="h-11 w-full cursor-pointer appearance-none rounded-2xl border border-slate-200 bg-slate-50/70 pr-9 pl-10 text-sm font-semibold text-slate-900 shadow-inner transition focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:outline-none"
+                                >
+                                    <option value="all">All Year Levels</option>
+                                    <option
+                                        v-for="year in availableYearLevels"
+                                        :key="year"
+                                        :value="year"
+                                    >
+                                        {{ year }}
+                                    </option>
+                                </select>
+                                <div
+                                    class="pointer-events-none absolute top-1/2 right-3.5 -translate-y-1/2 text-slate-400"
+                                >
+                                    <svg
+                                        class="size-4"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M19 9l-7 7-7-7"
+                                        />
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <button
+                                v-if="
+                                    searchQuery ||
+                                    selectedYearLevel !== 'all' ||
+                                    selectedDepartment !== 'all'
+                                "
+                                type="button"
+                                class="inline-flex h-11 items-center gap-1.5 rounded-2xl border border-slate-200 bg-white px-3.5 text-xs font-bold text-slate-600 shadow-sm transition hover:bg-slate-100 hover:text-slate-900"
+                                title="Clear search and filters"
+                                @click="
+                                    searchQuery = '';
+                                    selectedYearLevel = 'all';
+                                    selectedDepartment = 'all';
+                                "
+                            >
+                                <X class="size-3.5" />
+                                <span class="hidden sm:inline">Clear</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <div
@@ -457,11 +668,44 @@ const confirmAutoApproveAll = () => {
                     </p>
                 </div>
 
+                <div
+                    v-else-if="filteredApprovalRequests.length === 0"
+                    class="p-8 text-center sm:p-12"
+                >
+                    <div
+                        class="mx-auto grid h-16 w-16 place-items-center rounded-3xl bg-blue-50 text-blue-700"
+                    >
+                        <Inbox class="size-8" />
+                    </div>
+
+                    <p class="mt-4 font-black text-slate-700">
+                        No records found.
+                    </p>
+
+                    <p class="mt-1 text-sm font-medium text-slate-500">
+                        No requests match your current search, department, or
+                        year level filter.
+                    </p>
+
+                    <button
+                        type="button"
+                        class="mt-4 inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 shadow-sm transition hover:bg-slate-50"
+                        @click="
+                            searchQuery = '';
+                            selectedYearLevel = 'all';
+                            selectedDepartment = 'all';
+                        "
+                    >
+                        <X class="size-3.5" />
+                        Clear Filters
+                    </button>
+                </div>
+
                 <div v-else>
                     <!-- Mobile Card List -->
                     <div class="grid gap-3 p-4 lg:hidden">
                         <article
-                            v-for="request in approvalRequests"
+                            v-for="request in filteredApprovalRequests"
                             :key="request.id"
                             class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
                         >
@@ -502,6 +746,14 @@ const confirmAutoApproveAll = () => {
                                             ? request.user.course.code
                                             : 'N/A'
                                     }}
+                                </span>
+
+                                <span
+                                    v-if="request.user.year_level"
+                                    class="inline-flex items-center gap-1 rounded-full border border-purple-200 bg-purple-50 px-2.5 py-1 text-xs font-black text-purple-700"
+                                >
+                                    <GraduationCap class="size-3" />
+                                    {{ request.user.year_level }}
                                 </span>
 
                                 <span
@@ -563,6 +815,12 @@ const confirmAutoApproveAll = () => {
                                     <th
                                         class="px-6 py-4 text-xs font-black tracking-wide uppercase"
                                     >
+                                        Year Level
+                                    </th>
+
+                                    <th
+                                        class="px-6 py-4 text-xs font-black tracking-wide uppercase"
+                                    >
                                         Semester
                                     </th>
 
@@ -588,7 +846,7 @@ const confirmAutoApproveAll = () => {
 
                             <tbody class="divide-y divide-slate-100">
                                 <tr
-                                    v-for="request in approvalRequests"
+                                    v-for="request in filteredApprovalRequests"
                                     :key="request.id"
                                     class="transition hover:bg-blue-50/50"
                                 >
@@ -627,6 +885,22 @@ const confirmAutoApproveAll = () => {
                                                     ? request.user.course.code
                                                     : 'N/A'
                                             }}
+                                        </span>
+                                    </td>
+
+                                    <td class="px-6 py-4">
+                                        <span
+                                            v-if="request.user.year_level"
+                                            class="inline-flex items-center gap-1.5 rounded-full border border-purple-200 bg-purple-50 px-3 py-1 text-xs font-black text-purple-700"
+                                        >
+                                            <GraduationCap class="size-3.5" />
+                                            {{ request.user.year_level }}
+                                        </span>
+                                        <span
+                                            v-else
+                                            class="text-xs font-medium text-slate-400"
+                                        >
+                                            N/A
                                         </span>
                                     </td>
 
@@ -734,6 +1008,11 @@ const confirmAutoApproveAll = () => {
                                     ? selectedRequest.user.course.code
                                     : 'N/A'
                             }}
+                        </p>
+
+                        <p>
+                            <span class="font-black">Year Level:</span>
+                            {{ selectedRequest.user.year_level || 'N/A' }}
                         </p>
 
                         <p>
