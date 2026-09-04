@@ -55,8 +55,8 @@ const props = defineProps<{
 const showCreateStaffModal = ref(false);
 const showEditUserModal = ref(false);
 const showStatusModal = ref(false);
-const showAdminMobileMoreMenu = ref(false);
 const selectedUser = ref<User | null>(null);
+
 const selectedStatusUser = ref<User | null>(null);
 const successMessage = ref('');
 const errorMessage = ref('');
@@ -168,7 +168,6 @@ const openCreateStaffModal = () => {
     form.clearErrors();
     form.reset();
 
-    showAdminMobileMoreMenu.value = false;
     showCreateStaffModal.value = true;
 };
 
@@ -213,7 +212,6 @@ const openEditUserModal = (user: User) => {
     editForm.password = '';
     editForm.password_confirmation = '';
 
-    showAdminMobileMoreMenu.value = false;
     showEditUserModal.value = true;
 };
 
@@ -253,7 +251,6 @@ const openStatusModal = (user: User) => {
     successMessage.value = '';
     errorMessage.value = '';
     selectedStatusUser.value = user;
-    showAdminMobileMoreMenu.value = false;
     showStatusModal.value = true;
 };
 
@@ -294,14 +291,6 @@ const submitToggleUserActive = () => {
             },
         },
     );
-};
-
-const toggleAdminMobileMoreMenu = () => {
-    showAdminMobileMoreMenu.value = !showAdminMobileMoreMenu.value;
-};
-
-const closeAdminMobileMoreMenu = () => {
-    showAdminMobileMoreMenu.value = false;
 };
 
 const roleBadgeClass = (role: string) => {

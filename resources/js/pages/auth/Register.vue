@@ -63,7 +63,8 @@ defineOptions({
                 />
 
                 <p class="text-xs font-medium text-slate-500">
-                    Student ID must be exactly 9 characters and can contain numbers only.
+                    Student ID must be exactly 9 characters and can contain
+                    numbers only.
                 </p>
 
                 <InputError :message="errors.student_id" />
@@ -90,7 +91,10 @@ defineOptions({
 
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div class="grid gap-2">
-                    <Label for="last_name" class="text-sm font-black text-slate-800">
+                    <Label
+                        for="last_name"
+                        class="text-sm font-black text-slate-800"
+                    >
                         Last Name
                     </Label>
 
@@ -109,7 +113,10 @@ defineOptions({
                 </div>
 
                 <div class="grid gap-2">
-                    <Label for="first_name" class="text-sm font-black text-slate-800">
+                    <Label
+                        for="first_name"
+                        class="text-sm font-black text-slate-800"
+                    >
                         First Name
                     </Label>
 

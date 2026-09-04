@@ -92,25 +92,35 @@ const props = defineProps<{
 }>();
 
 const formatStudentName = (user?: Student | null) => {
-    if (!user) return 'N/A';
+    if (!user) {
+        return 'N/A';
+    }
+
     if (user.last_name && user.first_name) {
         return `${user.last_name}, ${user.first_name}`;
     }
+
     if (user.last_name) {
         return user.last_name;
     }
+
     if (user.name) {
         if (user.name.includes(',')) {
             return user.name;
         }
+
         const parts = user.name.trim().split(/\s+/);
+
         if (parts.length > 1) {
             const lastName = parts.pop();
             const firstName = parts.join(' ');
+
             return `${lastName}, ${firstName}`;
         }
+
         return user.name;
     }
+
     return 'N/A';
 };
 
@@ -119,7 +129,6 @@ const selectedCourse = ref('all');
 const searchQuery = ref('');
 const selectedRequest = ref<ClearanceRequest | null>(null);
 const showDetailsModal = ref(false);
-const showAdminMobileMoreMenu = ref(false);
 
 const setFilter = (filter: StatusFilter) => {
     activeFilter.value = filter;
@@ -132,7 +141,6 @@ const clearFilters = () => {
 };
 
 const openDetailsModal = (request: ClearanceRequest) => {
-    showAdminMobileMoreMenu.value = false;
     selectedRequest.value = request;
     showDetailsModal.value = true;
 };
@@ -140,14 +148,6 @@ const openDetailsModal = (request: ClearanceRequest) => {
 const closeDetailsModal = () => {
     selectedRequest.value = null;
     showDetailsModal.value = false;
-};
-
-const toggleAdminMobileMoreMenu = () => {
-    showAdminMobileMoreMenu.value = !showAdminMobileMoreMenu.value;
-};
-
-const closeAdminMobileMoreMenu = () => {
-    showAdminMobileMoreMenu.value = false;
 };
 
 const availableCourses = computed(() => {
@@ -921,7 +921,11 @@ const formatDateTime = (value: string | null) => {
                                     <td class="px-6 py-4">
                                         <div>
                                             <p class="font-black text-blue-950">
-                                                {{ formatStudentName(request.user) }}
+                                                {{
+                                                    formatStudentName(
+                                                        request.user,
+                                                    )
+                                                }}
                                             </p>
 
                                             <p

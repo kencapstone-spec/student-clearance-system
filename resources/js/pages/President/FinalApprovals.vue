@@ -85,25 +85,35 @@ const successMessage = ref('');
 const errorMessage = ref('');
 
 const formatStudentName = (user?: Student | null) => {
-    if (!user) return 'N/A';
+    if (!user) {
+        return 'N/A';
+    }
+
     if (user.last_name && user.first_name) {
         return `${user.last_name}, ${user.first_name}`;
     }
+
     if (user.last_name) {
         return user.last_name;
     }
+
     if (user.name) {
         if (user.name.includes(',')) {
             return user.name;
         }
+
         const parts = user.name.trim().split(/\s+/);
+
         if (parts.length > 1) {
             const lastName = parts.pop();
             const firstName = parts.join(' ');
+
             return `${lastName}, ${firstName}`;
         }
+
         return user.name;
     }
+
     return 'N/A';
 };
 
@@ -180,20 +190,6 @@ const confirmAutoApproveAll = () => {
             },
         },
     );
-};
-
-const scrollToTop = () => {
-    window.scrollTo({
-        top: 0,
-        behavior: 'smooth',
-    });
-};
-
-const scrollToQueue = () => {
-    document.getElementById('final-approval-queue')?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-    });
 };
 </script>
 
@@ -599,7 +595,11 @@ const scrollToQueue = () => {
                                     <td class="px-6 py-4">
                                         <div>
                                             <p class="font-black text-blue-950">
-                                                {{ formatStudentName(request.user) }}
+                                                {{
+                                                    formatStudentName(
+                                                        request.user,
+                                                    )
+                                                }}
                                             </p>
 
                                             <p

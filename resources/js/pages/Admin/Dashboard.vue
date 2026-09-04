@@ -7,14 +7,12 @@ import {
     ClipboardCheck,
     FileText,
     GraduationCap,
-    LayoutDashboard,
     ShieldCheck,
     UserRoundCog,
     Users,
-    X,
     XCircle,
 } from 'lucide-vue-next';
-import { ref, onMounted, onUnmounted } from 'vue';
+import { onMounted, onUnmounted } from 'vue';
 
 let pollingInterval: ReturnType<typeof setInterval>;
 
@@ -30,7 +28,6 @@ onMounted(() => {
 onUnmounted(() => {
     clearInterval(pollingInterval);
 });
-
 
 type Stats = {
     students: number;

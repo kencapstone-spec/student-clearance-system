@@ -12,10 +12,9 @@ import {
     RotateCcw,
     Search,
     ShieldCheck,
-    UserRoundCog,
-    X,
 } from 'lucide-vue-next';
-import { reactive, ref } from 'vue';
+
+import { reactive } from 'vue';
 
 type Course = {
     id: number;
@@ -65,8 +64,6 @@ const filterForm = reactive({
     school_year: props.filters.school_year ?? '',
 });
 
-const showAdminMobileMoreMenu = ref(false);
-
 const applyFilters = () => {
     router.get(
         '/admin/reports',
@@ -85,14 +82,6 @@ const applyFilters = () => {
 
 const clearFilters = () => {
     router.get('/admin/reports');
-};
-
-const toggleAdminMobileMoreMenu = () => {
-    showAdminMobileMoreMenu.value = !showAdminMobileMoreMenu.value;
-};
-
-const closeAdminMobileMoreMenu = () => {
-    showAdminMobileMoreMenu.value = false;
 };
 
 const statusLabel = (request: ReportRequest) => {

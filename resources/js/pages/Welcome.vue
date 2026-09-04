@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Head, Link, usePage } from '@inertiajs/vue3';
-import type { PageProps } from '@inertiajs/core';
+import { Head, Link } from '@inertiajs/vue3';
+
 import {
     ArrowRight,
     BarChart3,
@@ -30,7 +30,6 @@ withDefaults(
 );
 
 const isScrolled = ref(false);
-const page = usePage<PageProps>();
 
 const handleScroll = () => {
     isScrolled.value = window.scrollY > 10;
@@ -74,8 +73,8 @@ onUnmounted(() => {
                 :class="[
                     'fixed inset-x-0 top-0 z-50 transition-all duration-300',
                     isScrolled
-                        ? 'border-b border-white/10 bg-slate-950/85 backdrop-blur-xl shadow-xl shadow-black/10'
-                        : 'border-b border-transparent bg-transparent'
+                        ? 'border-b border-white/10 bg-slate-950/85 shadow-xl shadow-black/10 backdrop-blur-xl'
+                        : 'border-b border-transparent bg-transparent',
                 ]"
             >
                 <div
@@ -135,7 +134,7 @@ onUnmounted(() => {
 
             <!-- Hero -->
             <div
-                class="relative z-10 mx-auto grid max-w-7xl gap-8 px-4 pb-10 pt-24 sm:px-6 sm:pb-14 sm:pt-28 lg:min-h-[calc(100vh-80px)] lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-12 lg:pb-20 lg:pt-32"
+                class="relative z-10 mx-auto grid max-w-7xl gap-8 px-4 pt-24 pb-10 sm:px-6 sm:pt-28 sm:pb-14 lg:min-h-[calc(100vh-80px)] lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-12 lg:pt-32 lg:pb-20"
             >
                 <div>
                     <div

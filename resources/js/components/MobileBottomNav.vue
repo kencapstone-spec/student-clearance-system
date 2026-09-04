@@ -82,6 +82,7 @@ const userRole = computed(() => authUser.value?.role ?? 'student');
 
 const notifications = computed<NotificationsProp>(() => {
     const shared = page.props.notifications as NotificationsProp | undefined;
+
     return {
         items: shared?.items ?? [],
         unread_count: shared?.unread_count ?? 0,
@@ -89,12 +90,22 @@ const notifications = computed<NotificationsProp>(() => {
 });
 
 const studentClearance = computed<StudentClearanceProp | null>(() => {
-    return (page.props.studentClearance as StudentClearanceProp | null | undefined) ?? null;
+    return (
+        (page.props.studentClearance as
+            | StudentClearanceProp
+            | null
+            | undefined) ?? null
+    );
 });
 
 // Also check dashboard specific clearanceRequest prop
 const dashboardClearance = computed(() => {
-    return (page.props.clearanceRequest as { id?: number; status?: string } | null | undefined) ?? null;
+    return (
+        (page.props.clearanceRequest as
+            | { id?: number; status?: string }
+            | null
+            | undefined) ?? null
+    );
 });
 
 const canPrintReceipt = computed(() => {
@@ -123,7 +134,10 @@ const isUrlActive = (target: string) => {
     if (target === '/dashboard' || target === '/admin/dashboard') {
         return currentUrl.value === target;
     }
-    return currentUrl.value === target || currentUrl.value.startsWith(target + '/');
+
+    return (
+        currentUrl.value === target || currentUrl.value.startsWith(target + '/')
+    );
 };
 
 const showMoreSheet = ref(false);
@@ -206,11 +220,11 @@ const handleReceiptClick = () => {
     <!-- Floating Pop-up Circle Button for Print Clearance (Student Only when Fully Cleared) -->
     <div
         v-if="canPrintReceipt"
-        class="fixed bottom-22 right-4 z-40 animate-in fade-in zoom-in slide-in-from-bottom-4 duration-300 md:hidden"
+        class="fixed right-4 bottom-22 z-40 animate-in duration-300 fade-in slide-in-from-bottom-4 zoom-in md:hidden"
     >
         <button
             type="button"
-            class="group relative flex h-13 w-13 items-center justify-center rounded-full bg-gradient-to-tr from-emerald-600 via-emerald-500 to-teal-400 text-white shadow-xl shadow-emerald-950/30 ring-4 ring-white transition-all hover:scale-105 active:scale-95"
+            class="group relative flex h-13 w-13 items-center justify-center rounded-full bg-gradient-to-tr from-emerald-600 via-emerald-500 to-teal-400 text-white shadow-xl ring-4 shadow-emerald-950/30 ring-white transition-all hover:scale-105 active:scale-95"
             @click="handleReceiptClick"
             title="Print Clearance Receipt"
         >
@@ -222,7 +236,9 @@ const handleReceiptClick = () => {
                     class="relative inline-flex h-3.5 w-3.5 rounded-full bg-emerald-400 ring-2 ring-white"
                 ></span>
             </span>
-            <Printer class="size-6 drop-shadow-sm transition group-hover:scale-110" />
+            <Printer
+                class="size-6 drop-shadow-sm transition group-hover:scale-110"
+            />
         </button>
     </div>
 
@@ -239,35 +255,55 @@ const handleReceiptClick = () => {
             <Link
                 href="/admin/users"
                 class="flex w-full flex-col items-center justify-center py-1 transition active:scale-95"
-                :class="isUrlActive('/admin/users') ? 'text-blue-950' : 'text-slate-500'"
+                :class="
+                    isUrlActive('/admin/users')
+                        ? 'text-blue-950'
+                        : 'text-slate-500'
+                "
             >
                 <Users class="size-5" />
                 <span
                     class="mt-0.5 h-1 w-1 rounded-full transition-all"
-                    :class="isUrlActive('/admin/users') ? 'bg-blue-700' : 'bg-transparent'"
+                    :class="
+                        isUrlActive('/admin/users')
+                            ? 'bg-blue-700'
+                            : 'bg-transparent'
+                    "
                 ></span>
-                <span class="text-[0.65rem] font-bold tracking-tight">Users</span>
+                <span class="text-[0.65rem] font-bold tracking-tight"
+                    >Users</span
+                >
             </Link>
 
             <!-- Clearances -->
             <Link
                 href="/admin/clearance-requests"
                 class="flex w-full flex-col items-center justify-center py-1 transition active:scale-95"
-                :class="isUrlActive('/admin/clearance-requests') ? 'text-blue-950' : 'text-slate-500'"
+                :class="
+                    isUrlActive('/admin/clearance-requests')
+                        ? 'text-blue-950'
+                        : 'text-slate-500'
+                "
             >
                 <ClipboardCheck class="size-5" />
                 <span
                     class="mt-0.5 h-1 w-1 rounded-full transition-all"
-                    :class="isUrlActive('/admin/clearance-requests') ? 'bg-blue-700' : 'bg-transparent'"
+                    :class="
+                        isUrlActive('/admin/clearance-requests')
+                            ? 'bg-blue-700'
+                            : 'bg-transparent'
+                    "
                 ></span>
-                <span class="text-[0.65rem] font-bold tracking-tight">Clearance</span>
+                <span class="text-[0.65rem] font-bold tracking-tight"
+                    >Clearance</span
+                >
             </Link>
 
             <!-- Elevated Center Focal Button: Dashboard -->
             <div class="-mt-5 flex flex-col items-center justify-center">
                 <Link
                     href="/admin/dashboard"
-                    class="flex h-12 w-12 items-center justify-center rounded-2xl ring-4 ring-white shadow-lg transition-transform active:scale-95"
+                    class="flex h-12 w-12 items-center justify-center rounded-2xl shadow-lg ring-4 ring-white transition-transform active:scale-95"
                     :class="
                         isUrlActive('/admin/dashboard')
                             ? 'bg-gradient-to-tr from-blue-950 via-blue-800 to-indigo-600 text-white shadow-blue-900/30'
@@ -278,7 +314,11 @@ const handleReceiptClick = () => {
                 </Link>
                 <span
                     class="mt-1 text-[0.65rem] font-black tracking-tight"
-                    :class="isUrlActive('/admin/dashboard') ? 'text-blue-950 font-black' : 'text-slate-500'"
+                    :class="
+                        isUrlActive('/admin/dashboard')
+                            ? 'font-black text-blue-950'
+                            : 'text-slate-500'
+                    "
                 >
                     Home
                 </span>
@@ -288,25 +328,37 @@ const handleReceiptClick = () => {
             <Link
                 href="/admin/reports"
                 class="flex w-full flex-col items-center justify-center py-1 transition active:scale-95"
-                :class="isUrlActive('/admin/reports') ? 'text-blue-950' : 'text-slate-500'"
+                :class="
+                    isUrlActive('/admin/reports')
+                        ? 'text-blue-950'
+                        : 'text-slate-500'
+                "
             >
                 <FileText class="size-5" />
                 <span
                     class="mt-0.5 h-1 w-1 rounded-full transition-all"
-                    :class="isUrlActive('/admin/reports') ? 'bg-blue-700' : 'bg-transparent'"
+                    :class="
+                        isUrlActive('/admin/reports')
+                            ? 'bg-blue-700'
+                            : 'bg-transparent'
+                    "
                 ></span>
-                <span class="text-[0.65rem] font-bold tracking-tight">Reports</span>
+                <span class="text-[0.65rem] font-bold tracking-tight"
+                    >Reports</span
+                >
             </Link>
 
             <!-- More -->
             <button
                 type="button"
-                class="flex w-full flex-col items-center justify-center py-1 text-slate-500 transition active:scale-95 hover:text-slate-900"
+                class="flex w-full flex-col items-center justify-center py-1 text-slate-500 transition hover:text-slate-900 active:scale-95"
                 @click="openMoreSheet"
             >
                 <MoreHorizontal class="size-5" />
                 <span class="mt-0.5 h-1 w-1 rounded-full bg-transparent"></span>
-                <span class="text-[0.65rem] font-bold tracking-tight">More</span>
+                <span class="text-[0.65rem] font-bold tracking-tight"
+                    >More</span
+                >
             </button>
         </div>
 
@@ -318,30 +370,34 @@ const handleReceiptClick = () => {
             <!-- Status Modal Trigger -->
             <button
                 type="button"
-                class="flex w-full flex-col items-center justify-center py-1 text-slate-500 transition active:scale-95 hover:text-blue-950"
+                class="flex w-full flex-col items-center justify-center py-1 text-slate-500 transition hover:text-blue-950 active:scale-95"
                 @click="handleStudentStatusClick"
             >
                 <ClipboardCheck class="size-5" />
                 <span class="mt-0.5 h-1 w-1 rounded-full bg-transparent"></span>
-                <span class="text-[0.65rem] font-bold tracking-tight">Status</span>
+                <span class="text-[0.65rem] font-bold tracking-tight"
+                    >Status</span
+                >
             </button>
 
             <!-- Request Modal Trigger -->
             <button
                 type="button"
-                class="flex w-full flex-col items-center justify-center py-1 text-slate-500 transition active:scale-95 hover:text-blue-950"
+                class="flex w-full flex-col items-center justify-center py-1 text-slate-500 transition hover:text-blue-950 active:scale-95"
                 @click="handleStudentRequestClick"
             >
                 <FilePlus class="size-5" />
                 <span class="mt-0.5 h-1 w-1 rounded-full bg-transparent"></span>
-                <span class="text-[0.65rem] font-bold tracking-tight">Request</span>
+                <span class="text-[0.65rem] font-bold tracking-tight"
+                    >Request</span
+                >
             </button>
 
             <!-- Elevated Center Focal Button: Dashboard -->
             <div class="-mt-5 flex flex-col items-center justify-center">
                 <button
                     type="button"
-                    class="flex h-12 w-12 items-center justify-center rounded-2xl ring-4 ring-white shadow-lg transition-transform active:scale-95"
+                    class="flex h-12 w-12 items-center justify-center rounded-2xl shadow-lg ring-4 ring-white transition-transform active:scale-95"
                     :class="
                         isUrlActive('/dashboard')
                             ? 'bg-gradient-to-tr from-blue-950 via-blue-800 to-indigo-600 text-white shadow-blue-900/30'
@@ -353,7 +409,11 @@ const handleReceiptClick = () => {
                 </button>
                 <span
                     class="mt-1 text-[0.65rem] font-black tracking-tight"
-                    :class="isUrlActive('/dashboard') ? 'text-blue-950 font-black' : 'text-slate-500'"
+                    :class="
+                        isUrlActive('/dashboard')
+                            ? 'font-black text-blue-950'
+                            : 'text-slate-500'
+                    "
                 >
                     Home
                 </span>
@@ -362,7 +422,7 @@ const handleReceiptClick = () => {
             <!-- Alerts Drawer Trigger -->
             <button
                 type="button"
-                class="relative flex w-full flex-col items-center justify-center py-1 text-slate-500 transition active:scale-95 hover:text-blue-950"
+                class="relative flex w-full flex-col items-center justify-center py-1 text-slate-500 transition hover:text-blue-950 active:scale-95"
                 @click="openAlertsSheet"
             >
                 <div class="relative">
@@ -371,22 +431,30 @@ const handleReceiptClick = () => {
                         v-if="notifications.unread_count > 0"
                         class="absolute -top-1 -right-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[0.6rem] font-black text-white shadow-xs"
                     >
-                        {{ notifications.unread_count > 99 ? '99+' : notifications.unread_count }}
+                        {{
+                            notifications.unread_count > 99
+                                ? '99+'
+                                : notifications.unread_count
+                        }}
                     </span>
                 </div>
                 <span class="mt-0.5 h-1 w-1 rounded-full bg-transparent"></span>
-                <span class="text-[0.65rem] font-bold tracking-tight">Alerts</span>
+                <span class="text-[0.65rem] font-bold tracking-tight"
+                    >Alerts</span
+                >
             </button>
 
             <!-- More -->
             <button
                 type="button"
-                class="flex w-full flex-col items-center justify-center py-1 text-slate-500 transition active:scale-95 hover:text-slate-900"
+                class="flex w-full flex-col items-center justify-center py-1 text-slate-500 transition hover:text-slate-900 active:scale-95"
                 @click="openMoreSheet"
             >
                 <MoreHorizontal class="size-5" />
                 <span class="mt-0.5 h-1 w-1 rounded-full bg-transparent"></span>
-                <span class="text-[0.65rem] font-bold tracking-tight">More</span>
+                <span class="text-[0.65rem] font-bold tracking-tight"
+                    >More</span
+                >
             </button>
         </div>
 
@@ -398,7 +466,7 @@ const handleReceiptClick = () => {
             <!-- Alerts -->
             <button
                 type="button"
-                class="flex w-full flex-col items-center justify-center py-1 text-slate-500 transition active:scale-95 hover:text-blue-950"
+                class="flex w-full flex-col items-center justify-center py-1 text-slate-500 transition hover:text-blue-950 active:scale-95"
                 @click="openAlertsSheet"
             >
                 <div class="relative">
@@ -407,18 +475,24 @@ const handleReceiptClick = () => {
                         v-if="notifications.unread_count > 0"
                         class="absolute -top-1 -right-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[0.6rem] font-black text-white shadow-xs"
                     >
-                        {{ notifications.unread_count > 99 ? '99+' : notifications.unread_count }}
+                        {{
+                            notifications.unread_count > 99
+                                ? '99+'
+                                : notifications.unread_count
+                        }}
                     </span>
                 </div>
                 <span class="mt-0.5 h-1 w-1 rounded-full bg-transparent"></span>
-                <span class="text-[0.65rem] font-bold tracking-tight">Alerts</span>
+                <span class="text-[0.65rem] font-bold tracking-tight"
+                    >Alerts</span
+                >
             </button>
 
             <!-- Elevated Center Focal Button: Pending Requests -->
             <div class="-mt-5 flex flex-col items-center justify-center">
                 <Link
                     href="/staff/pending-requests"
-                    class="flex h-12 w-12 items-center justify-center rounded-2xl ring-4 ring-white shadow-lg transition-transform active:scale-95"
+                    class="flex h-12 w-12 items-center justify-center rounded-2xl shadow-lg ring-4 ring-white transition-transform active:scale-95"
                     :class="
                         isUrlActive('/staff/pending-requests')
                             ? 'bg-gradient-to-tr from-blue-950 via-blue-800 to-indigo-600 text-white shadow-blue-900/30'
@@ -429,7 +503,11 @@ const handleReceiptClick = () => {
                 </Link>
                 <span
                     class="mt-1 text-[0.65rem] font-black tracking-tight"
-                    :class="isUrlActive('/staff/pending-requests') ? 'text-blue-950 font-black' : 'text-slate-500'"
+                    :class="
+                        isUrlActive('/staff/pending-requests')
+                            ? 'font-black text-blue-950'
+                            : 'text-slate-500'
+                    "
                 >
                     Requests
                 </span>
@@ -438,12 +516,14 @@ const handleReceiptClick = () => {
             <!-- More -->
             <button
                 type="button"
-                class="flex w-full flex-col items-center justify-center py-1 text-slate-500 transition active:scale-95 hover:text-slate-900"
+                class="flex w-full flex-col items-center justify-center py-1 text-slate-500 transition hover:text-slate-900 active:scale-95"
                 @click="openMoreSheet"
             >
                 <MoreHorizontal class="size-5" />
                 <span class="mt-0.5 h-1 w-1 rounded-full bg-transparent"></span>
-                <span class="text-[0.65rem] font-bold tracking-tight">More</span>
+                <span class="text-[0.65rem] font-bold tracking-tight"
+                    >More</span
+                >
             </button>
         </div>
 
@@ -455,7 +535,7 @@ const handleReceiptClick = () => {
             <!-- Alerts -->
             <button
                 type="button"
-                class="flex w-full flex-col items-center justify-center py-1 text-slate-500 transition active:scale-95 hover:text-blue-950"
+                class="flex w-full flex-col items-center justify-center py-1 text-slate-500 transition hover:text-blue-950 active:scale-95"
                 @click="openAlertsSheet"
             >
                 <div class="relative">
@@ -464,18 +544,24 @@ const handleReceiptClick = () => {
                         v-if="notifications.unread_count > 0"
                         class="absolute -top-1 -right-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[0.6rem] font-black text-white shadow-xs"
                     >
-                        {{ notifications.unread_count > 99 ? '99+' : notifications.unread_count }}
+                        {{
+                            notifications.unread_count > 99
+                                ? '99+'
+                                : notifications.unread_count
+                        }}
                     </span>
                 </div>
                 <span class="mt-0.5 h-1 w-1 rounded-full bg-transparent"></span>
-                <span class="text-[0.65rem] font-bold tracking-tight">Alerts</span>
+                <span class="text-[0.65rem] font-bold tracking-tight"
+                    >Alerts</span
+                >
             </button>
 
             <!-- Elevated Center Focal Button: Final Approvals -->
             <div class="-mt-5 flex flex-col items-center justify-center">
                 <Link
                     href="/president/final-approvals"
-                    class="flex h-12 w-12 items-center justify-center rounded-2xl ring-4 ring-white shadow-lg transition-transform active:scale-95"
+                    class="flex h-12 w-12 items-center justify-center rounded-2xl shadow-lg ring-4 ring-white transition-transform active:scale-95"
                     :class="
                         isUrlActive('/president/final-approvals')
                             ? 'bg-gradient-to-tr from-blue-950 via-blue-800 to-indigo-600 text-white shadow-blue-900/30'
@@ -486,7 +572,11 @@ const handleReceiptClick = () => {
                 </Link>
                 <span
                     class="mt-1 text-[0.65rem] font-black tracking-tight"
-                    :class="isUrlActive('/president/final-approvals') ? 'text-blue-950 font-black' : 'text-slate-500'"
+                    :class="
+                        isUrlActive('/president/final-approvals')
+                            ? 'font-black text-blue-950'
+                            : 'text-slate-500'
+                    "
                 >
                     Approvals
                 </span>
@@ -495,12 +585,14 @@ const handleReceiptClick = () => {
             <!-- More -->
             <button
                 type="button"
-                class="flex w-full flex-col items-center justify-center py-1 text-slate-500 transition active:scale-95 hover:text-slate-900"
+                class="flex w-full flex-col items-center justify-center py-1 text-slate-500 transition hover:text-slate-900 active:scale-95"
                 @click="openMoreSheet"
             >
                 <MoreHorizontal class="size-5" />
                 <span class="mt-0.5 h-1 w-1 rounded-full bg-transparent"></span>
-                <span class="text-[0.65rem] font-bold tracking-tight">More</span>
+                <span class="text-[0.65rem] font-bold tracking-tight"
+                    >More</span
+                >
             </button>
         </div>
     </nav>
@@ -511,7 +603,9 @@ const handleReceiptClick = () => {
             side="bottom"
             class="max-h-[85vh] overflow-y-auto rounded-t-3xl border-slate-200 bg-white p-6 shadow-2xl"
         >
-            <div class="mx-auto mb-4 h-1.5 w-12 rounded-full bg-slate-300"></div>
+            <div
+                class="mx-auto mb-4 h-1.5 w-12 rounded-full bg-slate-300"
+            ></div>
 
             <SheetHeader class="text-left">
                 <SheetTitle class="text-lg font-black text-slate-900">
@@ -539,7 +633,7 @@ const handleReceiptClick = () => {
                     </p>
                     <div class="mt-1 flex flex-wrap gap-1.5">
                         <span
-                            class="inline-flex rounded-full bg-blue-100 px-2 py-0.5 text-[0.65rem] font-black uppercase text-blue-900"
+                            class="inline-flex rounded-full bg-blue-100 px-2 py-0.5 text-[0.65rem] font-black text-blue-900 uppercase"
                         >
                             {{ userRole }}
                         </span>
@@ -639,7 +733,6 @@ const handleReceiptClick = () => {
                     </Link>
                 </template>
 
-
                 <!-- Account & Logout Action -->
                 <button
                     type="button"
@@ -673,9 +766,13 @@ const handleReceiptClick = () => {
             side="bottom"
             class="max-h-[85vh] overflow-y-auto rounded-t-3xl border-slate-200 bg-white p-6 shadow-2xl"
         >
-            <div class="mx-auto mb-4 h-1.5 w-12 rounded-full bg-slate-300"></div>
+            <div
+                class="mx-auto mb-4 h-1.5 w-12 rounded-full bg-slate-300"
+            ></div>
 
-            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+            <div
+                class="flex items-center justify-between border-b border-slate-100 pb-4"
+            >
                 <div>
                     <SheetTitle class="text-lg font-black text-slate-900">
                         Notifications
@@ -709,20 +806,30 @@ const handleReceiptClick = () => {
                         :key="notification.id"
                         :href="`/notifications/${notification.id}/open`"
                         class="block rounded-2xl border border-slate-100 p-3.5 text-left transition hover:bg-slate-50"
-                        :class="notification.read_at ? 'bg-white opacity-80' : 'bg-slate-50/90 font-medium'"
+                        :class="
+                            notification.read_at
+                                ? 'bg-white opacity-80'
+                                : 'bg-slate-50/90 font-medium'
+                        "
                         @click="closeAlertsSheet"
                     >
                         <div class="flex items-start gap-3">
                             <span
                                 class="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full"
-                                :class="notification.read_at ? 'bg-slate-300' : 'bg-blue-600 ring-2 ring-blue-100'"
+                                :class="
+                                    notification.read_at
+                                        ? 'bg-slate-300'
+                                        : 'bg-blue-600 ring-2 ring-blue-100'
+                                "
                             ></span>
 
                             <div class="min-w-0 flex-1">
                                 <p class="text-sm font-bold text-slate-900">
                                     {{ notification.title }}
                                 </p>
-                                <p class="mt-0.5 text-xs text-slate-600 line-clamp-2">
+                                <p
+                                    class="mt-0.5 line-clamp-2 text-xs text-slate-600"
+                                >
                                     {{ notification.message }}
                                 </p>
                                 <p
@@ -741,7 +848,9 @@ const handleReceiptClick = () => {
 
     <!-- LOGOUT CONFIRMATION DIALOG -->
     <Dialog v-model:open="showLogoutDialog">
-        <DialogContent class="rounded-3xl border border-slate-200 p-0 shadow-2xl sm:max-w-md">
+        <DialogContent
+            class="rounded-3xl border border-slate-200 p-0 shadow-2xl sm:max-w-md"
+        >
             <div class="p-6">
                 <DialogHeader>
                     <div class="flex items-start gap-4">
@@ -752,12 +861,18 @@ const handleReceiptClick = () => {
                         </div>
 
                         <div>
-                            <DialogTitle class="text-xl font-black text-slate-950">
+                            <DialogTitle
+                                class="text-xl font-black text-slate-950"
+                            >
                                 Confirm logout
                             </DialogTitle>
 
-                            <DialogDescription class="mt-2 text-sm leading-6 text-slate-600">
-                                Are you sure you want to log out of your account? You will need to sign in again to continue using the clearance system.
+                            <DialogDescription
+                                class="mt-2 text-sm leading-6 text-slate-600"
+                            >
+                                Are you sure you want to log out of your
+                                account? You will need to sign in again to
+                                continue using the clearance system.
                             </DialogDescription>
                         </div>
                     </div>

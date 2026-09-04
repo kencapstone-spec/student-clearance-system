@@ -123,25 +123,35 @@ const rejectedApprovals = computed(() => {
 });
 
 const formatStudentName = (user?: Student | null) => {
-    if (!user) return 'N/A';
+    if (!user) {
+        return 'N/A';
+    }
+
     if (user.last_name && user.first_name) {
         return `${user.last_name}, ${user.first_name}`;
     }
+
     if (user.last_name) {
         return user.last_name;
     }
+
     if (user.name) {
         if (user.name.includes(',')) {
             return user.name;
         }
+
         const parts = user.name.trim().split(/\s+/);
+
         if (parts.length > 1) {
             const lastName = parts.pop();
             const firstName = parts.join(' ');
+
             return `${lastName}, ${firstName}`;
         }
+
         return user.name;
     }
+
     return 'N/A';
 };
 
@@ -153,6 +163,7 @@ const availableYearLevels = computed(() => {
         }
     });
     const standard = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
+
     return Array.from(new Set([...standard, ...Array.from(levels)]));
 });
 
@@ -167,6 +178,7 @@ const availableDepartments = computed(() => {
     const map = new Map<string, string>();
     props.approvals.forEach((approval) => {
         const course = approval.clearance_request?.user?.course;
+
         if (course?.code) {
             map.set(course.code, course.name || course.code);
         }
@@ -178,13 +190,17 @@ const availableDepartments = computed(() => {
 const filteredApprovals = computed(() => {
     return props.approvals.filter((approval) => {
         // Status filter
-        if (activeFilter.value !== 'all' && approval.status !== activeFilter.value) {
+        if (
+            activeFilter.value !== 'all' &&
+            approval.status !== activeFilter.value
+        ) {
             return false;
         }
 
         // Year Level filter
         if (selectedYearLevel.value !== 'all') {
             const studentYear = approval.clearance_request?.user?.year_level;
+
             if (studentYear !== selectedYearLevel.value) {
                 return false;
             }
@@ -193,6 +209,7 @@ const filteredApprovals = computed(() => {
         // Department / Course filter
         if (selectedDepartment.value !== 'all') {
             const courseCode = approval.clearance_request?.user?.course?.code;
+
             if (courseCode !== selectedDepartment.value) {
                 return false;
             }
@@ -202,18 +219,31 @@ const filteredApprovals = computed(() => {
         if (searchQuery.value.trim()) {
             const query = searchQuery.value.toLowerCase().trim();
             const student = approval.clearance_request?.user;
-            if (!student) return false;
+
+            if (!student) {
+                return false;
+            }
 
             const formattedName = formatStudentName(student).toLowerCase();
             const matchesName =
                 student.name?.toLowerCase().includes(query) ||
                 formattedName.includes(query);
-            const matchesFirst = student.first_name?.toLowerCase().includes(query);
-            const matchesLast = student.last_name?.toLowerCase().includes(query);
+            const matchesFirst = student.first_name
+                ?.toLowerCase()
+                .includes(query);
+            const matchesLast = student.last_name
+                ?.toLowerCase()
+                .includes(query);
             const matchesId = student.student_id?.toLowerCase().includes(query);
-            const matchesCourseCode = student.course?.code?.toLowerCase().includes(query);
-            const matchesCourseName = student.course?.name?.toLowerCase().includes(query);
-            const matchesYear = student.year_level?.toLowerCase().includes(query);
+            const matchesCourseCode = student.course?.code
+                ?.toLowerCase()
+                .includes(query);
+            const matchesCourseName = student.course?.name
+                ?.toLowerCase()
+                .includes(query);
+            const matchesYear = student.year_level
+                ?.toLowerCase()
+                .includes(query);
 
             if (
                 !matchesName &&
@@ -238,9 +268,8 @@ const selectedApprovalForReject = computed(() => {
     }
 
     return (
-        props.approvals.find(
-            (a) => a.id === selectedRejectApprovalId.value,
-        ) ?? null
+        props.approvals.find((a) => a.id === selectedRejectApprovalId.value) ??
+        null
     );
 });
 
@@ -407,21 +436,6 @@ const filterButtonClass = (filter: FilterStatus) => {
     }
 
     return 'border-slate-200 bg-white text-slate-600 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700';
-};
-
-const thumbButtonClass = (filter: FilterStatus) => {
-    if (activeFilter.value === filter) {
-        return 'bg-white/15 ring-1 ring-blue-200/40';
-    }
-
-    return '';
-};
-
-const scrollToTop = () => {
-    window.scrollTo({
-        top: 0,
-        behavior: 'smooth',
-    });
 };
 </script>
 
@@ -663,7 +677,9 @@ const scrollToTop = () => {
             <section
                 class="overflow-hidden rounded-3xl border border-slate-200 bg-white/95 shadow-sm shadow-slate-200/70"
             >
-                <div class="border-b border-slate-200 bg-white px-4 py-5 sm:px-6">
+                <div
+                    class="border-b border-slate-200 bg-white px-4 py-5 sm:px-6"
+                >
                     <div
                         class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
                     >
@@ -684,7 +700,9 @@ const scrollToTop = () => {
                             </p>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+                        <div
+                            class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap"
+                        >
                             <button
                                 type="button"
                                 class="inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-2xl border px-4 py-2.5 text-sm font-black transition"
@@ -695,7 +713,11 @@ const scrollToTop = () => {
                                 All
                                 <span
                                     class="ml-1 rounded-full px-2 py-0.5 text-[0.7rem] font-black"
-                                    :class="activeFilter === 'all' ? 'bg-white/25 text-white' : 'bg-slate-100 text-slate-600'"
+                                    :class="
+                                        activeFilter === 'all'
+                                            ? 'bg-white/25 text-white'
+                                            : 'bg-slate-100 text-slate-600'
+                                    "
                                 >
                                     {{ props.approvals.length }}
                                 </span>
@@ -710,7 +732,11 @@ const scrollToTop = () => {
                                 Pending
                                 <span
                                     class="ml-1 rounded-full px-2 py-0.5 text-[0.7rem] font-black"
-                                    :class="activeFilter === 'pending' ? 'bg-white/25 text-white' : 'bg-orange-100 text-orange-700'"
+                                    :class="
+                                        activeFilter === 'pending'
+                                            ? 'bg-white/25 text-white'
+                                            : 'bg-orange-100 text-orange-700'
+                                    "
                                 >
                                     {{ pendingApprovals.length }}
                                 </span>
@@ -725,7 +751,11 @@ const scrollToTop = () => {
                                 Approved
                                 <span
                                     class="ml-1 rounded-full px-2 py-0.5 text-[0.7rem] font-black"
-                                    :class="activeFilter === 'approved' ? 'bg-white/25 text-white' : 'bg-green-100 text-green-700'"
+                                    :class="
+                                        activeFilter === 'approved'
+                                            ? 'bg-white/25 text-white'
+                                            : 'bg-green-100 text-green-700'
+                                    "
                                 >
                                     {{ approvedApprovals.length }}
                                 </span>
@@ -740,7 +770,11 @@ const scrollToTop = () => {
                                 Rejected
                                 <span
                                     class="ml-1 rounded-full px-2 py-0.5 text-[0.7rem] font-black"
-                                    :class="activeFilter === 'rejected' ? 'bg-white/25 text-white' : 'bg-red-100 text-red-700'"
+                                    :class="
+                                        activeFilter === 'rejected'
+                                            ? 'bg-white/25 text-white'
+                                            : 'bg-red-100 text-red-700'
+                                    "
                                 >
                                     {{ rejectedApprovals.length }}
                                 </span>
@@ -753,20 +787,20 @@ const scrollToTop = () => {
                         class="mt-4 flex flex-col gap-3 border-t border-slate-100 pt-4 lg:flex-row lg:items-center lg:justify-between"
                     >
                         <!-- Search Box -->
-                        <div class="relative flex-1 min-w-[200px]">
+                        <div class="relative min-w-[200px] flex-1">
                             <Search
-                                class="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-400"
+                                class="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-slate-400"
                             />
                             <input
                                 v-model="searchQuery"
                                 type="text"
                                 placeholder="Search by student name, ID, course, or year..."
-                                class="h-11 w-full rounded-2xl border border-slate-200 bg-slate-50/70 pl-10 pr-10 text-sm font-semibold text-slate-900 shadow-inner placeholder:font-medium placeholder:text-slate-400 transition focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:outline-none"
+                                class="h-11 w-full rounded-2xl border border-slate-200 bg-slate-50/70 pr-10 pl-10 text-sm font-semibold text-slate-900 shadow-inner transition placeholder:font-medium placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:outline-none"
                             />
                             <button
                                 v-if="searchQuery"
                                 type="button"
-                                class="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-slate-400 transition hover:bg-slate-200 hover:text-slate-700"
+                                class="absolute top-1/2 right-3 -translate-y-1/2 rounded-full p-1 text-slate-400 transition hover:bg-slate-200 hover:text-slate-700"
                                 @click="searchQuery = ''"
                             >
                                 <X class="size-3.5" />
@@ -774,15 +808,17 @@ const scrollToTop = () => {
                         </div>
 
                         <!-- Dropdowns Container -->
-                        <div class="flex flex-wrap items-center gap-2 shrink-0">
+                        <div class="flex shrink-0 flex-wrap items-center gap-2">
                             <!-- Department Selector -->
-                            <div class="relative min-w-[160px] sm:min-w-[185px]">
+                            <div
+                                class="relative min-w-[160px] sm:min-w-[185px]"
+                            >
                                 <Building2
-                                    class="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-blue-600"
+                                    class="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-blue-600"
                                 />
                                 <select
                                     v-model="selectedDepartment"
-                                    class="h-11 w-full cursor-pointer appearance-none rounded-2xl border border-slate-200 bg-slate-50/70 pl-10 pr-9 text-sm font-semibold text-slate-900 shadow-inner transition focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:outline-none"
+                                    class="h-11 w-full cursor-pointer appearance-none rounded-2xl border border-slate-200 bg-slate-50/70 pr-9 pl-10 text-sm font-semibold text-slate-900 shadow-inner transition focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:outline-none"
                                 >
                                     <option value="all">All Departments</option>
                                     <option
@@ -794,7 +830,7 @@ const scrollToTop = () => {
                                     </option>
                                 </select>
                                 <div
-                                    class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+                                    class="pointer-events-none absolute top-1/2 right-3.5 -translate-y-1/2 text-slate-400"
                                 >
                                     <svg
                                         class="size-4"
@@ -813,13 +849,15 @@ const scrollToTop = () => {
                             </div>
 
                             <!-- Year Level Selector -->
-                            <div class="relative min-w-[150px] sm:min-w-[170px]">
+                            <div
+                                class="relative min-w-[150px] sm:min-w-[170px]"
+                            >
                                 <GraduationCap
-                                    class="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-indigo-600"
+                                    class="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-indigo-600"
                                 />
                                 <select
                                     v-model="selectedYearLevel"
-                                    class="h-11 w-full cursor-pointer appearance-none rounded-2xl border border-slate-200 bg-slate-50/70 pl-10 pr-9 text-sm font-semibold text-slate-900 shadow-inner transition focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:outline-none"
+                                    class="h-11 w-full cursor-pointer appearance-none rounded-2xl border border-slate-200 bg-slate-50/70 pr-9 pl-10 text-sm font-semibold text-slate-900 shadow-inner transition focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:outline-none"
                                 >
                                     <option value="all">All Year Levels</option>
                                     <option
@@ -831,7 +869,7 @@ const scrollToTop = () => {
                                     </option>
                                 </select>
                                 <div
-                                    class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+                                    class="pointer-events-none absolute top-1/2 right-3.5 -translate-y-1/2 text-slate-400"
                                 >
                                     <svg
                                         class="size-4"
@@ -850,10 +888,18 @@ const scrollToTop = () => {
                             </div>
 
                             <button
-                                v-if="searchQuery || selectedYearLevel !== 'all' || selectedDepartment !== 'all'"
+                                v-if="
+                                    searchQuery ||
+                                    selectedYearLevel !== 'all' ||
+                                    selectedDepartment !== 'all'
+                                "
                                 type="button"
                                 class="inline-flex h-11 items-center gap-1.5 rounded-2xl border border-slate-200 bg-white px-3.5 text-xs font-bold text-slate-600 shadow-sm transition hover:bg-slate-100 hover:text-slate-900"
-                                @click="searchQuery = ''; selectedYearLevel = 'all'; selectedDepartment = 'all'"
+                                @click="
+                                    searchQuery = '';
+                                    selectedYearLevel = 'all';
+                                    selectedDepartment = 'all';
+                                "
                                 title="Clear search and filters"
                             >
                                 <X class="size-3.5" />
@@ -878,16 +924,29 @@ const scrollToTop = () => {
                     </p>
 
                     <p class="mt-1 text-sm font-medium text-slate-500">
-                        <span v-if="searchQuery || selectedYearLevel !== 'all' || selectedDepartment !== 'all'">
-                            No requests match your current search, department, or year level filter.
+                        <span
+                            v-if="
+                                searchQuery ||
+                                selectedYearLevel !== 'all' ||
+                                selectedDepartment !== 'all'
+                            "
+                        >
+                            No requests match your current search, department,
+                            or year level filter.
                         </span>
                         <span v-else>
-                            Records will appear here based on the selected filter.
+                            Records will appear here based on the selected
+                            filter.
                         </span>
                     </p>
 
                     <button
-                        v-if="searchQuery || selectedYearLevel !== 'all' || selectedDepartment !== 'all' || activeFilter !== 'pending'"
+                        v-if="
+                            searchQuery ||
+                            selectedYearLevel !== 'all' ||
+                            selectedDepartment !== 'all' ||
+                            activeFilter !== 'pending'
+                        "
                         type="button"
                         class="mt-4 inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-black text-blue-700 shadow-sm transition hover:bg-slate-50"
                         @click="resetFilters"
@@ -953,11 +1012,17 @@ const scrollToTop = () => {
                                 </span>
 
                                 <span
-                                    v-if="approval.clearance_request.user.year_level"
+                                    v-if="
+                                        approval.clearance_request.user
+                                            .year_level
+                                    "
                                     class="inline-flex items-center gap-1 rounded-full border border-indigo-100 bg-indigo-50 px-3 py-1 text-xs font-black text-indigo-700"
                                 >
                                     <GraduationCap class="size-3" />
-                                    {{ approval.clearance_request.user.year_level }}
+                                    {{
+                                        approval.clearance_request.user
+                                            .year_level
+                                    }}
                                 </span>
 
                                 <span
@@ -1076,7 +1141,8 @@ const scrollToTop = () => {
                                             <p class="font-black text-blue-950">
                                                 {{
                                                     formatStudentName(
-                                                        approval.clearance_request
+                                                        approval
+                                                            .clearance_request
                                                             .user,
                                                     )
                                                 }}
@@ -1115,11 +1181,17 @@ const scrollToTop = () => {
 
                                     <td class="px-6 py-4">
                                         <span
-                                            v-if="approval.clearance_request.user.year_level"
+                                            v-if="
+                                                approval.clearance_request.user
+                                                    .year_level
+                                            "
                                             class="inline-flex items-center gap-1.5 rounded-full border border-indigo-100 bg-indigo-50 px-3 py-1 text-xs font-black text-indigo-700 shadow-xs"
                                         >
                                             <GraduationCap class="size-3" />
-                                            {{ approval.clearance_request.user.year_level }}
+                                            {{
+                                                approval.clearance_request.user
+                                                    .year_level
+                                            }}
                                         </span>
                                         <span
                                             v-else
@@ -1326,20 +1398,37 @@ const scrollToTop = () => {
                     <div class="grid gap-2">
                         <p>
                             <span class="font-black">Student:</span>
-                            {{ formatStudentName(selectedApprovalForReject.clearance_request.user) }}
+                            {{
+                                formatStudentName(
+                                    selectedApprovalForReject.clearance_request
+                                        .user,
+                                )
+                            }}
                             <span class="text-xs font-semibold text-slate-500">
-                                ({{ selectedApprovalForReject.clearance_request.user.student_id }})
+                                ({{
+                                    selectedApprovalForReject.clearance_request
+                                        .user.student_id
+                                }})
                             </span>
                         </p>
                         <p>
                             <span class="font-black">Course & Year:</span>
-                            {{ selectedApprovalForReject.clearance_request.user.course?.code ?? 'N/A' }}
+                            {{
+                                selectedApprovalForReject.clearance_request.user
+                                    .course?.code ?? 'N/A'
+                            }}
                             <span
-                                v-if="selectedApprovalForReject.clearance_request.user.year_level"
+                                v-if="
+                                    selectedApprovalForReject.clearance_request
+                                        .user.year_level
+                                "
                                 class="ml-1.5 inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-black text-indigo-700"
                             >
                                 <GraduationCap class="size-3" />
-                                {{ selectedApprovalForReject.clearance_request.user.year_level }}
+                                {{
+                                    selectedApprovalForReject.clearance_request
+                                        .user.year_level
+                                }}
                             </span>
                         </p>
                     </div>
@@ -1456,8 +1545,9 @@ const scrollToTop = () => {
                             >
                                 <GraduationCap class="size-3" />
                                 {{
-                                    selectedApprovalForApproval.clearance_request
-                                        .user.year_level ?? 'Not specified'
+                                    selectedApprovalForApproval
+                                        .clearance_request.user.year_level ??
+                                    'Not specified'
                                 }}
                             </span>
                         </p>

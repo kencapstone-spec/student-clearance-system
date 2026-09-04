@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { Head, router } from '@inertiajs/vue3';
-import { CheckCircle2, Download, ChevronRight, LogOut } from 'lucide-vue-next';
+
+import { CheckCircle2, Download } from 'lucide-vue-next';
 import { computed, ref, onMounted, onUnmounted } from 'vue';
+
 import { dashboard } from '@/routes';
 import { resolveCourseTheme } from '@/utils/courseThemes';
 import type { CourseTheme } from '@/utils/courseThemes';
@@ -32,6 +34,7 @@ onMounted(() => {
     window.addEventListener('open-submit-request', handleOpenSubmitRequest);
 
     const params = new URLSearchParams(window.location.search);
+
     if (params.get('view') === 'status') {
         openClearanceDetailsModal();
     } else if (params.get('view') === 'request') {
@@ -47,7 +50,10 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-    window.removeEventListener('open-clearance-status', handleOpenClearanceStatus);
+    window.removeEventListener(
+        'open-clearance-status',
+        handleOpenClearanceStatus,
+    );
     window.removeEventListener('open-submit-request', handleOpenSubmitRequest);
     clearInterval(pollingInterval);
 });
@@ -276,32 +282,12 @@ const selectedCompliedApproval = ref<{
     officeName: string;
 } | null>(null);
 
-const showMobileMoreMenu = ref(false);
-
-const showMobileLogoutModal = ref(false);
-
-const activeMobileNav = ref<'home' | 'request' | 'offices' | 'more'>('home');
-
-const courseCode = computed(() => {
-    return props.student.course?.code ?? 'N/A';
-});
-
-const studentInitials = computed(() => {
-    return props.student.name
-        .split(' ')
-        .map((name) => name.charAt(0))
-        .slice(0, 2)
-        .join('');
-});
-
 const openClearanceDetailsModal = () => {
-    showMobileMoreMenu.value = false;
     showClearanceDetailsModal.value = true;
 };
 
 const closeClearanceDetailsModal = () => {
     showClearanceDetailsModal.value = false;
-    activeMobileNav.value = 'home';
 };
 
 const openClearanceReceipt = () => {
@@ -429,14 +415,12 @@ const unmetPrerequisites = (office: Office) => {
 
 const openSubmitRequestModal = () => {
     selectedOfficeIds.value = [];
-    showMobileMoreMenu.value = false;
     showSubmitRequestModal.value = true;
 };
 
 const closeSubmitRequestModal = () => {
     selectedOfficeIds.value = [];
     showSubmitRequestModal.value = false;
-    activeMobileNav.value = 'home';
 };
 
 const toggleOfficeSelection = (officeId: number) => {
@@ -514,56 +498,6 @@ const submitClearanceRequest = () => {
     }
 
     router.post('/student/clearance-requests', payload, options);
-};
-
-const scrollToDashboardTop = () => {
-    activeMobileNav.value = 'home';
-    showMobileMoreMenu.value = false;
-
-    window.scrollTo({
-        top: 0,
-        behavior: 'smooth',
-    });
-};
-
-const openMobileRequests = () => {
-    showMobileMoreMenu.value = false;
-
-    if (requestableOffices.value.length === 0) {
-        return;
-    }
-
-    activeMobileNav.value = 'request';
-    openSubmitRequestModal();
-};
-
-const openMobileOffices = () => {
-    activeMobileNav.value = 'offices';
-    showMobileMoreMenu.value = false;
-    openClearanceDetailsModal();
-};
-
-const toggleMobileMoreMenu = () => {
-    activeMobileNav.value = 'more';
-    showMobileMoreMenu.value = !showMobileMoreMenu.value;
-};
-
-const closeMobileMoreMenu = () => {
-    showMobileMoreMenu.value = false;
-    activeMobileNav.value = 'home';
-};
-
-const openMobileLogoutModal = () => {
-    showMobileMoreMenu.value = false;
-    showMobileLogoutModal.value = true;
-};
-
-const closeMobileLogoutModal = () => {
-    showMobileLogoutModal.value = false;
-};
-
-const confirmMobileLogout = () => {
-    router.post('/logout');
 };
 </script>
 
@@ -1153,7 +1087,7 @@ const confirmMobileLogout = () => {
                     class="flex max-h-[85dvh] w-full max-w-3xl flex-col rounded-2xl bg-white shadow-xl sm:max-h-[90dvh]"
                 >
                     <div
-                        class="shrink-0 flex items-start justify-between gap-3 border-b border-slate-200 px-4 py-3 sm:px-6 sm:py-4"
+                        class="flex shrink-0 items-start justify-between gap-3 border-b border-slate-200 px-4 py-3 sm:px-6 sm:py-4"
                     >
                         <div>
                             <h2
@@ -1179,7 +1113,9 @@ const confirmMobileLogout = () => {
                         </button>
                     </div>
 
-                    <div class="flex-1 overflow-y-auto space-y-3 px-4 py-4 sm:px-6">
+                    <div
+                        class="flex-1 space-y-3 overflow-y-auto px-4 py-4 sm:px-6"
+                    >
                         <div
                             class="rounded-xl border p-3 text-sm leading-snug"
                             :class="courseTheme.statusBoxClass"
@@ -1285,7 +1221,7 @@ const confirmMobileLogout = () => {
                     </div>
 
                     <div
-                        class="shrink-0 flex flex-col gap-3 border-t border-slate-200 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6"
+                        class="flex shrink-0 flex-col gap-3 border-t border-slate-200 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6"
                     >
                         <p class="text-sm text-slate-500">
                             Selected offices:
@@ -1338,7 +1274,7 @@ const confirmMobileLogout = () => {
                     class="flex max-h-[85dvh] w-full max-w-5xl flex-col rounded-2xl bg-white shadow-xl sm:max-h-[90dvh]"
                 >
                     <div
-                        class="shrink-0 flex items-start justify-between gap-3 border-b border-slate-200 px-4 py-3 sm:px-6 sm:py-4"
+                        class="flex shrink-0 items-start justify-between gap-3 border-b border-slate-200 px-4 py-3 sm:px-6 sm:py-4"
                     >
                         <div>
                             <h2
@@ -1362,7 +1298,9 @@ const confirmMobileLogout = () => {
                         </button>
                     </div>
 
-                    <div class="flex-1 overflow-y-auto space-y-5 px-4 py-4 sm:px-6">
+                    <div
+                        class="flex-1 space-y-5 overflow-y-auto px-4 py-4 sm:px-6"
+                    >
                         <!-- Student Information -->
                         <div class="grid grid-cols-2 gap-3 md:grid-cols-3">
                             <div
@@ -1492,9 +1430,7 @@ const confirmMobileLogout = () => {
                                 Office Approval Breakdown
                             </h3>
 
-                            <div
-                                class="grid gap-2 px-1 pb-4"
-                            >
+                            <div class="grid gap-2 px-1 pb-4">
                                 <div
                                     v-for="office in officeStatuses"
                                     :key="office.id"
@@ -1566,7 +1502,7 @@ const confirmMobileLogout = () => {
                     </div>
 
                     <div
-                        class="shrink-0 flex justify-end border-t border-slate-200 px-4 py-3 sm:px-6"
+                        class="flex shrink-0 justify-end border-t border-slate-200 px-4 py-3 sm:px-6"
                     >
                         <button
                             type="button"
@@ -1641,50 +1577,6 @@ const confirmMobileLogout = () => {
                             @click="confirmMarkAsComplied"
                         >
                             Confirm
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Mobile Logout Confirmation Modal -->
-            <div
-                v-if="showMobileLogoutModal"
-                class="fixed inset-0 z-[60] flex items-end justify-center bg-black/50 px-3 py-4 sm:items-center"
-            >
-                <div
-                    class="w-full max-w-md rounded-t-2xl bg-white shadow-xl sm:rounded-2xl"
-                >
-                    <div class="border-b border-slate-200 px-6 py-4">
-                        <h2
-                            class="text-xl font-bold"
-                            :class="courseTheme.headingTextClass"
-                        >
-                            Logout?
-                        </h2>
-
-                        <p class="mt-1 text-sm text-slate-500">
-                            Are you sure you want to log out of your student
-                            account?
-                        </p>
-                    </div>
-
-                    <div
-                        class="grid grid-cols-2 gap-3 border-t border-slate-200 px-6 py-4"
-                    >
-                        <button
-                            type="button"
-                            class="min-h-11 rounded-xl border border-slate-300 px-4 py-3 font-semibold text-slate-700 transition hover:bg-slate-100"
-                            @click="closeMobileLogoutModal"
-                        >
-                            Cancel
-                        </button>
-
-                        <button
-                            type="button"
-                            class="min-h-11 rounded-xl bg-red-600 px-4 py-3 font-semibold text-white transition hover:bg-red-700"
-                            @click="confirmMobileLogout"
-                        >
-                            Logout
                         </button>
                     </div>
                 </div>

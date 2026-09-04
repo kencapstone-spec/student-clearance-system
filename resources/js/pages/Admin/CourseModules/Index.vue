@@ -11,9 +11,9 @@ import {
     RotateCcw,
     Save,
     ShieldCheck,
-    UserRoundCog,
     X,
 } from 'lucide-vue-next';
+
 import { computed, ref } from 'vue';
 
 type Office = {
@@ -39,7 +39,6 @@ defineProps<{
 const selectedCourse = ref<Course | null>(null);
 const showEditModal = ref(false);
 const showRemoveConfirmModal = ref(false);
-const showAdminMobileMoreMenu = ref(false);
 const successMessage = ref('');
 const errorMessage = ref('');
 
@@ -72,7 +71,6 @@ const openEditModal = (course: Course) => {
     form.clearErrors();
     errorMessage.value = '';
     successMessage.value = '';
-    showAdminMobileMoreMenu.value = false;
     showRemoveConfirmModal.value = false;
     showEditModal.value = true;
 };
@@ -135,14 +133,6 @@ const saveAssignments = () => {
                 'Unable to update course module offices. Please check the selected offices.';
         },
     });
-};
-
-const toggleAdminMobileMoreMenu = () => {
-    showAdminMobileMoreMenu.value = !showAdminMobileMoreMenu.value;
-};
-
-const closeAdminMobileMoreMenu = () => {
-    showAdminMobileMoreMenu.value = false;
 };
 </script>
 
