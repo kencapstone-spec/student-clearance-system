@@ -16,14 +16,28 @@ class RoleMiddleware
      */
     public function handle(Request $request, Closure $next, string ...$roles): Response
     {
-        if (! $request->user()) {
+        $user = $request->user();
+
+        if (! $user) {
             return redirect()->route('login');
         }
 
-        if (! in_array($request->user()->role, $roles)) {
-            abort(403, 'Unauthorized access.');
+        if (! in_array($user->role, $roles)) {
+            if ($request->wantsJson() && ! $request->header('X-Inertia')) {
+                return response()->json(['message' => 'Unauthorized access.'], 403);
+            }
+
+            $redirectRoute = match ($user->role) {
+                'admin' => 'admin.dashboard',
+                'president' => 'president.final-approvals.index',
+                'staff' => 'staff.pending-requests.index',
+                default => 'dashboard',
+            };
+
+            return redirect()->route($redirectRoute)->with('error', 'You are not authorized to access that area.');
         }
 
         return $next($request);
     }
 }
+
