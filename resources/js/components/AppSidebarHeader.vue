@@ -10,7 +10,9 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { SidebarTrigger } from '@/components/ui/sidebar';
-import type { BreadcrumbItem } from '@/types';
+import UserMenuContent from '@/components/UserMenuContent.vue';
+import { useInitials } from '@/composables/useInitials';
+import type { BreadcrumbItem, User } from '@/types';
 
 type SharedNotification = {
     id: number;
@@ -27,12 +29,6 @@ type NotificationsProp = {
     unread_count: number;
 };
 
-type AuthProps = {
-    user?: {
-        role?: string;
-    };
-};
-
 const props = withDefaults(
     defineProps<{
         breadcrumbs?: BreadcrumbItem[];
@@ -43,11 +39,11 @@ const props = withDefaults(
 );
 
 const page = usePage();
+const { getInitials } = useInitials();
+const authUser = computed(() => (page.props.auth as { user?: User })?.user);
 
 const userRole = computed(() => {
-    const auth = page.props.auth as AuthProps | undefined;
-
-    return auth?.user?.role ?? 'student';
+    return authUser.value?.role ?? 'student';
 });
 
 const portalLabel = computed(() => {
@@ -253,6 +249,29 @@ const markAllNotificationsAsRead = () => {
                             </div>
                         </Link>
                     </div>
+                </DropdownMenuContent>
+            </DropdownMenu>
+
+            <!-- Mobile User Profile Avatar Dropdown -->
+            <DropdownMenu v-if="authUser">
+                <DropdownMenuTrigger :as-child="true">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        class="relative h-11 w-11 cursor-pointer rounded-2xl border border-slate-200 bg-blue-950 text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-blue-900 md:hidden"
+                    >
+                        <span class="text-xs font-black tracking-wider">
+                            {{ getInitials(authUser.name) }}
+                        </span>
+                        <span class="sr-only">Open user menu</span>
+                    </Button>
+                </DropdownMenuTrigger>
+
+                <DropdownMenuContent
+                    align="end"
+                    class="w-64 overflow-hidden rounded-2xl border border-slate-200 bg-white p-1 shadow-2xl shadow-slate-300/70"
+                >
+                    <UserMenuContent :user="authUser" />
                 </DropdownMenuContent>
             </DropdownMenu>
         </div>

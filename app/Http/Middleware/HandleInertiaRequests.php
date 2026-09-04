@@ -63,12 +63,24 @@ class HandleInertiaRequests extends Middleware
                 ->count();
         }
 
+        $studentClearance = null;
+        if ($user && $user->role === 'student') {
+            $latestClearance = $user->clearanceRequests()->latest()->first(['id', 'status']);
+            if ($latestClearance) {
+                $studentClearance = [
+                    'id' => $latestClearance->id,
+                    'is_cleared' => $latestClearance->status === 'cleared',
+                ];
+            }
+        }
+
         return [
             ...parent::share($request),
             'name' => config('app.name'),
             'auth' => [
                 'user' => $user,
             ],
+            'studentClearance' => $studentClearance,
             'notifications' => [
                 'items' => $notifications,
                 'unread_count' => $unreadNotificationCount,

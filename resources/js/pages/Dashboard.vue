@@ -19,7 +19,25 @@ defineOptions({
 
 let pollingInterval: ReturnType<typeof setInterval>;
 
+const handleOpenClearanceStatus = () => {
+    openClearanceDetailsModal();
+};
+
+const handleOpenSubmitRequest = () => {
+    openSubmitRequestModal();
+};
+
 onMounted(() => {
+    window.addEventListener('open-clearance-status', handleOpenClearanceStatus);
+    window.addEventListener('open-submit-request', handleOpenSubmitRequest);
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('view') === 'status') {
+        openClearanceDetailsModal();
+    } else if (params.get('view') === 'request') {
+        openSubmitRequestModal();
+    }
+
     pollingInterval = setInterval(() => {
         router.reload({
             data: { _t: Date.now() },
@@ -29,6 +47,8 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
+    window.removeEventListener('open-clearance-status', handleOpenClearanceStatus);
+    window.removeEventListener('open-submit-request', handleOpenSubmitRequest);
     clearInterval(pollingInterval);
 });
 
@@ -43,6 +63,9 @@ type Student = {
     name: string;
     student_id: string;
     role: string;
+    year_level?: string | null;
+    first_name?: string | null;
+    last_name?: string | null;
     course?: Course | null;
 };
 
@@ -600,6 +623,14 @@ const confirmMobileLogout = () => {
                                     :class="courseTheme.accentTextClass"
                                 >
                                     {{ student.course.code }} Course Theme
+                                </span>
+
+                                <span
+                                    v-if="student.year_level"
+                                    class="inline-flex rounded-full bg-white/85 px-3 py-1 text-xs font-black shadow-sm"
+                                    :class="courseTheme.accentTextClass"
+                                >
+                                    {{ student.year_level }}
                                 </span>
                             </div>
                         </div>
@@ -1615,74 +1646,6 @@ const confirmMobileLogout = () => {
                 </div>
             </div>
 
-            <!-- Mobile More / Profile Sheet -->
-            <div
-                v-if="showMobileMoreMenu"
-                class="fixed inset-x-3 bottom-24 z-50 rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl shadow-slate-900/20 md:hidden"
-            >
-                <div class="flex items-start justify-between gap-3">
-                    <div class="flex min-w-0 items-center gap-3">
-                        <div
-                            class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-sm font-black shadow-sm"
-                            :class="courseTheme.iconBgClass"
-                        >
-                            {{ studentInitials }}
-                        </div>
-
-                        <div class="min-w-0">
-                            <p
-                                class="truncate text-sm font-black"
-                                :class="courseTheme.headingTextClass"
-                            >
-                                {{ student.name }}
-                            </p>
-
-                            <p class="text-xs font-semibold text-slate-500">
-                                Student ID: {{ student.student_id }}
-                            </p>
-
-                            <p
-                                class="mt-1 inline-flex rounded-full bg-slate-100 px-2 py-0.5 text-[0.65rem] font-black"
-                                :class="courseTheme.accentTextClass"
-                            >
-                                {{ courseCode }} Course Theme
-                            </p>
-                        </div>
-                    </div>
-
-                    <button
-                        type="button"
-                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-lg font-black text-slate-500 transition hover:bg-slate-100"
-                        @click="closeMobileMoreMenu"
-                    >
-                        ×
-                    </button>
-                </div>
-
-                <div class="mt-4 grid gap-2">
-
-
-                    <button
-                        v-if="isFullyCleared"
-                        type="button"
-                        class="flex min-h-12 items-center justify-between rounded-xl bg-green-600 px-4 py-3 text-left text-sm font-black text-white shadow-md shadow-green-600/20 transition hover:bg-green-700 active:translate-y-0.5"
-                        @click="openClearanceReceipt"
-                    >
-                        <span>Print Clearance Receipt</span>
-                        <Download class="size-4 opacity-90" />
-                    </button>
-
-                    <button
-                        type="button"
-                        class="flex min-h-12 items-center justify-between rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-left text-sm font-black text-red-700 transition hover:bg-red-100 active:bg-red-200"
-                        @click="openMobileLogoutModal"
-                    >
-                        <span>Logout</span>
-                        <LogOut class="size-4 opacity-70" />
-                    </button>
-                </div>
-            </div>
-
             <!-- Mobile Logout Confirmation Modal -->
             <div
                 v-if="showMobileLogoutModal"
@@ -1726,71 +1689,6 @@ const confirmMobileLogout = () => {
                     </div>
                 </div>
             </div>
-
-            <!-- Mobile Thumb Navigation -->
-            <nav
-                class="fixed inset-x-3 bottom-3 z-40 rounded-2xl border p-2 shadow-2xl backdrop-blur md:hidden"
-                :class="courseTheme.mobileNavClass"
-            >
-                <div class="grid grid-cols-4 gap-1">
-                    <button
-                        type="button"
-                        class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
-                        :class="
-                            activeMobileNav === 'home'
-                                ? courseTheme.mobileNavActiveClass
-                                : ''
-                        "
-                        @click="scrollToDashboardTop"
-                    >
-                        <span class="text-base">⌂</span>
-                        <span>Home</span>
-                    </button>
-
-                    <button
-                        type="button"
-                        class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-45"
-                        :class="
-                            activeMobileNav === 'request'
-                                ? courseTheme.mobileNavActiveClass
-                                : ''
-                        "
-                        :disabled="requestableOffices.length === 0"
-                        @click="openMobileRequests"
-                    >
-                        <span class="text-base">📄</span>
-                        <span>Request</span>
-                    </button>
-
-                    <button
-                        type="button"
-                        class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
-                        :class="
-                            activeMobileNav === 'offices'
-                                ? courseTheme.mobileNavActiveClass
-                                : ''
-                        "
-                        @click="openMobileOffices"
-                    >
-                        <span class="text-base">🏢</span>
-                        <span>Offices</span>
-                    </button>
-
-                    <button
-                        type="button"
-                        class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
-                        :class="
-                            activeMobileNav === 'more' || showMobileMoreMenu
-                                ? courseTheme.mobileNavActiveClass
-                                : ''
-                        "
-                        @click="toggleMobileMoreMenu"
-                    >
-                        <span class="text-base">•••</span>
-                        <span>More</span>
-                    </button>
-                </div>
-            </nav>
         </div>
     </div>
 </template>

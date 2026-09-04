@@ -38,7 +38,10 @@ type Course = {
 type Student = {
     id: number;
     name: string;
+    first_name?: string | null;
+    last_name?: string | null;
     student_id: string;
+    year_level?: string | null;
     course: Course | null;
 };
 
@@ -87,6 +90,29 @@ type StatusFilter =
 const props = defineProps<{
     clearanceRequests: ClearanceRequest[];
 }>();
+
+const formatStudentName = (user?: Student | null) => {
+    if (!user) return 'N/A';
+    if (user.last_name && user.first_name) {
+        return `${user.last_name}, ${user.first_name}`;
+    }
+    if (user.last_name) {
+        return user.last_name;
+    }
+    if (user.name) {
+        if (user.name.includes(',')) {
+            return user.name;
+        }
+        const parts = user.name.trim().split(/\s+/);
+        if (parts.length > 1) {
+            const lastName = parts.pop();
+            const firstName = parts.join(' ');
+            return `${lastName}, ${firstName}`;
+        }
+        return user.name;
+    }
+    return 'N/A';
+};
 
 const activeFilter = ref<StatusFilter>('all');
 const selectedCourse = ref('all');
@@ -711,7 +737,7 @@ const formatDateTime = (value: string | null) => {
                                     <h3
                                         class="line-clamp-2 text-base leading-tight font-black break-words text-blue-950"
                                     >
-                                        {{ request.user.name }}
+                                        {{ formatStudentName(request.user) }}
                                     </h3>
 
                                     <p
@@ -895,7 +921,7 @@ const formatDateTime = (value: string | null) => {
                                     <td class="px-6 py-4">
                                         <div>
                                             <p class="font-black text-blue-950">
-                                                {{ request.user.name }}
+                                                {{ formatStudentName(request.user) }}
                                             </p>
 
                                             <p
@@ -1051,7 +1077,7 @@ const formatDateTime = (value: string | null) => {
                         <h2
                             class="mt-1 truncate text-xl font-black text-blue-950 sm:text-2xl"
                         >
-                            {{ selectedRequest.user.name }}
+                            {{ formatStudentName(selectedRequest.user) }}
                         </h2>
 
                         <p class="mt-1 text-sm font-medium text-slate-500">
@@ -1335,91 +1361,4 @@ const formatDateTime = (value: string | null) => {
             </div>
         </div>
     </div>
-
-    <!-- Admin Mobile More Sheet -->
-    <div
-        v-if="showAdminMobileMoreMenu"
-        class="fixed inset-x-3 bottom-24 z-40 rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl shadow-slate-900/20 md:hidden"
-    >
-        <div class="flex items-start justify-between gap-3">
-            <div>
-                <p class="text-sm font-black text-blue-950">Admin Tools</p>
-
-                <p class="mt-1 text-xs font-semibold text-slate-500">
-                    Quick access to reports and course modules.
-                </p>
-            </div>
-
-            <button
-                type="button"
-                class="grid size-10 place-items-center rounded-xl border border-slate-200 text-slate-500"
-                @click="closeAdminMobileMoreMenu"
-            >
-                <X class="size-5" />
-            </button>
-        </div>
-
-        <div class="mt-4 grid gap-2">
-            <Link
-                href="/admin/reports"
-                class="flex min-h-12 items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-black text-slate-700"
-            >
-                <span>Reports</span>
-                <span>→</span>
-            </Link>
-
-            <Link
-                href="/admin/course-modules"
-                class="flex min-h-12 items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-black text-slate-700"
-            >
-                <span>Course Modules</span>
-                <span>→</span>
-            </Link>
-        </div>
-    </div>
-
-    <!-- Admin Mobile Thumb Navigation -->
-    <nav
-        class="fixed inset-x-3 bottom-3 z-30 rounded-2xl border border-blue-200 bg-blue-950/95 p-2 shadow-2xl shadow-blue-950/25 backdrop-blur md:hidden"
-    >
-        <div class="grid grid-cols-4 gap-1">
-            <Link
-                href="/admin/dashboard"
-                class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
-            >
-                <LayoutDashboard class="size-4" />
-                <span>Home</span>
-            </Link>
-
-            <Link
-                href="/admin/users"
-                class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
-            >
-                <UserRoundCog class="size-4" />
-                <span>Users</span>
-            </Link>
-
-            <Link
-                href="/admin/clearance-requests"
-                class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl bg-white/15 px-2 py-2 text-[0.65rem] font-black text-white ring-1 ring-blue-200/40 transition hover:bg-white/10"
-            >
-                <ShieldCheck class="size-4" />
-                <span>Requests</span>
-            </Link>
-
-            <button
-                type="button"
-                class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.65rem] font-black text-white transition hover:bg-white/10"
-                :class="
-                    showAdminMobileMoreMenu
-                        ? 'bg-white/15 ring-1 ring-blue-200/40'
-                        : ''
-                "
-                @click="toggleAdminMobileMoreMenu"
-            >
-                <span class="text-base leading-none">•••</span>
-                <span>More</span>
-            </button>
-        </div>
-    </nav>
 </template>

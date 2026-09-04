@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Staff;
 use App\Http\Controllers\Controller;
 use App\Models\AppSetting;
 use App\Models\ClearanceApproval;
+use App\Models\Course;
 use App\Services\NotificationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -35,9 +36,12 @@ class PendingRequestController extends Controller
             ->latest()
             ->get();
 
+        $courses = Course::query()->orderBy('code')->get(['id', 'code', 'name']);
+
         return Inertia::render('staff/PendingRequests', [
             'staff' => $user,
             'approvals' => $approvals,
+            'courses' => $courses,
         ]);
     }
 

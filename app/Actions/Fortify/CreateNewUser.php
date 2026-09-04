@@ -22,19 +22,31 @@ class CreateNewUser implements CreatesNewUsers
             'student_id' => [
                 'required',
                 'string',
-                'regex:/^[0-9]{8,10}$/',
+                'regex:/^[0-9]{9}$/',
                 'unique:users,student_id',
             ],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'first_name' => ['required', 'string', 'max:255'],
+            'year_level' => ['required', 'string', 'max:50'],
             'course_id' => ['required', 'exists:courses,id'],
             'password' => $this->passwordRules(),
+        ], [
+            'student_id.regex' => 'The student ID must be exactly 9 digits and contain numbers only.',
+            'last_name.required' => 'The last name field is required.',
+            'first_name.required' => 'The first name field is required.',
+            'year_level.required' => 'Please select your year level.',
         ])->validate();
+
+        $fullName = trim($input['first_name'] . ' ' . $input['last_name']);
 
         return User::create([
             'student_id' => $input['student_id'],
             'email' => $input['email'],
-            'name' => $input['name'],
+            'first_name' => $input['first_name'],
+            'last_name' => $input['last_name'],
+            'name' => $fullName,
+            'year_level' => $input['year_level'],
             'course_id' => $input['course_id'],
             'role' => 'student',
             'password' => $input['password'],

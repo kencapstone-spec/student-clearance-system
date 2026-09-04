@@ -54,17 +54,16 @@ defineOptions({
                     autocomplete="username"
                     name="student_id"
                     placeholder="Example: 202610001"
-                    minlength="8"
-                    maxlength="10"
-                    pattern="[0-9]{8,10}"
+                    minlength="9"
+                    maxlength="9"
+                    pattern="[0-9]{9}"
                     inputmode="numeric"
-                    title="Student ID must be between 8 to 10 digits and contain numbers only."
+                    title="Student ID must be exactly 9 digits and contain numbers only."
                     class="!h-12 !rounded-2xl !border-slate-200 !bg-white !px-4 !text-sm !font-semibold !text-slate-900 !shadow-sm placeholder:!font-medium placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20"
                 />
 
                 <p class="text-xs font-medium text-slate-500">
-                    Student ID must be between 8 to 10 characters and can
-                    contain numbers only.
+                    Student ID must be exactly 9 characters and can contain numbers only.
                 </p>
 
                 <InputError :message="errors.student_id" />
@@ -89,23 +88,69 @@ defineOptions({
                 <InputError :message="errors.email" />
             </div>
 
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div class="grid gap-2">
+                    <Label for="last_name" class="text-sm font-black text-slate-800">
+                        Last Name
+                    </Label>
+
+                    <Input
+                        id="last_name"
+                        type="text"
+                        required
+                        :tabindex="3"
+                        autocomplete="family-name"
+                        name="last_name"
+                        placeholder="Enter your last name"
+                        class="!h-12 !rounded-2xl !border-slate-200 !bg-white !px-4 !text-sm !font-semibold !text-slate-900 !shadow-sm placeholder:!font-medium placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20"
+                    />
+
+                    <InputError :message="errors.last_name" />
+                </div>
+
+                <div class="grid gap-2">
+                    <Label for="first_name" class="text-sm font-black text-slate-800">
+                        First Name
+                    </Label>
+
+                    <Input
+                        id="first_name"
+                        type="text"
+                        required
+                        :tabindex="4"
+                        autocomplete="given-name"
+                        name="first_name"
+                        placeholder="Enter your first name"
+                        class="!h-12 !rounded-2xl !border-slate-200 !bg-white !px-4 !text-sm !font-semibold !text-slate-900 !shadow-sm placeholder:!font-medium placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20"
+                    />
+
+                    <InputError :message="errors.first_name" />
+                </div>
+            </div>
+
             <div class="grid gap-2">
-                <Label for="name" class="text-sm font-black text-slate-800">
-                    Full Name
+                <Label
+                    for="year_level"
+                    class="text-sm font-black text-slate-800"
+                >
+                    Year Level
                 </Label>
 
-                <Input
-                    id="name"
-                    type="text"
+                <select
+                    id="year_level"
+                    name="year_level"
                     required
-                    :tabindex="3"
-                    autocomplete="name"
-                    name="name"
-                    placeholder="Enter your full name"
-                    class="!h-12 !rounded-2xl !border-slate-200 !bg-white !px-4 !text-sm !font-semibold !text-slate-900 !shadow-sm placeholder:!font-medium placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20"
-                />
+                    :tabindex="5"
+                    class="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-900 shadow-sm transition outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                    <option value="">Select your year level</option>
+                    <option value="1st Year">1st Year</option>
+                    <option value="2nd Year">2nd Year</option>
+                    <option value="3rd Year">3rd Year</option>
+                    <option value="4th Year">4th Year</option>
+                </select>
 
-                <InputError :message="errors.name" />
+                <InputError :message="errors.year_level" />
             </div>
 
             <div class="grid gap-2">
@@ -120,7 +165,7 @@ defineOptions({
                     id="course_id"
                     name="course_id"
                     required
-                    :tabindex="4"
+                    :tabindex="6"
                     class="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-900 shadow-sm transition outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                     <option value="">Select your course</option>
@@ -144,7 +189,7 @@ defineOptions({
                 <PasswordInput
                     id="password"
                     required
-                    :tabindex="5"
+                    :tabindex="7"
                     autocomplete="new-password"
                     name="password"
                     placeholder="Password"
@@ -165,7 +210,7 @@ defineOptions({
                 <PasswordInput
                     id="password_confirmation"
                     required
-                    :tabindex="6"
+                    :tabindex="8"
                     autocomplete="new-password"
                     name="password_confirmation"
                     placeholder="Confirm password"
@@ -178,7 +223,7 @@ defineOptions({
             <Button
                 type="submit"
                 class="mt-2 h-12 w-full rounded-2xl bg-blue-700 text-sm font-black text-white shadow-xl shadow-blue-700/25 transition hover:-translate-y-0.5 hover:bg-blue-800 hover:shadow-2xl disabled:translate-y-0 disabled:opacity-70"
-                tabindex="7"
+                tabindex="9"
                 :disabled="processing"
                 data-test="register-user-button"
             >
@@ -192,7 +237,7 @@ defineOptions({
             <Link
                 :href="login()"
                 class="font-black text-blue-700 underline-offset-4 transition hover:text-blue-900 hover:underline"
-                :tabindex="8"
+                :tabindex="10"
             >
                 Log in
             </Link>
