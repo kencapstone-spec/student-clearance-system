@@ -14,8 +14,6 @@ createInertiaApp({
                 return null;
             case name.startsWith('ClearanceVerification/'):
                 return null;
-            case name.startsWith('ClearanceReceipt/'):
-                return null;
             case name === 'Admin/Reports/Print':
                 return null;
             case name.startsWith('auth/'):

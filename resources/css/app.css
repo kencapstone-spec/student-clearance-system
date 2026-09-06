@@ -199,3 +199,13 @@
         overflow-x: clip;
     }
 }
+
+@media print {
+    header,
+    nav,
+    aside,
+    [data-sidebar='sidebar'],
+    .print\:hidden {
+        display: none !important;
+    }
+}

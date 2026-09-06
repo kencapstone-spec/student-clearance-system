@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
 import QRCode from 'qrcode';
 import { onMounted, ref } from 'vue';
 
@@ -459,14 +459,18 @@ const downloadPdf = () => {
 };
 
 const goBack = () => {
-    window.history.back();
+    if (window.history.length > 1) {
+        window.history.back();
+    } else {
+        router.visit('/dashboard');
+    }
 };
 </script>
 <template>
     <Head title="Printable Clearance Receipt" />
 
     <div
-        class="min-h-screen bg-gray-100 px-4 py-4 text-gray-900 print:bg-white print:px-0 print:py-0"
+        class="min-h-screen bg-slate-100/70 p-3 text-slate-900 sm:p-4 md:p-6 print:min-h-0 print:bg-white print:p-0"
     >
         <div class="receipt-container mx-auto max-w-3xl">
             <div

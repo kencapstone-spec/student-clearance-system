@@ -102,6 +102,10 @@ const canPrintReceipt = computed(() => {
         return false;
     }
 
+    if (currentUrl.value.startsWith('/clearance-receipts')) {
+        return false;
+    }
+
     if (studentClearance.value?.is_cleared) {
         return true;
     }
@@ -195,7 +199,7 @@ const handleReceiptClick = () => {
     <!-- Floating Pop-up Circle Button for Print Clearance (Student Only when Fully Cleared) -->
     <div
         v-if="canPrintReceipt"
-        class="fixed right-4 bottom-22 z-40 animate-in duration-300 fade-in slide-in-from-bottom-4 zoom-in md:hidden"
+        class="fixed right-4 bottom-22 z-40 animate-in duration-300 fade-in slide-in-from-bottom-4 zoom-in md:hidden print:hidden"
     >
         <button
             type="button"
@@ -219,7 +223,7 @@ const handleReceiptClick = () => {
 
     <!-- Main Mobile Bottom Navigation Bar -->
     <nav
-        class="fixed inset-x-0 bottom-0 z-30 border-t border-slate-200/80 bg-white/95 px-3 pt-1 pb-[max(env(safe-area-inset-bottom),0.75rem)] shadow-[0_-4px_24px_rgba(0,0,0,0.06)] backdrop-blur-xl md:hidden"
+        class="fixed inset-x-0 bottom-0 z-30 border-t border-slate-200/80 bg-white/95 px-3 pt-1 pb-[max(env(safe-area-inset-bottom),0.75rem)] shadow-[0_-4px_24px_rgba(0,0,0,0.06)] backdrop-blur-xl md:hidden print:hidden"
     >
         <!-- ADMIN NAVIGATION (5 items) -->
         <div

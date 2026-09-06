@@ -107,7 +107,7 @@ const mainNavItems = computed<NavItem[]>(() => {
     <Sidebar
         collapsible="offcanvas"
         variant="inset"
-        class="border-r border-slate-200/80 bg-white"
+        class="border-r border-slate-200/80 bg-white print:hidden"
     >
         <SidebarHeader class="border-b border-slate-100 px-4 py-5">
             <SidebarMenu>
