@@ -39,13 +39,13 @@ defineProps<{
         v-bind="store.form()"
         :reset-on-success="['password']"
         v-slot="{ errors, processing }"
-        class="flex flex-col gap-6"
+        class="flex flex-col gap-4 sm:gap-5"
     >
-        <div class="grid gap-5">
-            <div class="grid gap-2">
+        <div class="grid gap-3.5 sm:gap-4">
+            <div class="grid gap-1.5">
                 <Label
                     for="student_id"
-                    class="text-sm font-black text-slate-800"
+                    class="text-xs font-bold text-slate-700 sm:text-xs sm:font-black"
                 >
                     Account ID
                 </Label>
@@ -59,17 +59,17 @@ defineProps<{
                     :tabindex="1"
                     autocomplete="username"
                     placeholder="Enter your Account ID"
-                    class="!h-12 !rounded-2xl !border-slate-200 !bg-white !px-4 !text-sm !font-semibold !text-slate-900 !shadow-sm placeholder:!font-medium placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20"
+                    class="!h-10 sm:!h-10.5 !rounded-xl !border-slate-200 !bg-white !px-3.5 !text-xs sm:!text-sm !font-semibold !text-slate-900 !shadow-xs placeholder:!font-normal placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20"
                 />
 
                 <InputError :message="errors.student_id" />
             </div>
 
-            <div class="grid gap-2">
+            <div class="grid gap-1.5">
                 <div class="flex items-center justify-between">
                     <Label
                         for="password"
-                        class="text-sm font-black text-slate-800"
+                        class="text-xs font-bold text-slate-700 sm:text-xs sm:font-black"
                     >
                         Password
                     </Label>
@@ -91,7 +91,7 @@ defineProps<{
                     :tabindex="2"
                     autocomplete="current-password"
                     placeholder="Enter your password"
-                    class="!h-12 !rounded-2xl !border-slate-200 !bg-white !px-4 !text-sm !font-semibold !text-slate-900 !shadow-sm placeholder:!font-medium placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20"
+                    class="!h-10 sm:!h-10.5 !rounded-xl !border-slate-200 !bg-white !px-3.5 !text-xs sm:!text-sm !font-semibold !text-slate-900 !shadow-xs placeholder:!font-normal placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20"
                 />
 
                 <InputError :message="errors.password" />
@@ -100,7 +100,7 @@ defineProps<{
             <div class="flex items-center justify-between">
                 <Label
                     for="remember"
-                    class="flex items-center space-x-3 text-sm font-bold text-slate-700"
+                    class="flex items-center space-x-2.5 text-xs sm:text-sm font-semibold text-slate-600"
                 >
                     <Checkbox id="remember" name="remember" :tabindex="3" />
                     <span>Remember me</span>
@@ -109,7 +109,7 @@ defineProps<{
 
             <Button
                 type="submit"
-                class="mt-2 h-12 w-full rounded-2xl bg-blue-700 text-sm font-black text-white shadow-xl shadow-blue-700/25 transition hover:-translate-y-0.5 hover:bg-blue-800 hover:shadow-2xl disabled:translate-y-0 disabled:opacity-70"
+                class="mt-1 h-10.5 sm:h-11 w-full rounded-xl bg-blue-700 text-xs sm:text-sm font-black text-white shadow-lg shadow-blue-700/25 transition hover:-translate-y-0.5 hover:bg-blue-800 hover:shadow-xl disabled:translate-y-0 disabled:opacity-70"
                 :tabindex="4"
                 :disabled="processing"
                 data-test="login-button"
@@ -120,13 +120,13 @@ defineProps<{
         </div>
 
         <div
-            class="text-center text-sm font-medium text-slate-500"
+            class="text-center text-xs sm:text-sm font-medium text-slate-500"
             v-if="canRegister"
         >
             Don't have an account?
             <Link
                 :href="register()"
-                class="font-black text-blue-700 underline-offset-4 transition hover:text-blue-900 hover:underline"
+                class="font-extrabold text-blue-700 underline-offset-4 transition hover:text-blue-900 hover:underline"
                 :tabindex="5"
             >
                 Register here

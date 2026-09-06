@@ -33,9 +33,9 @@ const inputEmail = ref(props.email);
         :reset-on-success="['password', 'password_confirmation']"
         v-slot="{ errors, processing }"
     >
-        <div class="grid gap-6">
-            <div class="grid gap-2">
-                <Label for="email" class="text-sm font-black text-slate-800">
+        <div class="grid gap-3.5 sm:gap-4">
+            <div class="grid gap-1.5">
+                <Label for="email" class="text-xs font-bold text-slate-700 sm:text-xs sm:font-black">
                     Email Address
                 </Label>
                 <Input
@@ -44,14 +44,14 @@ const inputEmail = ref(props.email);
                     name="email"
                     autocomplete="email"
                     v-model="inputEmail"
-                    class="!h-12 cursor-not-allowed !rounded-2xl !border-slate-200 !bg-slate-100 !px-4 !text-sm !font-semibold !text-slate-500 !shadow-sm"
+                    class="!h-10 sm:!h-10.5 cursor-not-allowed !rounded-xl !border-slate-200 !bg-slate-100 !px-3.5 !text-xs sm:!text-sm !font-semibold !text-slate-500 !shadow-xs"
                     readonly
                 />
                 <InputError :message="errors.email" />
             </div>
 
-            <div class="grid gap-2">
-                <Label for="password" class="text-sm font-black text-slate-800">
+            <div class="grid gap-1.5">
+                <Label for="password" class="text-xs font-bold text-slate-700 sm:text-xs sm:font-black">
                     New Password
                 </Label>
                 <PasswordInput
@@ -60,15 +60,15 @@ const inputEmail = ref(props.email);
                     autocomplete="new-password"
                     autofocus
                     placeholder="Enter new password"
-                    class="!h-12 !rounded-2xl !border-slate-200 !bg-white !px-4 !text-sm !font-semibold !text-slate-900 !shadow-sm placeholder:!font-medium placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20"
+                    class="!h-10 sm:!h-10.5 !rounded-xl !border-slate-200 !bg-white !px-3.5 !text-xs sm:!text-sm !font-semibold !text-slate-900 !shadow-xs placeholder:!font-normal placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20"
                 />
                 <InputError :message="errors.password" />
             </div>
 
-            <div class="grid gap-2">
+            <div class="grid gap-1.5">
                 <Label
                     for="password_confirmation"
-                    class="text-sm font-black text-slate-800"
+                    class="text-xs font-bold text-slate-700 sm:text-xs sm:font-black"
                 >
                     Confirm New Password
                 </Label>
@@ -77,14 +77,14 @@ const inputEmail = ref(props.email);
                     name="password_confirmation"
                     autocomplete="new-password"
                     placeholder="Confirm new password"
-                    class="!h-12 !rounded-2xl !border-slate-200 !bg-white !px-4 !text-sm !font-semibold !text-slate-900 !shadow-sm placeholder:!font-medium placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20"
+                    class="!h-10 sm:!h-10.5 !rounded-xl !border-slate-200 !bg-white !px-3.5 !text-xs sm:!text-sm !font-semibold !text-slate-900 !shadow-xs placeholder:!font-normal placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20"
                 />
                 <InputError :message="errors.password_confirmation" />
             </div>
 
             <Button
                 type="submit"
-                class="mt-2 h-12 w-full rounded-2xl bg-blue-700 text-sm font-black text-white shadow-xl shadow-blue-700/25 transition hover:-translate-y-0.5 hover:bg-blue-800 hover:shadow-2xl disabled:translate-y-0 disabled:opacity-70"
+                class="mt-1 h-10.5 sm:h-11 w-full rounded-xl bg-blue-700 text-xs sm:text-sm font-black text-white shadow-lg shadow-blue-700/25 transition hover:-translate-y-0.5 hover:bg-blue-800 hover:shadow-xl disabled:translate-y-0 disabled:opacity-70"
                 :disabled="processing"
                 data-test="reset-password-button"
             >
