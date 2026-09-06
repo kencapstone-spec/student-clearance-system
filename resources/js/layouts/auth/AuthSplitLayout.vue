@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
 import {
-    CheckCircle,
     ClipboardCheck,
     FileCheck2,
     QrCode,
@@ -240,39 +239,49 @@ defineProps<{
         </section>
 
         <section
-            class="relative flex min-h-svh w-full items-center justify-center overflow-y-auto px-4 py-6 sm:px-6 sm:py-8 lg:h-svh lg:overflow-y-auto lg:px-8 xl:px-12"
+            class="relative flex min-h-svh w-full items-center justify-center overflow-x-hidden overflow-y-auto bg-gradient-to-br from-slate-50 via-blue-50/20 to-indigo-50/30 px-4 py-6 sm:px-6 sm:py-8 lg:h-svh lg:overflow-y-auto lg:px-8 xl:px-12"
         >
-            <div class="pointer-events-none absolute inset-0">
+            <!-- Background atmosphere with contained ambient glows -->
+            <div class="pointer-events-none absolute inset-0 overflow-hidden">
                 <div
-                    class="absolute top-[-8rem] right-[-8rem] h-80 w-80 rounded-full bg-blue-200/60 blur-3xl"
+                    class="absolute inset-0 bg-[radial-gradient(#94a3b8_1px,transparent_1px)] [background-size:24px_24px] opacity-25"
                 ></div>
                 <div
-                    class="absolute bottom-[-10rem] left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-cyan-100/80 blur-3xl"
+                    class="absolute -top-32 -right-32 h-80 w-80 rounded-full bg-blue-400/15 blur-3xl"
+                ></div>
+                <div
+                    class="absolute -bottom-32 -left-32 h-80 w-80 rounded-full bg-indigo-400/15 blur-3xl"
                 ></div>
             </div>
 
             <div
                 class="relative z-10 my-auto w-full max-w-md sm:max-w-lg lg:max-w-xl"
             >
+                <!-- Compact modern mobile branding -->
                 <div class="mb-4 text-center lg:hidden">
                     <Link
                         :href="home()"
-                        class="inline-flex items-center gap-2.5 rounded-2xl border border-slate-200/80 bg-white/90 px-3.5 py-2 shadow-xs backdrop-blur"
+                        class="inline-flex items-center gap-3 rounded-2xl border border-slate-200/90 bg-white/95 px-3.5 py-2 shadow-sm backdrop-blur"
                     >
                         <div
-                            class="flex size-8 shrink-0 items-center justify-center rounded-xl bg-blue-700 text-white shadow-sm"
+                            class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-700 text-white shadow-md shadow-blue-700/25"
                         >
                             <AppLogoIcon
-                                class="size-5 fill-current text-white"
+                                class="size-5.5 fill-current text-white"
                             />
                         </div>
 
                         <div class="text-left">
-                            <p
-                                class="text-[9px] font-black tracking-wider text-blue-700 uppercase"
-                            >
-                                Talibon Polytechnic College
-                            </p>
+                            <div class="flex items-center gap-1.5">
+                                <p
+                                    class="text-[9px] font-black tracking-wider text-blue-700 uppercase"
+                                >
+                                    Talibon Polytechnic College
+                                </p>
+                                <span
+                                    class="size-1.5 rounded-full bg-emerald-500 ring-2 ring-emerald-200"
+                                ></span>
+                            </div>
                             <p
                                 class="text-xs font-black tracking-tight text-slate-900"
                             >
@@ -282,28 +291,34 @@ defineProps<{
                     </Link>
                 </div>
 
+                <!-- Modern Glassmorphism Card -->
                 <div
-                    class="rounded-2xl border border-slate-200/90 bg-white/95 p-5 shadow-xl shadow-slate-200/60 backdrop-blur-xl sm:rounded-3xl sm:p-7 xl:p-8"
+                    class="relative rounded-3xl border border-white/90 bg-white/95 p-6 shadow-[0_20px_60px_-15px_rgba(15,23,42,0.12),0_0_0_1px_rgba(255,255,255,0.8)_inset] ring-1 ring-slate-900/5 backdrop-blur-2xl sm:p-7 xl:p-8"
                 >
+                    <!-- Top subtle accent bar -->
+                    <div
+                        class="absolute inset-x-0 top-0 h-1 rounded-t-3xl bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500"
+                    ></div>
+
                     <div class="mb-4 sm:mb-5">
-                        <div class="mb-2.5 flex items-center justify-center">
+                        <div class="mb-3 flex items-center justify-center">
                             <div
-                                class="flex size-9 items-center justify-center rounded-xl bg-blue-50 text-blue-700 sm:size-10"
+                                class="flex size-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-700 text-white shadow-lg ring-4 shadow-blue-600/30 ring-blue-50 sm:size-12"
                             >
-                                <FileCheck2 class="size-5" />
+                                <FileCheck2 class="size-5.5 sm:size-6" />
                             </div>
                         </div>
 
                         <h1
                             v-if="title"
-                            class="text-center text-xl font-black tracking-tight text-slate-950 sm:text-2xl"
+                            class="text-center text-xl font-black tracking-tight text-slate-900 sm:text-2xl"
                         >
                             {{ title }}
                         </h1>
 
                         <p
                             v-if="description"
-                            class="mt-1 text-center text-xs leading-5 text-slate-500 sm:text-sm"
+                            class="mt-1 text-center text-xs leading-5 font-medium text-slate-500 sm:text-sm"
                         >
                             {{ description }}
                         </p>
@@ -312,11 +327,15 @@ defineProps<{
                     <slot />
                 </div>
 
+                <!-- Modern Trust Footer -->
                 <div
                     class="mt-3.5 flex items-center justify-center gap-1.5 text-xs font-semibold text-slate-400 sm:mt-4"
                 >
-                    <CheckCircle class="size-3.5 text-green-600" />
-                    Secure role-based clearance access
+                    <ShieldCheck class="size-4 text-emerald-600" />
+                    <span
+                        >Official Clearance Portal • Secure Role-Based
+                        Access</span
+                    >
                 </div>
             </div>
         </section>

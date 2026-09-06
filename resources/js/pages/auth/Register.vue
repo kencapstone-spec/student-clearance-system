@@ -1,5 +1,16 @@
 <script setup lang="ts">
 import { Form, Head, Link } from '@inertiajs/vue3';
+import {
+    ArrowRight,
+    ChevronDown,
+    GraduationCap,
+    IdCard,
+    Layers,
+    Lock,
+    Mail,
+    ShieldCheck,
+    User,
+} from 'lucide-vue-next';
 import InputError from '@/components/InputError.vue';
 import PasswordInput from '@/components/PasswordInput.vue';
 import { Button } from '@/components/ui/button';
@@ -22,7 +33,7 @@ defineProps<{
 defineOptions({
     layout: {
         title: 'Student Registration',
-        description: 'Create your student clearance account',
+        description: 'Create your official student clearance account',
     },
 });
 </script>
@@ -36,174 +47,212 @@ defineOptions({
         v-slot="{ errors, processing }"
         class="flex flex-col gap-3.5 sm:gap-4"
     >
-        <div class="grid gap-2.5 sm:gap-3">
+        <div class="grid gap-3 sm:gap-3.5">
             <!-- Row 1: Student ID & Email Address -->
-            <div class="grid grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-3">
-                <div class="grid gap-1">
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div class="space-y-1.5">
                     <div class="flex items-center justify-between">
                         <Label
                             for="student_id"
-                            class="text-xs font-bold text-slate-700 sm:text-xs sm:font-black"
+                            class="text-[11px] font-black tracking-wider text-slate-700 uppercase"
                         >
                             Student ID
                         </Label>
-                        <span class="text-[10px] font-semibold text-slate-400">
-                            9 digits only
+                        <span
+                            class="inline-flex items-center rounded-md border border-blue-200/80 bg-blue-50 px-2 py-0.5 text-[10px] font-extrabold text-blue-700"
+                        >
+                            9 Digits
                         </span>
                     </div>
 
-                    <Input
-                        id="student_id"
-                        type="text"
-                        required
-                        autofocus
-                        :tabindex="1"
-                        autocomplete="username"
-                        name="student_id"
-                        placeholder="e.g. 202610001"
-                        minlength="9"
-                        maxlength="9"
-                        pattern="[0-9]{9}"
-                        inputmode="numeric"
-                        title="Student ID must be exactly 9 digits and contain numbers only."
-                        class="!h-9.5 !rounded-xl !border-slate-200 !bg-white !px-3.5 !text-xs !font-semibold !text-slate-900 !shadow-xs placeholder:!font-normal placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20 sm:!h-10 sm:!text-sm"
-                    />
+                    <div class="group relative flex items-center">
+                        <IdCard
+                            class="pointer-events-none absolute left-3.5 size-4 text-slate-400 transition-colors group-focus-within:text-blue-600"
+                        />
+                        <Input
+                            id="student_id"
+                            type="text"
+                            required
+                            autofocus
+                            :tabindex="1"
+                            autocomplete="username"
+                            name="student_id"
+                            placeholder="e.g. 202610001"
+                            minlength="9"
+                            maxlength="9"
+                            pattern="[0-9]{9}"
+                            inputmode="numeric"
+                            title="Student ID must be exactly 9 digits and contain numbers only."
+                            class="!h-10.5 !rounded-xl !border-slate-200/90 !bg-slate-50/70 !pr-3.5 !pl-10 !text-sm !font-semibold !text-slate-900 !shadow-xs transition-all duration-150 placeholder:!font-normal placeholder:!text-slate-400 focus:!bg-white focus-visible:!border-blue-600 focus-visible:!ring-4 focus-visible:!ring-blue-600/10"
+                        />
+                    </div>
 
                     <InputError :message="errors.student_id" />
                 </div>
 
-                <div class="grid gap-1">
+                <div class="space-y-1.5">
                     <Label
                         for="email"
-                        class="text-xs font-bold text-slate-700 sm:text-xs sm:font-black"
+                        class="text-[11px] font-black tracking-wider text-slate-700 uppercase"
                     >
                         Email Address
                     </Label>
 
-                    <Input
-                        id="email"
-                        type="email"
-                        required
-                        :tabindex="2"
-                        autocomplete="email"
-                        name="email"
-                        placeholder="student@example.com"
-                        class="!h-9.5 !rounded-xl !border-slate-200 !bg-white !px-3.5 !text-xs !font-semibold !text-slate-900 !shadow-xs placeholder:!font-normal placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20 sm:!h-10 sm:!text-sm"
-                    />
+                    <div class="group relative flex items-center">
+                        <Mail
+                            class="pointer-events-none absolute left-3.5 size-4 text-slate-400 transition-colors group-focus-within:text-blue-600"
+                        />
+                        <Input
+                            id="email"
+                            type="email"
+                            required
+                            :tabindex="2"
+                            autocomplete="email"
+                            name="email"
+                            placeholder="student@example.com"
+                            class="!h-10.5 !rounded-xl !border-slate-200/90 !bg-slate-50/70 !pr-3.5 !pl-10 !text-sm !font-semibold !text-slate-900 !shadow-xs transition-all duration-150 placeholder:!font-normal placeholder:!text-slate-400 focus:!bg-white focus-visible:!border-blue-600 focus-visible:!ring-4 focus-visible:!ring-blue-600/10"
+                        />
+                    </div>
 
                     <InputError :message="errors.email" />
                 </div>
             </div>
 
             <!-- Row 2: Last Name & First Name -->
-            <div class="grid grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-3">
-                <div class="grid gap-1">
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div class="space-y-1.5">
                     <Label
                         for="last_name"
-                        class="text-xs font-bold text-slate-700 sm:text-xs sm:font-black"
+                        class="text-[11px] font-black tracking-wider text-slate-700 uppercase"
                     >
                         Last Name
                     </Label>
 
-                    <Input
-                        id="last_name"
-                        type="text"
-                        required
-                        :tabindex="3"
-                        autocomplete="family-name"
-                        name="last_name"
-                        placeholder="Last name"
-                        class="!h-9.5 !rounded-xl !border-slate-200 !bg-white !px-3.5 !text-xs !font-semibold !text-slate-900 !shadow-xs placeholder:!font-normal placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20 sm:!h-10 sm:!text-sm"
-                    />
+                    <div class="group relative flex items-center">
+                        <User
+                            class="pointer-events-none absolute left-3.5 size-4 text-slate-400 transition-colors group-focus-within:text-blue-600"
+                        />
+                        <Input
+                            id="last_name"
+                            type="text"
+                            required
+                            :tabindex="3"
+                            autocomplete="family-name"
+                            name="last_name"
+                            placeholder="Last name"
+                            class="!h-10.5 !rounded-xl !border-slate-200/90 !bg-slate-50/70 !pr-3.5 !pl-10 !text-sm !font-semibold !text-slate-900 !shadow-xs transition-all duration-150 placeholder:!font-normal placeholder:!text-slate-400 focus:!bg-white focus-visible:!border-blue-600 focus-visible:!ring-4 focus-visible:!ring-blue-600/10"
+                        />
+                    </div>
 
                     <InputError :message="errors.last_name" />
                 </div>
 
-                <div class="grid gap-1">
+                <div class="space-y-1.5">
                     <Label
                         for="first_name"
-                        class="text-xs font-bold text-slate-700 sm:text-xs sm:font-black"
+                        class="text-[11px] font-black tracking-wider text-slate-700 uppercase"
                     >
                         First Name
                     </Label>
 
-                    <Input
-                        id="first_name"
-                        type="text"
-                        required
-                        :tabindex="4"
-                        autocomplete="given-name"
-                        name="first_name"
-                        placeholder="First name"
-                        class="!h-9.5 !rounded-xl !border-slate-200 !bg-white !px-3.5 !text-xs !font-semibold !text-slate-900 !shadow-xs placeholder:!font-normal placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20 sm:!h-10 sm:!text-sm"
-                    />
+                    <div class="group relative flex items-center">
+                        <User
+                            class="pointer-events-none absolute left-3.5 size-4 text-slate-400 transition-colors group-focus-within:text-blue-600"
+                        />
+                        <Input
+                            id="first_name"
+                            type="text"
+                            required
+                            :tabindex="4"
+                            autocomplete="given-name"
+                            name="first_name"
+                            placeholder="First name"
+                            class="!h-10.5 !rounded-xl !border-slate-200/90 !bg-slate-50/70 !pr-3.5 !pl-10 !text-sm !font-semibold !text-slate-900 !shadow-xs transition-all duration-150 placeholder:!font-normal placeholder:!text-slate-400 focus:!bg-white focus-visible:!border-blue-600 focus-visible:!ring-4 focus-visible:!ring-blue-600/10"
+                        />
+                    </div>
 
                     <InputError :message="errors.first_name" />
                 </div>
             </div>
 
             <!-- Row 3: Year Level & Course -->
-            <div class="grid grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-3">
-                <div class="grid gap-1">
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div class="space-y-1.5">
                     <Label
                         for="year_level"
-                        class="text-xs font-bold text-slate-700 sm:text-xs sm:font-black"
+                        class="text-[11px] font-black tracking-wider text-slate-700 uppercase"
                     >
                         Year Level
                     </Label>
 
-                    <select
-                        id="year_level"
-                        name="year_level"
-                        required
-                        :tabindex="5"
-                        class="h-9.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-xs font-semibold text-slate-900 shadow-xs transition outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 disabled:cursor-not-allowed disabled:opacity-50 sm:h-10 sm:text-sm"
-                    >
-                        <option value="">Select year level</option>
-                        <option value="1st Year">1st Year</option>
-                        <option value="2nd Year">2nd Year</option>
-                        <option value="3rd Year">3rd Year</option>
-                        <option value="4th Year">4th Year</option>
-                    </select>
+                    <div class="group relative flex items-center">
+                        <Layers
+                            class="pointer-events-none absolute left-3.5 size-4 text-slate-400 transition-colors group-focus-within:text-blue-600"
+                        />
+                        <select
+                            id="year_level"
+                            name="year_level"
+                            required
+                            :tabindex="5"
+                            class="h-10.5 w-full cursor-pointer appearance-none rounded-xl border border-slate-200/90 bg-slate-50/70 pr-9 pl-10 text-sm font-semibold text-slate-900 shadow-xs transition-all duration-150 outline-none focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-600/10 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                            <option value="">Select year level</option>
+                            <option value="1st Year">1st Year</option>
+                            <option value="2nd Year">2nd Year</option>
+                            <option value="3rd Year">3rd Year</option>
+                            <option value="4th Year">4th Year</option>
+                        </select>
+                        <ChevronDown
+                            class="pointer-events-none absolute right-3 size-4 text-slate-400"
+                        />
+                    </div>
 
                     <InputError :message="errors.year_level" />
                 </div>
 
-                <div class="grid gap-1">
+                <div class="space-y-1.5">
                     <Label
                         for="course_id"
-                        class="text-xs font-bold text-slate-700 sm:text-xs sm:font-black"
+                        class="text-[11px] font-black tracking-wider text-slate-700 uppercase"
                     >
                         Course
                     </Label>
 
-                    <select
-                        id="course_id"
-                        name="course_id"
-                        required
-                        :tabindex="6"
-                        class="h-9.5 w-full truncate rounded-xl border border-slate-200 bg-white px-3.5 text-xs font-semibold text-slate-900 shadow-xs transition outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 disabled:cursor-not-allowed disabled:opacity-50 sm:h-10 sm:text-sm"
-                    >
-                        <option value="">Select course</option>
-                        <option
-                            v-for="course in courses"
-                            :key="course.id"
-                            :value="course.id"
+                    <div class="group relative flex items-center">
+                        <GraduationCap
+                            class="pointer-events-none absolute left-3.5 size-4 text-slate-400 transition-colors group-focus-within:text-blue-600"
+                        />
+                        <select
+                            id="course_id"
+                            name="course_id"
+                            required
+                            :tabindex="6"
+                            class="h-10.5 w-full cursor-pointer appearance-none truncate rounded-xl border border-slate-200/90 bg-slate-50/70 pr-9 pl-10 text-sm font-semibold text-slate-900 shadow-xs transition-all duration-150 outline-none focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-600/10 disabled:cursor-not-allowed disabled:opacity-50"
                         >
-                            {{ course.code }} - {{ course.name }}
-                        </option>
-                    </select>
+                            <option value="">Select course</option>
+                            <option
+                                v-for="course in courses"
+                                :key="course.id"
+                                :value="course.id"
+                            >
+                                {{ course.code }} - {{ course.name }}
+                            </option>
+                        </select>
+                        <ChevronDown
+                            class="pointer-events-none absolute right-3 size-4 text-slate-400"
+                        />
+                    </div>
 
                     <InputError :message="errors.course_id" />
                 </div>
             </div>
 
             <!-- Row 4: Password & Confirm Password -->
-            <div class="grid grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-3">
-                <div class="grid gap-1">
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div class="space-y-1.5">
                     <Label
                         for="password"
-                        class="text-xs font-bold text-slate-700 sm:text-xs sm:font-black"
+                        class="text-[11px] font-black tracking-wider text-slate-700 uppercase"
                     >
                         Password
                     </Label>
@@ -214,17 +263,18 @@ defineOptions({
                         :tabindex="7"
                         autocomplete="new-password"
                         name="password"
-                        placeholder="Password"
-                        class="!h-9.5 !rounded-xl !border-slate-200 !bg-white !px-3.5 !text-xs !font-semibold !text-slate-900 !shadow-xs placeholder:!font-normal placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20 sm:!h-10 sm:!text-sm"
+                        placeholder="Create password"
+                        :icon="Lock"
+                        class="!h-10.5 !rounded-xl !border-slate-200/90 !bg-slate-50/70 !text-sm !font-semibold !text-slate-900 !shadow-xs transition-all duration-150 placeholder:!font-normal placeholder:!text-slate-400 focus:!bg-white focus-visible:!border-blue-600 focus-visible:!ring-4 focus-visible:!ring-blue-600/10"
                     />
 
                     <InputError :message="errors.password" />
                 </div>
 
-                <div class="grid gap-1">
+                <div class="space-y-1.5">
                     <Label
                         for="password_confirmation"
-                        class="text-xs font-bold text-slate-700 sm:text-xs sm:font-black"
+                        class="text-[11px] font-black tracking-wider text-slate-700 uppercase"
                     >
                         Confirm Password
                     </Label>
@@ -235,8 +285,9 @@ defineOptions({
                         :tabindex="8"
                         autocomplete="new-password"
                         name="password_confirmation"
-                        placeholder="Confirm password"
-                        class="!h-9.5 !rounded-xl !border-slate-200 !bg-white !px-3.5 !text-xs !font-semibold !text-slate-900 !shadow-xs placeholder:!font-normal placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20 sm:!h-10 sm:!text-sm"
+                        placeholder="Repeat password"
+                        :icon="ShieldCheck"
+                        class="!h-10.5 !rounded-xl !border-slate-200/90 !bg-slate-50/70 !text-sm !font-semibold !text-slate-900 !shadow-xs transition-all duration-150 placeholder:!font-normal placeholder:!text-slate-400 focus:!bg-white focus-visible:!border-blue-600 focus-visible:!ring-4 focus-visible:!ring-blue-600/10"
                     />
 
                     <InputError :message="errors.password_confirmation" />
@@ -245,24 +296,31 @@ defineOptions({
 
             <Button
                 type="submit"
-                class="mt-1 h-10.5 w-full rounded-xl bg-blue-700 text-xs font-black text-white shadow-lg shadow-blue-700/25 transition hover:-translate-y-0.5 hover:bg-blue-800 hover:shadow-xl disabled:translate-y-0 disabled:opacity-70 sm:h-11 sm:text-sm"
+                class="group mt-2 h-11.5 w-full cursor-pointer rounded-xl bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 text-sm font-black text-white shadow-xl shadow-blue-700/25 transition-all duration-200 hover:-translate-y-0.5 hover:from-blue-700 hover:via-blue-800 hover:to-indigo-800 hover:shadow-2xl hover:shadow-blue-700/35 active:translate-y-0 disabled:translate-y-0 disabled:opacity-70"
                 tabindex="9"
                 :disabled="processing"
                 data-test="register-user-button"
             >
                 <Spinner v-if="processing" />
-                Create Student Account
+                <span>Create Student Account</span>
+                <ArrowRight
+                    v-if="!processing"
+                    class="size-4 transition-transform duration-150 group-hover:translate-x-1"
+                />
             </Button>
         </div>
 
-        <div class="text-center text-xs font-medium text-slate-500 sm:text-sm">
+        <div
+            class="text-center text-xs font-semibold text-slate-500 sm:text-sm"
+        >
             Already have an account?
             <Link
                 :href="login()"
-                class="font-extrabold text-blue-700 underline-offset-4 transition hover:text-blue-900 hover:underline"
+                class="inline-flex items-center gap-1 font-black text-blue-700 underline-offset-4 transition hover:text-blue-900 hover:underline"
                 :tabindex="10"
             >
-                Log in
+                <span>Log in</span>
+                <ArrowRight class="size-3" />
             </Link>
         </div>
     </Form>
