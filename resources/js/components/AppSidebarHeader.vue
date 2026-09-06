@@ -115,9 +115,33 @@ const markAllNotificationsAsRead = () => {
     <header
         class="sticky top-0 z-20 flex h-16 shrink-0 items-center border-b border-slate-200/80 bg-white/90 px-4 text-slate-900 shadow-sm shadow-slate-200/70 backdrop-blur-xl transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-14 md:px-6"
     >
-        <div class="flex min-w-0 flex-1 items-center gap-4">
+        <div class="flex min-w-0 flex-1 items-center gap-3 md:gap-4">
+            <!-- Mobile: User Profile Avatar Dropdown (Upper Left replacing Sidebar Trigger on Mobile) -->
+            <DropdownMenu v-if="authUser">
+                <DropdownMenuTrigger :as-child="true">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        class="relative -ml-1 h-10 w-10 shrink-0 cursor-pointer rounded-2xl border border-slate-200 bg-blue-950 text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-blue-900 md:hidden"
+                    >
+                        <span class="text-xs font-black tracking-wider">
+                            {{ getInitials(authUser.name) }}
+                        </span>
+                        <span class="sr-only">Open user menu</span>
+                    </Button>
+                </DropdownMenuTrigger>
+
+                <DropdownMenuContent
+                    align="start"
+                    class="w-64 overflow-hidden rounded-2xl border border-slate-200 bg-white p-1 shadow-2xl shadow-slate-300/70"
+                >
+                    <UserMenuContent :user="authUser" />
+                </DropdownMenuContent>
+            </DropdownMenu>
+
+            <!-- Desktop: Sidebar Trigger (Hidden on Mobile) -->
             <SidebarTrigger
-                class="-ml-1 rounded-2xl border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 hover:shadow-md"
+                class="-ml-1 hidden rounded-2xl border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 hover:shadow-md md:inline-flex"
             />
 
             <div class="hidden h-8 w-px bg-slate-200 sm:block"></div>
@@ -147,12 +171,13 @@ const markAllNotificationsAsRead = () => {
         </div>
 
         <div class="ml-auto flex items-center gap-2">
+            <!-- Notification Bell Dropdown (Upper Right) -->
             <DropdownMenu>
                 <DropdownMenuTrigger :as-child="true">
                     <Button
                         variant="ghost"
                         size="icon"
-                        class="relative h-11 w-11 cursor-pointer rounded-2xl border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 hover:shadow-md"
+                        class="relative h-10 w-10 cursor-pointer rounded-2xl border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 hover:shadow-md sm:h-11 sm:w-11"
                     >
                         <Bell class="size-5" />
 
@@ -173,7 +198,7 @@ const markAllNotificationsAsRead = () => {
 
                 <DropdownMenuContent
                     align="end"
-                    class="w-[22rem] overflow-hidden rounded-2xl border border-slate-200 bg-white p-0 shadow-2xl shadow-slate-300/70"
+                    class="w-[calc(100vw-2rem)] max-w-[22rem] overflow-hidden rounded-2xl border border-slate-200 bg-white p-0 shadow-2xl shadow-slate-300/70"
                 >
                     <div
                         class="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-4 py-3"
@@ -249,29 +274,6 @@ const markAllNotificationsAsRead = () => {
                             </div>
                         </Link>
                     </div>
-                </DropdownMenuContent>
-            </DropdownMenu>
-
-            <!-- Mobile User Profile Avatar Dropdown -->
-            <DropdownMenu v-if="authUser">
-                <DropdownMenuTrigger :as-child="true">
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        class="relative h-11 w-11 cursor-pointer rounded-2xl border border-slate-200 bg-blue-950 text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-blue-900 md:hidden"
-                    >
-                        <span class="text-xs font-black tracking-wider">
-                            {{ getInitials(authUser.name) }}
-                        </span>
-                        <span class="sr-only">Open user menu</span>
-                    </Button>
-                </DropdownMenuTrigger>
-
-                <DropdownMenuContent
-                    align="end"
-                    class="w-64 overflow-hidden rounded-2xl border border-slate-200 bg-white p-1 shadow-2xl shadow-slate-300/70"
-                >
-                    <UserMenuContent :user="authUser" />
                 </DropdownMenuContent>
             </DropdownMenu>
         </div>

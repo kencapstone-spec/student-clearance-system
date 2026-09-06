@@ -293,11 +293,11 @@ defineProps<{
 
                 <!-- Modern Glassmorphism Card -->
                 <div
-                    class="relative rounded-3xl border border-white/90 bg-white/95 p-6 shadow-[0_20px_60px_-15px_rgba(15,23,42,0.12),0_0_0_1px_rgba(255,255,255,0.8)_inset] ring-1 ring-slate-900/5 backdrop-blur-2xl sm:p-7 xl:p-8"
+                    class="relative overflow-hidden rounded-3xl border border-white/90 bg-white/95 p-6 shadow-[0_20px_60px_-15px_rgba(15,23,42,0.12),0_0_0_1px_rgba(255,255,255,0.8)_inset] ring-1 ring-slate-900/5 backdrop-blur-2xl sm:p-7 xl:p-8"
                 >
                     <!-- Top subtle accent bar -->
                     <div
-                        class="absolute inset-x-0 top-0 h-1 rounded-t-3xl bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500"
+                        class="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500"
                     ></div>
 
                     <div class="mb-4 sm:mb-5">

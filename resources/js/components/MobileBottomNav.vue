@@ -9,23 +9,13 @@ import {
     GraduationCap,
     LayoutGrid,
     Layers,
-    LogOut,
     MoreHorizontal,
     Printer,
     Settings,
-    ShieldAlert,
     ShieldCheck,
     Users,
 } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/ui/dialog';
 import {
     Sheet,
     SheetContent,
@@ -33,7 +23,6 @@ import {
     SheetTitle,
 } from '@/components/ui/sheet';
 import { useInitials } from '@/composables/useInitials';
-import { logout } from '@/routes';
 
 type UserCourse = {
     id?: number;
@@ -142,7 +131,6 @@ const isUrlActive = (target: string) => {
 
 const showMoreSheet = ref(false);
 const showAlertsSheet = ref(false);
-const showLogoutDialog = ref(false);
 
 const openMoreSheet = () => {
     showMoreSheet.value = true;
@@ -158,19 +146,6 @@ const openAlertsSheet = () => {
 
 const closeAlertsSheet = () => {
     showAlertsSheet.value = false;
-};
-
-const openLogoutDialog = () => {
-    showMoreSheet.value = false;
-    showLogoutDialog.value = true;
-};
-
-const closeLogoutDialog = () => {
-    showLogoutDialog.value = false;
-};
-
-const handleLogout = () => {
-    router.flushAll();
 };
 
 const markAllAsRead = () => {
@@ -362,99 +337,78 @@ const handleReceiptClick = () => {
             </button>
         </div>
 
-        <!-- STUDENT NAVIGATION (5 items) -->
+        <!-- STUDENT NAVIGATION (4 items - Symmetrical & Clean) -->
         <div
             v-else-if="userRole === 'student'"
-            class="grid grid-cols-5 items-end justify-items-center gap-1"
+            class="grid grid-cols-4 items-center justify-items-center gap-1"
         >
+            <!-- Home -->
+            <button
+                type="button"
+                class="flex w-full flex-col items-center justify-center py-1.5 transition active:scale-95"
+                :class="
+                    isUrlActive('/dashboard')
+                        ? 'text-blue-950'
+                        : 'text-slate-500 hover:text-blue-950'
+                "
+                @click="handleStudentHomeClick"
+            >
+                <LayoutGrid class="size-5" />
+                <span
+                    class="mt-0.5 h-1 w-1 rounded-full transition-all"
+                    :class="
+                        isUrlActive('/dashboard')
+                            ? 'bg-blue-700'
+                            : 'bg-transparent'
+                    "
+                ></span>
+                <span
+                    class="text-[0.65rem] tracking-tight"
+                    :class="
+                        isUrlActive('/dashboard') ? 'font-black' : 'font-bold'
+                    "
+                >
+                    Home
+                </span>
+            </button>
+
             <!-- Status Modal Trigger -->
             <button
                 type="button"
-                class="flex w-full flex-col items-center justify-center py-1 text-slate-500 transition hover:text-blue-950 active:scale-95"
+                class="flex w-full flex-col items-center justify-center py-1.5 text-slate-500 transition hover:text-blue-950 active:scale-95"
                 @click="handleStudentStatusClick"
             >
                 <ClipboardCheck class="size-5" />
                 <span class="mt-0.5 h-1 w-1 rounded-full bg-transparent"></span>
-                <span class="text-[0.65rem] font-bold tracking-tight"
-                    >Status</span
-                >
+                <span class="text-[0.65rem] font-bold tracking-tight">
+                    Status
+                </span>
             </button>
 
             <!-- Request Modal Trigger -->
             <button
                 type="button"
-                class="flex w-full flex-col items-center justify-center py-1 text-slate-500 transition hover:text-blue-950 active:scale-95"
+                class="flex w-full flex-col items-center justify-center py-1.5 text-slate-500 transition hover:text-blue-950 active:scale-95"
                 @click="handleStudentRequestClick"
             >
                 <FilePlus class="size-5" />
                 <span class="mt-0.5 h-1 w-1 rounded-full bg-transparent"></span>
-                <span class="text-[0.65rem] font-bold tracking-tight"
-                    >Request</span
-                >
-            </button>
-
-            <!-- Elevated Center Focal Button: Dashboard -->
-            <div class="-mt-5 flex flex-col items-center justify-center">
-                <button
-                    type="button"
-                    class="flex h-12 w-12 items-center justify-center rounded-2xl shadow-lg ring-4 ring-white transition-transform active:scale-95"
-                    :class="
-                        isUrlActive('/dashboard')
-                            ? 'bg-gradient-to-tr from-blue-950 via-blue-800 to-indigo-600 text-white shadow-blue-900/30'
-                            : 'border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100'
-                    "
-                    @click="handleStudentHomeClick"
-                >
-                    <LayoutGrid class="size-6" />
-                </button>
-                <span
-                    class="mt-1 text-[0.65rem] font-black tracking-tight"
-                    :class="
-                        isUrlActive('/dashboard')
-                            ? 'font-black text-blue-950'
-                            : 'text-slate-500'
-                    "
-                >
-                    Home
+                <span class="text-[0.65rem] font-bold tracking-tight">
+                    Request
                 </span>
-            </div>
-
-            <!-- Alerts Drawer Trigger -->
-            <button
-                type="button"
-                class="relative flex w-full flex-col items-center justify-center py-1 text-slate-500 transition hover:text-blue-950 active:scale-95"
-                @click="openAlertsSheet"
-            >
-                <div class="relative">
-                    <Bell class="size-5" />
-                    <span
-                        v-if="notifications.unread_count > 0"
-                        class="absolute -top-1 -right-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[0.6rem] font-black text-white shadow-xs"
-                    >
-                        {{
-                            notifications.unread_count > 99
-                                ? '99+'
-                                : notifications.unread_count
-                        }}
-                    </span>
-                </div>
-                <span class="mt-0.5 h-1 w-1 rounded-full bg-transparent"></span>
-                <span class="text-[0.65rem] font-bold tracking-tight"
-                    >Alerts</span
-                >
             </button>
 
             <!-- More -->
             <button
                 type="button"
-                class="flex w-full flex-col items-center justify-center py-1 text-slate-500 transition hover:text-slate-900 active:scale-95"
+                class="flex w-full flex-col items-center justify-center py-1.5 text-slate-500 transition hover:text-slate-900 active:scale-95"
                 @click="openMoreSheet"
             >
                 <MoreHorizontal class="size-5" />
                 <span class="mt-0.5 h-1 w-1 rounded-full bg-transparent"></span>
-                <span class="text-[0.65rem] font-bold tracking-tight"
-                    >More</span
-                >
+                <span class="text-[0.65rem] font-bold tracking-tight">
+                    More
+                </span>
             </button>
         </div>
 
@@ -733,28 +687,29 @@ const handleReceiptClick = () => {
                     </Link>
                 </template>
 
-                <!-- Account & Logout Action -->
+                <!-- Student Official Clearance Receipt Action -->
                 <button
+                    v-if="userRole === 'student' && canPrintReceipt"
                     type="button"
-                    class="flex w-full items-center justify-between rounded-2xl border border-red-200 bg-red-50/60 p-3.5 text-left transition hover:bg-red-100/70 active:scale-[0.99]"
-                    @click="openLogoutDialog"
+                    class="flex w-full items-center justify-between rounded-2xl border border-emerald-200 bg-emerald-50/70 p-3.5 text-left transition hover:bg-emerald-100/70 active:scale-[0.99]"
+                    @click="handleReceiptClick"
                 >
                     <div class="flex items-center gap-3">
                         <div
-                            class="flex size-10 items-center justify-center rounded-xl bg-red-100 text-red-600"
+                            class="flex size-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700"
                         >
-                            <LogOut class="size-5" />
+                            <Printer class="size-5" />
                         </div>
                         <div>
-                            <p class="text-sm font-bold text-red-700">
-                                Sign Out
+                            <p class="text-sm font-bold text-emerald-900">
+                                Official Clearance Receipt
                             </p>
-                            <p class="text-xs text-red-600/80">
-                                Log out of your account
+                            <p class="text-xs text-emerald-700/80">
+                                View or print your signed clearance
                             </p>
                         </div>
                     </div>
-                    <ChevronRight class="size-5 text-red-400" />
+                    <ChevronRight class="size-5 text-emerald-500" />
                 </button>
             </div>
         </SheetContent>
@@ -845,58 +800,4 @@ const handleReceiptClick = () => {
             </div>
         </SheetContent>
     </Sheet>
-
-    <!-- LOGOUT CONFIRMATION DIALOG -->
-    <Dialog v-model:open="showLogoutDialog">
-        <DialogContent
-            class="rounded-3xl border border-slate-200 p-0 shadow-2xl sm:max-w-md"
-        >
-            <div class="p-6">
-                <DialogHeader>
-                    <div class="flex items-start gap-4">
-                        <div
-                            class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-red-50 text-red-600"
-                        >
-                            <ShieldAlert class="size-6" />
-                        </div>
-
-                        <div>
-                            <DialogTitle
-                                class="text-xl font-black text-slate-950"
-                            >
-                                Confirm logout
-                            </DialogTitle>
-
-                            <DialogDescription
-                                class="mt-2 text-sm leading-6 text-slate-600"
-                            >
-                                Are you sure you want to log out of your
-                                account? You will need to sign in again to
-                                continue using the clearance system.
-                            </DialogDescription>
-                        </div>
-                    </div>
-                </DialogHeader>
-
-                <DialogFooter class="mt-6 flex gap-3 sm:justify-end">
-                    <button
-                        type="button"
-                        class="rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-black text-slate-700 transition hover:bg-slate-50"
-                        @click="closeLogoutDialog"
-                    >
-                        Cancel
-                    </button>
-
-                    <Link
-                        :href="logout()"
-                        as="button"
-                        class="rounded-2xl bg-red-600 px-4 py-2.5 text-sm font-black text-white shadow-md shadow-red-600/20 transition hover:bg-red-700"
-                        @click="handleLogout"
-                    >
-                        Yes, log out
-                    </Link>
-                </DialogFooter>
-            </div>
-        </DialogContent>
-    </Dialog>
 </template>
