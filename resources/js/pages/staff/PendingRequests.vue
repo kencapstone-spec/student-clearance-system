@@ -9,7 +9,6 @@ import {
     GraduationCap,
     Inbox,
     Search,
-    ShieldCheck,
     X,
     XCircle,
 } from 'lucide-vue-next';
@@ -458,7 +457,8 @@ const filterButtonClass = (filter: FilterStatus) => {
                             class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-3 py-2 text-[0.65rem] font-black tracking-[0.14em] text-blue-700 uppercase sm:px-4 sm:text-xs sm:tracking-[0.18em]"
                         >
                             <Building2 class="size-4" />
-                            {{ staff.office?.name ?? 'Assigned Office' }} • Approver Panel
+                            {{ staff.office?.name ?? 'Assigned Office' }} •
+                            Approver Panel
                         </div>
 
                         <h1

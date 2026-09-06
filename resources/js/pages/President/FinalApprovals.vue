@@ -808,7 +808,7 @@ const confirmAutoApproveAll = () => {
 
                             <button
                                 type="button"
-                                class="inline-flex min-h-11 w-full sm:w-auto items-center justify-center gap-2 rounded-2xl px-4 py-2.5 text-sm font-black text-white shadow-md transition disabled:cursor-not-allowed disabled:opacity-60"
+                                class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl px-4 py-2.5 text-sm font-black text-white shadow-md transition disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                                 :class="
                                     readyApprovalCount === 0
                                         ? 'bg-slate-400 shadow-slate-400/20'

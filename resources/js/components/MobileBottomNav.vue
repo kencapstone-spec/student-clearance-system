@@ -14,12 +14,7 @@ import {
     Users,
 } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
-import {
-    Sheet,
-    SheetContent,
-    SheetHeader,
-    SheetTitle,
-} from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet';
 import { useInitials } from '@/composables/useInitials';
 
 type UserCourse = {
@@ -365,14 +360,18 @@ const handleReceiptClick = () => {
     <Sheet v-model:open="showMoreSheet">
         <SheetContent
             side="bottom"
-            class="max-h-[85vh] overflow-y-auto rounded-t-[1.75rem] border-t border-slate-200 bg-white px-4 pt-2.5 pb-8 shadow-2xl gap-0 focus:outline-hidden sm:px-6 sm:pb-8"
+            class="max-h-[85vh] gap-0 overflow-y-auto rounded-t-[1.75rem] border-t border-slate-200 bg-white px-4 pt-2.5 pb-8 shadow-2xl focus:outline-hidden sm:px-6 sm:pb-8"
         >
             <!-- Drag handle -->
-            <div class="mx-auto my-1.5 h-1 w-10 rounded-full bg-slate-300"></div>
+            <div
+                class="mx-auto my-1.5 h-1 w-10 rounded-full bg-slate-300"
+            ></div>
 
             <!-- Header -->
-            <div class="pr-8 pt-1 pb-3">
-                <SheetTitle class="text-base font-black tracking-tight text-slate-950">
+            <div class="pt-1 pr-8 pb-3">
+                <SheetTitle
+                    class="text-base font-black tracking-tight text-slate-950"
+                >
                     Menu & Quick Actions
                 </SheetTitle>
                 <p class="mt-0.5 text-xs font-medium text-slate-500">
@@ -392,15 +391,19 @@ const handleReceiptClick = () => {
                 </div>
 
                 <div class="min-w-0 flex-1">
-                    <p class="truncate text-sm font-black text-slate-950 leading-tight">
+                    <p
+                        class="truncate text-sm leading-tight font-black text-slate-950"
+                    >
                         {{ authUser.name }}
                     </p>
-                    <p class="truncate text-xs font-medium text-slate-500 mt-0.5">
+                    <p
+                        class="mt-0.5 truncate text-xs font-medium text-slate-500"
+                    >
                         {{ authUser.email }}
                     </p>
                     <div class="mt-1.5 flex flex-wrap gap-1.5">
                         <span
-                            class="inline-flex items-center rounded-md bg-blue-100/80 px-2 py-0.5 text-[0.625rem] font-bold uppercase tracking-wide text-blue-900"
+                            class="inline-flex items-center rounded-md bg-blue-100/80 px-2 py-0.5 text-[0.625rem] font-bold tracking-wide text-blue-900 uppercase"
                         >
                             {{ userRole }}
                         </span>
@@ -427,7 +430,9 @@ const handleReceiptClick = () => {
             </div>
 
             <!-- Category label -->
-            <p class="mb-2 px-1 text-[0.65rem] font-bold uppercase tracking-wider text-slate-400">
+            <p
+                class="mb-2 px-1 text-[0.65rem] font-bold tracking-wider text-slate-400 uppercase"
+            >
                 Navigation & Shortcuts
             </p>
 
@@ -437,7 +442,7 @@ const handleReceiptClick = () => {
                 <template v-if="userRole === 'admin'">
                     <Link
                         href="/admin/course-modules"
-                        class="group flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/70 p-3 shadow-xs transition-all hover:border-slate-300 hover:bg-slate-100/80 active:scale-[0.99] focus:outline-hidden"
+                        class="group flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/70 p-3 shadow-xs transition-all hover:border-slate-300 hover:bg-slate-100/80 focus:outline-hidden active:scale-[0.99]"
                         @click="closeMoreSheet"
                     >
                         <div
@@ -446,19 +451,25 @@ const handleReceiptClick = () => {
                             <Layers class="size-5" />
                         </div>
                         <div class="min-w-0 flex-1">
-                            <p class="text-sm font-bold text-slate-900 leading-tight">
+                            <p
+                                class="text-sm leading-tight font-bold text-slate-900"
+                            >
                                 Course Modules
                             </p>
-                            <p class="mt-0.5 text-xs text-slate-500 leading-snug">
+                            <p
+                                class="mt-0.5 text-xs leading-snug text-slate-500"
+                            >
                                 Manage academic courses and assigned offices
                             </p>
                         </div>
-                        <ChevronRight class="size-4.5 shrink-0 text-slate-400 transition-transform group-hover:translate-x-0.5" />
+                        <ChevronRight
+                            class="size-4.5 shrink-0 text-slate-400 transition-transform group-hover:translate-x-0.5"
+                        />
                     </Link>
 
                     <Link
                         href="/admin/office-prerequisites"
-                        class="group flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/70 p-3 shadow-xs transition-all hover:border-slate-300 hover:bg-slate-100/80 active:scale-[0.99] focus:outline-hidden"
+                        class="group flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/70 p-3 shadow-xs transition-all hover:border-slate-300 hover:bg-slate-100/80 focus:outline-hidden active:scale-[0.99]"
                         @click="closeMoreSheet"
                     >
                         <div
@@ -467,19 +478,25 @@ const handleReceiptClick = () => {
                             <GraduationCap class="size-5" />
                         </div>
                         <div class="min-w-0 flex-1">
-                            <p class="text-sm font-bold text-slate-900 leading-tight">
+                            <p
+                                class="text-sm leading-tight font-bold text-slate-900"
+                            >
                                 Office Prerequisites
                             </p>
-                            <p class="mt-0.5 text-xs text-slate-500 leading-snug">
+                            <p
+                                class="mt-0.5 text-xs leading-snug text-slate-500"
+                            >
                                 Configure dependency workflows for offices
                             </p>
                         </div>
-                        <ChevronRight class="size-4.5 shrink-0 text-slate-400 transition-transform group-hover:translate-x-0.5" />
+                        <ChevronRight
+                            class="size-4.5 shrink-0 text-slate-400 transition-transform group-hover:translate-x-0.5"
+                        />
                     </Link>
 
                     <Link
                         href="/admin/settings"
-                        class="group flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/70 p-3 shadow-xs transition-all hover:border-slate-300 hover:bg-slate-100/80 active:scale-[0.99] focus:outline-hidden"
+                        class="group flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/70 p-3 shadow-xs transition-all hover:border-slate-300 hover:bg-slate-100/80 focus:outline-hidden active:scale-[0.99]"
                         @click="closeMoreSheet"
                     >
                         <div
@@ -488,14 +505,20 @@ const handleReceiptClick = () => {
                             <Settings class="size-5" />
                         </div>
                         <div class="min-w-0 flex-1">
-                            <p class="text-sm font-bold text-slate-900 leading-tight">
+                            <p
+                                class="text-sm leading-tight font-bold text-slate-900"
+                            >
                                 System Settings
                             </p>
-                            <p class="mt-0.5 text-xs text-slate-500 leading-snug">
+                            <p
+                                class="mt-0.5 text-xs leading-snug text-slate-500"
+                            >
                                 Active semester and clearance rules
                             </p>
                         </div>
-                        <ChevronRight class="size-4.5 shrink-0 text-slate-400 transition-transform group-hover:translate-x-0.5" />
+                        <ChevronRight
+                            class="size-4.5 shrink-0 text-slate-400 transition-transform group-hover:translate-x-0.5"
+                        />
                     </Link>
                 </template>
 
@@ -503,7 +526,7 @@ const handleReceiptClick = () => {
                 <button
                     v-if="userRole === 'student' && canPrintReceipt"
                     type="button"
-                    class="group flex w-full items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50/80 p-3 text-left transition hover:bg-emerald-100/80 active:scale-[0.99] focus:outline-hidden"
+                    class="group flex w-full items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50/80 p-3 text-left transition hover:bg-emerald-100/80 focus:outline-hidden active:scale-[0.99]"
                     @click="handleReceiptClick"
                 >
                     <div
@@ -512,14 +535,20 @@ const handleReceiptClick = () => {
                         <Printer class="size-5" />
                     </div>
                     <div class="min-w-0 flex-1">
-                        <p class="text-sm font-bold text-emerald-900 leading-tight">
+                        <p
+                            class="text-sm leading-tight font-bold text-emerald-900"
+                        >
                             Official Clearance Receipt
                         </p>
-                        <p class="mt-0.5 text-xs text-emerald-700/80 leading-snug">
+                        <p
+                            class="mt-0.5 text-xs leading-snug text-emerald-700/80"
+                        >
                             View or print your signed clearance
                         </p>
                     </div>
-                    <ChevronRight class="size-4.5 shrink-0 text-emerald-500 transition-transform group-hover:translate-x-0.5" />
+                    <ChevronRight
+                        class="size-4.5 shrink-0 text-emerald-500 transition-transform group-hover:translate-x-0.5"
+                    />
                 </button>
             </div>
         </SheetContent>

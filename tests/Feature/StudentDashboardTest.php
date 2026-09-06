@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\AppSetting;
 use App\Models\ClearanceApproval;
 use App\Models\ClearanceRequest;
 use App\Models\Course;
@@ -94,8 +95,8 @@ test('student can mark rejected clearance as complied', function () {
 });
 
 test('studentClearance prop is null when active term has no clearance even if previous term was cleared', function () {
-    \App\Models\AppSetting::set('active_semester', '1st Semester');
-    \App\Models\AppSetting::set('active_school_year', '2026-2027');
+    AppSetting::set('active_semester', '1st Semester');
+    AppSetting::set('active_school_year', '2026-2027');
 
     $student = User::factory()->create(['role' => 'student']);
 
@@ -118,8 +119,8 @@ test('studentClearance prop is null when active term has no clearance even if pr
 });
 
 test('studentClearance prop is cleared when current active term is cleared', function () {
-    \App\Models\AppSetting::set('active_semester', '1st Semester');
-    \App\Models\AppSetting::set('active_school_year', '2026-2027');
+    AppSetting::set('active_semester', '1st Semester');
+    AppSetting::set('active_school_year', '2026-2027');
 
     $student = User::factory()->create(['role' => 'student']);
 
@@ -139,4 +140,3 @@ test('studentClearance prop is cleared when current active term is cleared', fun
             ->where('studentClearance.is_cleared', true)
         );
 });
-
