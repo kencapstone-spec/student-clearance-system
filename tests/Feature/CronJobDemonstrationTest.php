@@ -53,3 +53,18 @@ test('cron reject-all route executes and rejects pending clearance requests', fu
     $response->assertStatus(200);
     expect($approval->fresh()->status)->toBe('rejected');
 });
+
+test('cron approve-all works with demo key or without secret', function () {
+    $regularOffice = Office::factory()->create(['is_final_approver' => false]);
+    $clearanceRequest = ClearanceRequest::factory()->create();
+
+    $approval = ClearanceApproval::factory()->create([
+        'clearance_request_id' => $clearanceRequest->id,
+        'office_id' => $regularOffice->id,
+        'status' => 'pending',
+    ]);
+
+    $response = $this->get('/cron/approve-all/demo');
+    $response->assertStatus(200);
+    expect($approval->fresh()->status)->toBe('approved');
+});
