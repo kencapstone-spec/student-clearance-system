@@ -3,7 +3,6 @@ import { Link, router, usePage } from '@inertiajs/vue3';
 import {
     Bell,
     ChevronRight,
-    ClipboardCheck,
     FilePlus,
     FileText,
     GraduationCap,
@@ -12,7 +11,6 @@ import {
     MoreHorizontal,
     Printer,
     Settings,
-    ShieldCheck,
     Users,
 } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
@@ -223,6 +221,7 @@ const handleReceiptClick = () => {
 
     <!-- Main Mobile Bottom Navigation Bar -->
     <nav
+        v-if="userRole === 'admin' || userRole === 'student'"
         class="fixed inset-x-0 bottom-0 z-30 border-t border-slate-200/80 bg-white/95 px-3 pt-1 pb-[max(env(safe-area-inset-bottom),0.75rem)] shadow-[0_-4px_24px_rgba(0,0,0,0.06)] backdrop-blur-xl md:hidden print:hidden"
     >
         <!-- ADMIN NAVIGATION (5 items) -->
@@ -397,68 +396,6 @@ const handleReceiptClick = () => {
                     Status
                 </span>
             </button>
-        </div>
-
-        <!-- STAFF NAVIGATION (Centered Requests Button) -->
-        <div
-            v-else-if="userRole === 'staff'"
-            class="flex items-center justify-center py-1"
-        >
-            <!-- Elevated Center Focal Button: Pending Requests -->
-            <div class="-mt-5 flex flex-col items-center justify-center">
-                <Link
-                    href="/staff/pending-requests"
-                    class="flex h-12 w-12 items-center justify-center rounded-2xl shadow-lg ring-4 ring-white transition-transform active:scale-95"
-                    :class="
-                        isUrlActive('/staff/pending-requests')
-                            ? 'bg-gradient-to-tr from-blue-950 via-blue-800 to-indigo-600 text-white shadow-blue-900/30'
-                            : 'border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100'
-                    "
-                >
-                    <ClipboardCheck class="size-6" />
-                </Link>
-                <span
-                    class="mt-1 text-[0.65rem] font-black tracking-tight"
-                    :class="
-                        isUrlActive('/staff/pending-requests')
-                            ? 'font-black text-blue-950'
-                            : 'text-slate-500'
-                    "
-                >
-                    Requests
-                </span>
-            </div>
-        </div>
-
-        <!-- PRESIDENT NAVIGATION (Centered Approvals Button) -->
-        <div
-            v-else-if="userRole === 'president'"
-            class="flex items-center justify-center py-1"
-        >
-            <!-- Elevated Center Focal Button: Final Approvals -->
-            <div class="-mt-5 flex flex-col items-center justify-center">
-                <Link
-                    href="/president/final-approvals"
-                    class="flex h-12 w-12 items-center justify-center rounded-2xl shadow-lg ring-4 ring-white transition-transform active:scale-95"
-                    :class="
-                        isUrlActive('/president/final-approvals')
-                            ? 'bg-gradient-to-tr from-blue-950 via-blue-800 to-indigo-600 text-white shadow-blue-900/30'
-                            : 'border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100'
-                    "
-                >
-                    <ShieldCheck class="size-6" />
-                </Link>
-                <span
-                    class="mt-1 text-[0.65rem] font-black tracking-tight"
-                    :class="
-                        isUrlActive('/president/final-approvals')
-                            ? 'font-black text-blue-950'
-                            : 'text-slate-500'
-                    "
-                >
-                    Approvals
-                </span>
-            </div>
         </div>
     </nav>
 
