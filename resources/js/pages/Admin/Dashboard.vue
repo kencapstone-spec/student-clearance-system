@@ -20,7 +20,7 @@ onMounted(() => {
     pollingInterval = setInterval(() => {
         router.reload({
             data: { _t: Date.now() },
-            only: ['stats', 'recentRequests'],
+            only: ['stats', 'recentRequests', 'notifications'],
         });
     }, 5000);
 });

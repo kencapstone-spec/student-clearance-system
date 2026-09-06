@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Models\AppSetting;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -38,62 +39,69 @@ class HandleInertiaRequests extends Middleware
     {
         $user = $request->user();
 
-        $notifications = [];
-        $unreadNotificationCount = 0;
-
-        if ($user) {
-            $notifications = $user->notifications()
-                ->latest()
-                ->take(10)
-                ->get()
-                ->map(function ($notification) {
-                    return [
-                        'id' => $notification->id,
-                        'title' => $notification->title,
-                        'message' => $notification->message,
-                        'link' => $notification->link,
-                        'read_at' => $notification->read_at?->toDateTimeString(),
-                        'created_at' => $notification->created_at?->toDateTimeString(),
-                        'created_at_human' => $notification->created_at?->diffForHumans(),
-                    ];
-                })
-                ->values();
-
-            $unreadNotificationCount = $user->notifications()
-                ->whereNull('read_at')
-                ->count();
-        }
-
-        $studentClearance = null;
-        if ($user && $user->role === 'student') {
-            $activeSemester = AppSetting::get('active_semester', '1st Semester');
-            $activeSchoolYear = AppSetting::get('active_school_year', '2026-2027');
-
-            $latestClearance = $user->clearanceRequests()
-                ->where('semester', $activeSemester)
-                ->where('school_year', $activeSchoolYear)
-                ->latest()
-                ->first(['id', 'status']);
-
-            if ($latestClearance) {
-                $studentClearance = [
-                    'id' => $latestClearance->id,
-                    'is_cleared' => $latestClearance->status === 'cleared',
-                ];
-            }
-        }
-
         return [
             ...parent::share($request),
             'name' => config('app.name'),
             'auth' => [
                 'user' => $user,
             ],
-            'studentClearance' => $studentClearance,
-            'notifications' => [
-                'items' => $notifications,
-                'unread_count' => $unreadNotificationCount,
-            ],
+            'studentClearance' => Inertia::always(function () use ($request) {
+                $user = $request->user();
+
+                if (! $user || $user->role !== 'student') {
+                    return null;
+                }
+
+                $activeSemester = AppSetting::get('active_semester', '1st Semester');
+                $activeSchoolYear = AppSetting::get('active_school_year', '2026-2027');
+
+                $latestClearance = $user->clearanceRequests()
+                    ->where('semester', $activeSemester)
+                    ->where('school_year', $activeSchoolYear)
+                    ->latest()
+                    ->first(['id', 'status']);
+
+                if (! $latestClearance) {
+                    return null;
+                }
+
+                return [
+                    'id' => $latestClearance->id,
+                    'is_cleared' => $latestClearance->status === 'cleared',
+                ];
+            }),
+            'notifications' => Inertia::always(function () use ($request) {
+                $user = $request->user();
+
+                if (! $user) {
+                    return [
+                        'items' => [],
+                        'unread_count' => 0,
+                    ];
+                }
+
+                return [
+                    'items' => $user->notifications()
+                        ->latest()
+                        ->take(10)
+                        ->get()
+                        ->map(function ($notification) {
+                            return [
+                                'id' => $notification->id,
+                                'title' => $notification->title,
+                                'message' => $notification->message,
+                                'link' => $notification->link,
+                                'read_at' => $notification->read_at?->toDateTimeString(),
+                                'created_at' => $notification->created_at?->toDateTimeString(),
+                                'created_at_human' => $notification->created_at?->diffForHumans(),
+                            ];
+                        })
+                        ->values(),
+                    'unread_count' => $user->notifications()
+                        ->whereNull('read_at')
+                        ->count(),
+                ];
+            }),
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];
     }

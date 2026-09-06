@@ -156,4 +156,36 @@ class PendingRequestController extends Controller
 
         return back()->with('success', 'Clearance request rejected successfully.');
     }
+
+    public function markAsComplied(Request $request, ClearanceApproval $approval): RedirectResponse
+    {
+        $user = $request->user();
+
+        if ($approval->office_id !== $user->office_id) {
+            abort(403);
+        }
+
+        if ($approval->status !== 'rejected') {
+            return back()->with('error', 'Only rejected clearance requests can be marked as complied.');
+        }
+
+        $approval->update([
+            'status' => 'pending',
+            'approved_by' => null,
+            'acted_at' => null,
+        ]);
+
+        $approval->load(['clearanceRequest.user', 'office']);
+
+        if ($approval->clearanceRequest && $approval->clearanceRequest->user) {
+            NotificationService::send(
+                $approval->clearanceRequest->user,
+                'Clearance marked as complied',
+                "Your {$approval->office->name} clearance requirement was marked as complied by office staff.",
+                '/dashboard'
+            );
+        }
+
+        return back()->with('success', 'Clearance marked as complied and moved to pending queue.');
+    }
 }

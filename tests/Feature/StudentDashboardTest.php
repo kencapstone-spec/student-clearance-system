@@ -1,11 +1,13 @@
 <?php
 
+use App\Http\Middleware\HandleInertiaRequests;
 use App\Models\AppSetting;
 use App\Models\ClearanceApproval;
 use App\Models\ClearanceRequest;
 use App\Models\Course;
 use App\Models\Office;
 use App\Models\User;
+use App\Services\NotificationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
@@ -139,4 +141,30 @@ test('studentClearance prop is cleared when current active term is cleared', fun
             ->where('studentClearance.id', $clearedRequest->id)
             ->where('studentClearance.is_cleared', true)
         );
+});
+
+test('notifications prop is always returned during partial reloads', function () {
+    $student = User::factory()->create(['role' => 'student']);
+    NotificationService::send(
+        $student,
+        'Test Rejection',
+        'Your request was rejected.',
+        '/dashboard'
+    );
+
+    $version = (new HandleInertiaRequests)->version(request());
+
+    $response = $this->actingAs($student)
+        ->withHeaders([
+            'X-Inertia' => 'true',
+            'X-Inertia-Version' => $version,
+            'X-Inertia-Partial-Component' => 'Dashboard',
+            'X-Inertia-Partial-Data' => 'clearanceRequest',
+        ])
+        ->get('/dashboard');
+
+    $response->assertStatus(200);
+    expect($response->json('props.notifications.unread_count'))->toBe(1)
+        ->and($response->json('props.notifications.items.0.title'))->toBe('Test Rejection')
+        ->and($response->json('props.offices'))->toBeNull();
 });

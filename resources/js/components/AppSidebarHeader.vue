@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { Link, router, usePage } from '@inertiajs/vue3';
 import { Bell } from 'lucide-vue-next';
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
+import { toast } from 'vue-sonner';
 import Breadcrumbs from '@/components/Breadcrumbs.vue';
 import { Button } from '@/components/ui/button';
 import {
@@ -114,6 +115,49 @@ const markAllNotificationsAsRead = () => {
         },
     );
 };
+
+const previousNotificationIds = ref<Set<number>>(new Set());
+let isInitialNotificationLoad = true;
+
+watch(
+    () => notifications.value.items,
+    (currentItems) => {
+        const currentIds = new Set(currentItems.map((i) => i.id));
+
+        if (isInitialNotificationLoad) {
+            previousNotificationIds.value = currentIds;
+            isInitialNotificationLoad = false;
+
+            return;
+        }
+
+        const newUnreadItems = currentItems.filter(
+            (item) =>
+                !previousNotificationIds.value.has(item.id) && !item.read_at,
+        );
+
+        for (const item of newUnreadItems) {
+            const titleLower = item.title.toLowerCase();
+
+            if (titleLower.includes('reject')) {
+                toast.error(item.title, {
+                    description: item.message,
+                });
+            } else if (titleLower.includes('compli')) {
+                toast.info(item.title, {
+                    description: item.message,
+                });
+            } else {
+                toast.success(item.title, {
+                    description: item.message,
+                });
+            }
+        }
+
+        previousNotificationIds.value = currentIds;
+    },
+    { immediate: true, deep: true },
+);
 </script>
 
 <template>

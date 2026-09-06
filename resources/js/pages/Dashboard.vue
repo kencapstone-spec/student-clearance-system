@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Head, router } from '@inertiajs/vue3';
 
-import { CheckCircle2, Download } from 'lucide-vue-next';
+import { AlertTriangle, CheckCircle2, Download } from 'lucide-vue-next';
 import { computed, ref, onMounted, onUnmounted } from 'vue';
 
 import { dashboard } from '@/routes';
@@ -44,7 +44,12 @@ onMounted(() => {
     pollingInterval = setInterval(() => {
         router.reload({
             data: { _t: Date.now() },
-            only: ['clearanceRequest', 'offices'],
+            only: [
+                'clearanceRequest',
+                'offices',
+                'notifications',
+                'studentClearance',
+            ],
         });
     }, 5000);
 });
@@ -294,6 +299,12 @@ const officeStatuses = computed(() => {
 
     return sortOfficesByPrerequisites(statuses);
 });
+
+const rejectedOffices = computed(() => {
+    return officeStatuses.value.filter((o) => o.status === 'rejected');
+});
+
+const hasRejectedOffices = computed(() => rejectedOffices.value.length > 0);
 
 const progressMessage = computed(() => {
     if (!props.clearanceRequest) {
@@ -1048,20 +1059,6 @@ const submitClearanceRequest = () => {
                                 >
                                     {{ statusLabel(office.status) }}
                                 </span>
-
-                                <button
-                                    v-if="office.status === 'rejected'"
-                                    type="button"
-                                    class="rounded-xl bg-orange-100 px-3 py-1 text-xs font-black text-orange-700 transition hover:bg-orange-200"
-                                    @click="
-                                        openMarkAsCompliedModal(
-                                            office.approvalId,
-                                            office.name,
-                                        )
-                                    "
-                                >
-                                    Mark as Complied
-                                </button>
                             </div>
                         </div>
 
@@ -1089,62 +1086,217 @@ const submitClearanceRequest = () => {
                 </div>
             </section>
 
-            <!-- Submit Request -->
+            <!-- Submit / Comply Request -->
             <section
-                class="order-3 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/70 md:flex-row md:items-center md:justify-between md:rounded-[1.5rem] md:p-6 xl:order-4"
+                class="order-3 flex flex-col gap-4 rounded-2xl border p-4 shadow-sm transition-all md:rounded-[1.5rem] md:p-6 xl:order-4"
+                :class="
+                    hasRejectedOffices
+                        ? 'border-amber-300 bg-gradient-to-br from-amber-50/80 via-white to-orange-50/40 shadow-amber-200/50'
+                        : 'border-slate-200 bg-white/95 shadow-slate-200/70'
+                "
             >
-                <div class="flex items-center gap-3 md:gap-4">
-                    <div
-                        class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-xl shadow-sm md:h-14 md:w-14 md:rounded-2xl md:text-2xl"
-                        :class="courseTheme.iconBgClass"
-                    >
-                        📄
+                <div
+                    class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between"
+                >
+                    <div class="flex items-center gap-3 md:gap-4">
+                        <div
+                            class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-xl shadow-sm md:h-14 md:w-14 md:rounded-2xl md:text-2xl"
+                            :class="
+                                hasRejectedOffices
+                                    ? 'border border-amber-300 bg-amber-100 text-amber-800'
+                                    : courseTheme.iconBgClass
+                            "
+                        >
+                            {{ hasRejectedOffices ? '⚠️' : '📄' }}
+                        </div>
+
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <p
+                                    class="hidden text-xs font-black tracking-[0.18em] uppercase md:block"
+                                    :class="
+                                        hasRejectedOffices
+                                            ? 'text-amber-800'
+                                            : 'text-slate-400'
+                                    "
+                                >
+                                    Clearance Request
+                                </p>
+
+                                <span
+                                    v-if="hasRejectedOffices"
+                                    class="inline-flex items-center gap-1 rounded-full bg-amber-200/90 px-2 py-0.5 text-[0.65rem] font-black tracking-wider text-amber-900 uppercase"
+                                >
+                                    <AlertTriangle class="size-3" />
+                                    Action Required
+                                </span>
+                            </div>
+
+                            <h2
+                                class="mt-1 text-lg font-black md:text-xl"
+                                :class="
+                                    hasRejectedOffices
+                                        ? 'text-amber-950'
+                                        : courseTheme.headingTextClass
+                                "
+                            >
+                                {{
+                                    hasRejectedOffices
+                                        ? 'Comply Rejected Requirements'
+                                        : 'Submit New Clearance Request'
+                                }}
+                            </h2>
+
+                            <p
+                                class="text-xs font-medium md:text-sm"
+                                :class="
+                                    hasRejectedOffices
+                                        ? 'text-amber-800/90'
+                                        : 'text-slate-500'
+                                "
+                            >
+                                {{
+                                    hasRejectedOffices
+                                        ? 'One or more offices rejected your clearance. Review the remarks below and mark as complied to resubmit.'
+                                        : 'Need to request clearance from all required offices?'
+                                }}
+                            </p>
+                        </div>
                     </div>
 
-                    <div>
-                        <p
-                            class="hidden text-xs font-black tracking-[0.18em] text-slate-400 uppercase md:block"
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button
+                            v-if="requestableOffices.length > 0"
+                            type="button"
+                            class="w-full cursor-pointer rounded-2xl px-5 py-3 text-sm font-black text-white shadow-md transition hover:-translate-y-0.5 hover:shadow-lg md:w-auto md:px-6 md:text-base"
+                            :class="[
+                                courseTheme.primaryButtonClass,
+                                courseTheme.primaryButtonHoverClass,
+                            ]"
+                            @click="openSubmitRequestModal"
                         >
-                            Clearance Request
-                        </p>
+                            {{
+                                !clearanceRequest
+                                    ? 'Submit Clearance Request →'
+                                    : 'Request More Offices →'
+                            }}
+                        </button>
 
-                        <h2
-                            class="mt-1 text-lg font-black md:text-xl"
-                            :class="courseTheme.headingTextClass"
+                        <button
+                            v-else-if="hasRejectedOffices"
+                            type="button"
+                            class="w-full cursor-pointer rounded-2xl bg-amber-600 px-5 py-3 text-sm font-black text-white shadow-md shadow-amber-600/30 transition hover:-translate-y-0.5 hover:bg-amber-700 hover:shadow-lg md:w-auto md:px-6 md:text-base"
+                            @click="
+                                rejectedOffices.length === 1
+                                    ? openMarkAsCompliedModal(
+                                          rejectedOffices[0].approvalId,
+                                          rejectedOffices[0].name,
+                                      )
+                                    : openSubmitRequestModal()
+                            "
                         >
-                            Submit New Clearance Request
-                        </h2>
+                            {{
+                                rejectedOffices.length === 1
+                                    ? 'Mark as Complied →'
+                                    : `Review Rejected Items (${rejectedOffices.length}) →`
+                            }}
+                        </button>
 
-                        <p
-                            class="text-xs font-medium text-slate-500 md:text-sm"
+                        <button
+                            v-else
+                            type="button"
+                            disabled
+                            class="w-full cursor-not-allowed rounded-2xl bg-slate-400 px-5 py-3 text-sm font-black text-white shadow-none md:w-auto md:px-6 md:text-base"
                         >
-                            Need to request clearance from all required offices?
-                        </p>
+                            All Offices Requested
+                        </button>
                     </div>
                 </div>
 
-                <button
-                    type="button"
-                    class="w-full rounded-2xl px-5 py-3 text-sm font-black text-white shadow-md transition hover:-translate-y-0.5 hover:shadow-lg disabled:translate-y-0 disabled:shadow-none md:w-auto md:px-6 md:text-base"
-                    :class="
-                        requestableOffices.length === 0
-                            ? 'cursor-not-allowed bg-slate-400'
-                            : [
-                                  courseTheme.primaryButtonClass,
-                                  courseTheme.primaryButtonHoverClass,
-                              ]
-                    "
-                    :disabled="requestableOffices.length === 0"
-                    @click="openSubmitRequestModal"
+                <!-- Rejected requirements list inside Clearance Request section -->
+                <div
+                    v-if="hasRejectedOffices"
+                    class="mt-2 space-y-3 border-t border-amber-200/80 pt-3"
                 >
-                    {{
-                        !clearanceRequest
-                            ? 'Submit Clearance Request →'
-                            : requestableOffices.length > 0
-                              ? 'Request More Offices →'
-                              : 'All Offices Requested'
-                    }}
-                </button>
+                    <div
+                        class="flex items-center justify-between text-xs font-bold tracking-wider text-amber-950"
+                    >
+                        <span class="uppercase">
+                            Requirements Awaiting Compliance
+                        </span>
+                        <span
+                            class="rounded-full bg-amber-200 px-2 py-0.5 text-[0.7rem] font-black text-amber-900"
+                        >
+                            {{ rejectedOffices.length }} item{{
+                                rejectedOffices.length > 1 ? 's' : ''
+                            }}
+                        </span>
+                    </div>
+
+                    <div
+                        v-for="office in rejectedOffices"
+                        :key="'request-sec-' + office.id"
+                        class="flex flex-col gap-3 rounded-2xl border border-amber-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between"
+                    >
+                        <div class="min-w-0 flex-1">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span
+                                    class="text-sm font-black text-slate-900 md:text-base"
+                                >
+                                    {{ office.name }}
+                                </span>
+
+                                <span
+                                    v-if="office.is_final_approver"
+                                    class="rounded-full bg-purple-100 px-2.5 py-0.5 text-[0.65rem] font-black text-purple-700 uppercase"
+                                >
+                                    College President
+                                </span>
+
+                                <span
+                                    class="rounded-full bg-red-100 px-2.5 py-0.5 text-[0.65rem] font-black text-red-700 uppercase"
+                                >
+                                    Rejected
+                                </span>
+                            </div>
+
+                            <div
+                                v-if="office.remarks"
+                                class="mt-2 flex items-start gap-2 rounded-xl border border-red-200 bg-red-50/80 px-3 py-2 text-xs text-red-700"
+                            >
+                                <span class="shrink-0 font-black">
+                                    Office Remarks:
+                                </span>
+                                <span class="font-medium break-words">
+                                    {{ office.remarks }}
+                                </span>
+                            </div>
+
+                            <p
+                                v-else
+                                class="mt-1 text-xs text-slate-400 italic"
+                            >
+                                No remarks provided.
+                            </p>
+                        </div>
+
+                        <div class="shrink-0">
+                            <button
+                                type="button"
+                                class="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-orange-600 px-4 py-2.5 text-xs font-black text-white shadow-sm shadow-orange-600/30 transition hover:-translate-y-0.5 hover:bg-orange-700 hover:shadow-md sm:w-auto"
+                                @click="
+                                    openMarkAsCompliedModal(
+                                        office.approvalId,
+                                        office.name,
+                                    )
+                                "
+                            >
+                                <CheckCircle2 class="size-4" />
+                                Mark as Complied
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </section>
 
             <!-- Submit Clearance Request Office Selection Modal -->
@@ -1185,7 +1337,90 @@ const submitClearanceRequest = () => {
                     <div
                         class="flex-1 space-y-3 overflow-y-auto px-4 py-4 sm:px-6"
                     >
+                        <!-- Rejected Offices Awaiting Compliance in Modal -->
                         <div
+                            v-if="hasRejectedOffices"
+                            class="space-y-2.5 rounded-xl border border-amber-200 bg-amber-50/90 p-3.5 sm:p-4"
+                        >
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <AlertTriangle
+                                        class="size-4 text-amber-600"
+                                    />
+                                    <h3
+                                        class="text-xs font-black text-amber-950 sm:text-sm"
+                                    >
+                                        Rejected Requirements (Action Needed)
+                                    </h3>
+                                </div>
+                                <span
+                                    class="rounded-full bg-amber-200 px-2 py-0.5 text-[0.65rem] font-black text-amber-900"
+                                >
+                                    {{ rejectedOffices.length }} requirement{{
+                                        rejectedOffices.length > 1 ? 's' : ''
+                                    }}
+                                </span>
+                            </div>
+
+                            <p class="text-xs leading-snug text-amber-800">
+                                The offices below rejected your clearance
+                                request. Once you have addressed their remarks,
+                                click
+                                <span class="font-bold">Mark as Complied</span>
+                                to resubmit your clearance.
+                            </p>
+
+                            <div class="space-y-2 pt-1">
+                                <div
+                                    v-for="office in rejectedOffices"
+                                    :key="'modal-rej-' + office.id"
+                                    class="flex flex-col gap-2 rounded-xl border border-amber-200 bg-white p-3 sm:flex-row sm:items-center sm:justify-between"
+                                >
+                                    <div class="min-w-0 flex-1">
+                                        <div class="flex items-center gap-2">
+                                            <p
+                                                class="text-xs font-black text-slate-900 sm:text-sm"
+                                            >
+                                                {{ office.name }}
+                                            </p>
+                                            <span
+                                                v-if="office.is_final_approver"
+                                                class="rounded-full bg-purple-100 px-2 py-0.5 text-[0.6rem] font-black text-purple-700 uppercase"
+                                            >
+                                                College President
+                                            </span>
+                                        </div>
+                                        <div
+                                            v-if="office.remarks"
+                                            class="mt-1 rounded-lg bg-red-50 px-2.5 py-1.5 text-[0.7rem] text-red-700"
+                                        >
+                                            <span class="font-bold"
+                                                >Remarks:
+                                            </span>
+                                            <span>{{ office.remarks }}</span>
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        type="button"
+                                        class="inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-orange-600 px-3 py-1.5 text-xs font-black text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-orange-700"
+                                        @click="
+                                            closeSubmitRequestModal();
+                                            openMarkAsCompliedModal(
+                                                office.approvalId,
+                                                office.name,
+                                            );
+                                        "
+                                    >
+                                        <CheckCircle2 class="size-3.5" />
+                                        Mark as Complied
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div
+                            v-if="requestableOffices.length > 0"
                             class="rounded-xl border p-3 text-sm leading-snug"
                             :class="courseTheme.statusBoxClass"
                         >
@@ -1194,6 +1429,13 @@ const submitClearanceRequest = () => {
                             <span class="font-semibold">Pending</span>.
                             Unselected offices will stay as
                             <span class="font-semibold">Not Requested</span>.
+                        </div>
+
+                        <div
+                            v-else-if="!hasRejectedOffices"
+                            class="rounded-xl border border-slate-200 bg-slate-50 p-4 text-center text-sm font-medium text-slate-500"
+                        >
+                            All required offices have already been requested.
                         </div>
 
                         <div class="grid gap-3 sm:grid-cols-2">
@@ -1537,20 +1779,14 @@ const submitClearanceRequest = () => {
                                                 v-if="
                                                     office.status === 'rejected'
                                                 "
-                                                class="mt-3"
+                                                class="mt-2"
                                             >
-                                                <button
-                                                    type="button"
-                                                    class="inline-flex items-center rounded-lg bg-orange-100 px-3 py-1.5 text-[0.7rem] font-black tracking-wider text-orange-700 uppercase shadow-sm transition hover:bg-orange-200"
-                                                    @click="
-                                                        openMarkAsCompliedModal(
-                                                            office.approvalId,
-                                                            office.name,
-                                                        )
-                                                    "
+                                                <p
+                                                    class="text-[0.7rem] font-bold text-amber-700"
                                                 >
-                                                    Mark as Complied
-                                                </button>
+                                                    Comply in Clearance Request
+                                                    section
+                                                </p>
                                             </div>
                                         </div>
 

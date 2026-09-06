@@ -208,3 +208,22 @@ test('president dashboard returns pending, approved, and rejected requests', fun
         ->where('readyCount', 1)
     );
 });
+
+test('president can mark rejected clearance request as complied', function () {
+    $president = User::factory()->create(['role' => 'president']);
+    $presidentOffice = Office::factory()->create(['is_final_approver' => true]);
+
+    $student = User::factory()->create(['role' => 'student']);
+    $rejectedRequest = ClearanceRequest::factory()->create(['status' => 'pending', 'user_id' => $student->id]);
+    $presidentApproval = ClearanceApproval::factory()->create([
+        'clearance_request_id' => $rejectedRequest->id,
+        'office_id' => $presidentOffice->id,
+        'status' => 'rejected',
+        'remarks' => 'Institutional obligation pending',
+    ]);
+
+    $response = $this->actingAs($president)->patch(route('president.final-approvals.mark-as-complied', $rejectedRequest));
+
+    $response->assertRedirect()->assertSessionHas('success');
+    expect($presidentApproval->fresh()->status)->toBe('pending');
+});

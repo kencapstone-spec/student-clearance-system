@@ -113,6 +113,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::patch('staff/clearance-approvals/{approval}/reject', [PendingRequestController::class, 'reject'])
             ->name('staff.clearance-approvals.reject');
+
+        Route::patch('staff/clearance-approvals/{approval}/mark-as-complied', [PendingRequestController::class, 'markAsComplied'])
+            ->name('staff.clearance-approvals.mark-as-complied');
     });
 
     Route::middleware(['role:admin'])->group(function () {
@@ -179,6 +182,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('/president/final-approvals/{clearanceRequest}/reject', [FinalApprovalController::class, 'reject'])
             ->name('president.final-approvals.reject');
 
+        Route::patch('/president/final-approvals/{clearanceRequest}/mark-as-complied', [FinalApprovalController::class, 'markAsComplied'])
+            ->name('president.final-approvals.mark-as-complied');
+
         Route::patch('/president/final-approvals/approve-all', [FinalApprovalController::class, 'approveAll'])
             ->name('president.final-approvals.approve-all');
     });
@@ -198,9 +204,6 @@ Route::get('/cron/approve-all/{secret?}', function (Request $request, $secret = 
     }
 
     $params = [];
-    if ($request->has('final')) {
-        $params['--final'] = true;
-    }
     if ($request->filled('student_id')) {
         $params['student_id'] = $request->query('student_id');
     }

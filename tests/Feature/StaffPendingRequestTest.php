@@ -74,3 +74,21 @@ test('staff can approve all pending requests', function () {
     expect($approval1->fresh()->status)->toBe('approved')
         ->and($approval2->fresh()->status)->toBe('approved');
 });
+
+test('staff can mark rejected clearance as complied', function () {
+    $office = Office::factory()->create();
+    $staff = User::factory()->create(['role' => 'staff', 'office_id' => $office->id]);
+    $student = User::factory()->create(['role' => 'student']);
+    $clearanceRequest = ClearanceRequest::factory()->create(['user_id' => $student->id]);
+    $approval = ClearanceApproval::factory()->create([
+        'clearance_request_id' => $clearanceRequest->id,
+        'office_id' => $office->id,
+        'status' => 'rejected',
+        'remarks' => 'Incomplete documents',
+    ]);
+
+    $response = $this->actingAs($staff)->patch(route('staff.clearance-approvals.mark-as-complied', $approval));
+
+    $response->assertRedirect()->assertSessionHas('success');
+    expect($approval->fresh()->status)->toBe('pending');
+});

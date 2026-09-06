@@ -22,7 +22,7 @@ onMounted(() => {
     pollingInterval = setInterval(() => {
         router.reload({
             data: { _t: Date.now() },
-            only: ['clearanceRequests'],
+            only: ['clearanceRequests', 'readyCount', 'notifications'],
         });
     }, 5000);
 });
@@ -425,6 +425,26 @@ const confirmAutoApproveAll = () => {
             onError: () => {
                 errorMessage.value =
                     'Unable to auto approve ready requests. Please try again.';
+            },
+        },
+    );
+};
+
+const markAsComplied = (clearanceRequestId: number) => {
+    clearMessages();
+
+    router.patch(
+        `/president/final-approvals/${clearanceRequestId}/mark-as-complied`,
+        {},
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                successMessage.value =
+                    'Clearance marked as complied and returned to final approvals queue.';
+            },
+            onError: () => {
+                errorMessage.value =
+                    'Unable to mark as complied. Please try again.';
             },
         },
     );
@@ -1143,7 +1163,10 @@ const confirmAutoApproveAll = () => {
                                 </button>
                             </div>
 
-                            <div v-else class="mt-4">
+                            <div
+                                v-else
+                                class="mt-4 flex items-center justify-between gap-2"
+                            >
                                 <span
                                     class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-black"
                                     :class="
@@ -1166,6 +1189,18 @@ const confirmAutoApproveAll = () => {
                                             : 'Rejected'
                                     }}
                                 </span>
+
+                                <button
+                                    v-if="
+                                        getRequestStatus(request) === 'rejected'
+                                    "
+                                    type="button"
+                                    class="inline-flex cursor-pointer items-center gap-1.5 rounded-xl bg-orange-100 px-3 py-1 text-xs font-black text-orange-700 transition hover:bg-orange-200"
+                                    @click="markAsComplied(request.id)"
+                                >
+                                    <CheckCircle2 class="size-3.5" />
+                                    Mark as Complied
+                                </button>
                             </div>
                         </article>
                     </div>
@@ -1385,32 +1420,59 @@ const confirmAutoApproveAll = () => {
                                             </button>
                                         </div>
 
-                                        <span
+                                        <div
                                             v-else
-                                            class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-black"
-                                            :class="
-                                                getRequestStatus(request) ===
-                                                'approved'
-                                                    ? 'bg-slate-100 text-slate-500'
-                                                    : 'bg-red-100 text-red-700'
-                                            "
+                                            class="flex items-center justify-end gap-2"
                                         >
-                                            <CheckCircle2
-                                                v-if="
+                                            <span
+                                                class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-black"
+                                                :class="
                                                     getRequestStatus(
                                                         request,
                                                     ) === 'approved'
+                                                        ? 'bg-slate-100 text-slate-500'
+                                                        : 'bg-red-100 text-red-700'
                                                 "
-                                                class="size-3.5"
-                                            />
-                                            <XCircle v-else class="size-3.5" />
-                                            {{
-                                                getRequestStatus(request) ===
-                                                'approved'
-                                                    ? 'Completed'
-                                                    : 'Rejected'
-                                            }}
-                                        </span>
+                                            >
+                                                <CheckCircle2
+                                                    v-if="
+                                                        getRequestStatus(
+                                                            request,
+                                                        ) === 'approved'
+                                                    "
+                                                    class="size-3.5"
+                                                />
+                                                <XCircle
+                                                    v-else
+                                                    class="size-3.5"
+                                                />
+                                                {{
+                                                    getRequestStatus(
+                                                        request,
+                                                    ) === 'approved'
+                                                        ? 'Completed'
+                                                        : 'Rejected'
+                                                }}
+                                            </span>
+
+                                            <button
+                                                v-if="
+                                                    getRequestStatus(
+                                                        request,
+                                                    ) === 'rejected'
+                                                "
+                                                type="button"
+                                                class="inline-flex cursor-pointer items-center gap-1.5 rounded-xl bg-orange-100 px-3 py-1.5 text-xs font-black text-orange-700 transition hover:bg-orange-200"
+                                                @click="
+                                                    markAsComplied(request.id)
+                                                "
+                                            >
+                                                <CheckCircle2
+                                                    class="size-3.5"
+                                                />
+                                                Mark as Complied
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             </tbody>

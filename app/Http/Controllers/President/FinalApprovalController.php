@@ -90,6 +90,42 @@ class FinalApprovalController extends Controller
     }
 
     /**
+     * Mark a rejected final clearance request as complied.
+     */
+    public function markAsComplied(Request $request, ClearanceRequest $clearanceRequest)
+    {
+        $clearanceRequest->loadMissing([
+            'user',
+            'approvals.office',
+        ]);
+
+        $presidentApproval = $clearanceRequest->approvals->first(function ($approval) {
+            return $approval->office?->is_final_approver;
+        });
+
+        if (! $presidentApproval || $presidentApproval->status !== 'rejected') {
+            return back()->with('error', 'Only rejected final clearance requests can be marked as complied.');
+        }
+
+        $presidentApproval->update([
+            'status' => 'pending',
+            'approved_by' => null,
+            'acted_at' => null,
+        ]);
+
+        if ($clearanceRequest->user) {
+            NotificationService::send(
+                user: $clearanceRequest->user,
+                title: 'Clearance marked as complied',
+                message: 'Your clearance request was marked as complied by the College President.',
+                link: '/dashboard'
+            );
+        }
+
+        return back()->with('success', 'Clearance marked as complied and returned to final approvals queue.');
+    }
+
+    /**
      * Auto approve all clearance requests that are ready for final approval.
      */
     public function approveAll(Request $request)
