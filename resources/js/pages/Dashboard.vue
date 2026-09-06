@@ -198,6 +198,78 @@ const progressPercentage = computed(() => {
     return Math.round((approvedCount.value / props.offices.length) * 100);
 });
 
+const calculateOfficePrerequisiteDepths = <T extends Office>(
+    offices: T[],
+): Map<number, number> => {
+    const map = new Map<number, Office>();
+    props.offices.forEach((o) => map.set(o.id, o));
+    offices.forEach((o) => map.set(o.id, o));
+
+    const depths = new Map<number, number>();
+    const visiting = new Set<number>();
+
+    const getDepth = (id: number): number => {
+        if (depths.has(id)) {
+            return depths.get(id)!;
+        }
+
+        if (visiting.has(id)) {
+            return 0;
+        }
+
+        const office = map.get(id);
+        if (!office) {
+            return 0;
+        }
+
+        if (office.is_final_approver) {
+            depths.set(id, 99999);
+            return 99999;
+        }
+
+        if (!office.prerequisites || office.prerequisites.length === 0) {
+            depths.set(id, 0);
+            return 0;
+        }
+
+        visiting.add(id);
+        let maxPrereqDepth = 0;
+        for (const prereq of office.prerequisites) {
+            const d = getDepth(prereq.id);
+            if (d > maxPrereqDepth) {
+                maxPrereqDepth = d;
+            }
+        }
+        visiting.delete(id);
+
+        const depth = maxPrereqDepth + 1;
+        depths.set(id, depth);
+        return depth;
+    };
+
+    offices.forEach((o) => getDepth(o.id));
+    return depths;
+};
+
+const sortOfficesByPrerequisites = <T extends Office>(offices: T[]): T[] => {
+    const depths = calculateOfficePrerequisiteDepths(offices);
+
+    return [...offices].sort((a, b) => {
+        const depthA = depths.get(a.id) ?? 0;
+        const depthB = depths.get(b.id) ?? 0;
+
+        if (depthA !== depthB) {
+            return depthA - depthB;
+        }
+
+        if (a.sort_order !== b.sort_order) {
+            return a.sort_order - b.sort_order;
+        }
+
+        return a.name.localeCompare(b.name);
+    });
+};
+
 const officeStatuses = computed(() => {
     const statuses = props.offices.map((office) => {
         const approval = approvals.value.find(
@@ -212,7 +284,7 @@ const officeStatuses = computed(() => {
         };
     });
 
-    return statuses;
+    return sortOfficesByPrerequisites(statuses);
 });
 
 const progressMessage = computed(() => {
@@ -329,17 +401,7 @@ const requestableOffices = computed(() => {
         });
     }
 
-    return [...offices].sort((a, b) => {
-        const aCount = a.prerequisites?.length || 0;
-        const bCount = b.prerequisites?.length || 0;
-
-        if (aCount !== bCount) {
-            return aCount - bCount;
-        }
-
-        // Fallback to sort_order if they have the same number of prerequisites
-        return a.sort_order - b.sort_order;
-    });
+    return sortOfficesByPrerequisites(offices);
 });
 
 const isOfficeRequestable = (office: Office) => {

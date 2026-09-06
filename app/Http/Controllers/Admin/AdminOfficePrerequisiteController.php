@@ -13,12 +13,9 @@ class AdminOfficePrerequisiteController extends Controller
     {
         $offices = Office::with('prerequisites')
             ->where('is_final_approver', false)
-            ->orderBy('sort_order', 'asc')
-            ->get()
-            ->sortBy(function ($office) {
-                return $office->prerequisites->count();
-            })
-            ->values();
+            ->get();
+
+        $offices = Office::sortByPrerequisites($offices);
 
         return Inertia::render('Admin/OfficePrerequisites/Index', [
             'offices' => $offices,

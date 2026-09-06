@@ -126,4 +126,37 @@ class ClearancePrerequisitesTest extends TestCase
             'status' => 'pending',
         ]);
     }
+
+    public function test_offices_are_sorted_according_to_prerequisites_on_student_dashboard(): void
+    {
+        $officeA = Office::factory()->create(['name' => 'Independent Office A', 'sort_order' => 10]);
+        $officeB = Office::factory()->create(['name' => 'Independent Office B', 'sort_order' => 5]);
+        $officeC = Office::factory()->create(['name' => 'Dependent Office C', 'sort_order' => 1]); // lower sort_order but depends on B
+        $officeD = Office::factory()->create(['name' => 'Sub-dependent Office D', 'sort_order' => 2]); // depends on C
+        $president = Office::factory()->create(['name' => 'Office of the College President', 'is_final_approver' => true, 'sort_order' => 99]);
+
+        $officeC->prerequisites()->attach($officeB->id);
+        $officeD->prerequisites()->attach($officeC->id);
+
+        $course = $this->student->course;
+        $course->offices()->sync([$officeA->id, $officeB->id, $officeC->id, $officeD->id]);
+        $this->student->unsetRelation('course');
+
+        $response = $this->actingAs($this->student)->get(route('dashboard'));
+        $response->assertOk();
+
+        $offices = $response->viewData('page')['props']['offices'];
+        $officeIds = collect($offices)->pluck('id')->values()->all();
+
+        // Independent offices (B and A) should come before dependent C, which comes before sub-dependent D, and President is last
+        $indexOfA = array_search($officeA->id, $officeIds);
+        $indexOfB = array_search($officeB->id, $officeIds);
+        $indexOfC = array_search($officeC->id, $officeIds);
+        $indexOfD = array_search($officeD->id, $officeIds);
+        $indexOfPres = array_search($president->id, $officeIds);
+
+        $this->assertLessThan($indexOfC, $indexOfB, 'Office B (prereq of C) must come before Office C');
+        $this->assertLessThan($indexOfD, $indexOfC, 'Office C (prereq of D) must come before Office D');
+        $this->assertLessThan($indexOfPres, $indexOfD, 'Office D must come before President');
+    }
 }

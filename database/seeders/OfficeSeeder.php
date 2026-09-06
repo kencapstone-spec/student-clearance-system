@@ -50,19 +50,19 @@ class OfficeSeeder extends Seeder
                 'is_final_approver' => false,
             ],
             [
-                'name' => 'Registrar',
+                'name' => 'PE/Sports',
                 'group' => 'Student Services',
                 'sort_order' => 7,
                 'is_final_approver' => false,
             ],
             [
-                'name' => 'PE/Sports',
+                'name' => 'Canteen',
                 'group' => 'Student Services',
                 'sort_order' => 8,
                 'is_final_approver' => false,
             ],
             [
-                'name' => 'Canteen',
+                'name' => 'Registrar',
                 'group' => 'Student Services',
                 'sort_order' => 9,
                 'is_final_approver' => false,

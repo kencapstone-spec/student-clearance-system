@@ -31,7 +31,7 @@ Route::get('/verify-clearance/{verificationCode}', [ClearanceVerificationControl
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function (Request $request) {
-        $user = $request->user()->load('course.offices.prerequisites:id,name');
+        $user = $request->user()->load('course.offices.prerequisites');
 
         if ($user->role === 'admin') {
             return redirect()->route('admin.dashboard');
@@ -49,18 +49,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         $regularOffices = $courseOffices
             ->where('is_final_approver', false)
-            ->sortBy('sort_order')
             ->values();
 
         $finalApproverOffices = Office::query()
-            ->with('prerequisites:id,name')
+            ->with('prerequisites')
             ->where('is_final_approver', true)
             ->orderBy('sort_order')
             ->get(['id', 'name', 'group', 'sort_order', 'is_final_approver']);
 
-        $offices = $regularOffices
-            ->merge($finalApproverOffices)
-            ->values();
+        $offices = Office::sortByPrerequisites(
+            $regularOffices->merge($finalApproverOffices)
+        );
 
         $semester = AppSetting::get('active_semester', '1st Semester');
         $schoolYear = AppSetting::get('active_school_year', '2026-2027');
