@@ -26,13 +26,12 @@ RUN composer install --no-dev --prefer-dist -o
 # 2. Install Node dependencies, build Vite assets, and prune node_modules
 RUN npm ci && npm run build && rm -rf node_modules
 
-# Ensure proper ownership for runtime user
+# Ensure proper ownership for application files
 RUN chown -R 9999:9999 /var/www/html
 
-# Switch to non-root application user for container execution
-USER 9999
-
 # ServerSideUp production environment configuration
+# Note: Do NOT set USER 9999 here; ServerSideUp's entrypoint script requires
+# initial root to generate /etc/nginx/nginx.conf then automatically drops privileges to 9999.
 ENV PHP_OPCACHE_ENABLE=1 \
     AUTORUN_ENABLED=true \
     AUTORUN_LARAVEL_MIGRATION=true \
