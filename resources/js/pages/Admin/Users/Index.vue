@@ -65,8 +65,26 @@ const successMessage = ref('');
 const errorMessage = ref('');
 const userSearchQuery = ref('');
 const activeRoleFilter = ref<RoleFilter>('all');
+const selectedCourse = ref('all');
 const selectedYearLevel = ref('all');
 const availableYearLevels = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
+
+const availableCourses = computed(() => {
+    if (props.courses && props.courses.length > 0) {
+        return props.courses;
+    }
+
+    const courseMap = new Map<string, Course>();
+    props.users.forEach((user) => {
+        if (user.course?.code) {
+            courseMap.set(user.course.code, user.course);
+        }
+    });
+
+    return Array.from(courseMap.values()).sort((a, b) =>
+        a.code.localeCompare(b.code)
+    );
+});
 
 const formatUserName = (user?: User | null) => {
     if (!user) {
@@ -164,9 +182,19 @@ const filteredUsers = computed(() => {
             activeRoleFilter.value === 'all' ||
             user.role === activeRoleFilter.value;
 
+        const matchesCourse =
+            activeRoleFilter.value !== 'all' &&
+            activeRoleFilter.value !== 'student'
+                ? true
+                : selectedCourse.value === 'all' ||
+                  user.course?.code === selectedCourse.value;
+
         const matchesYearLevel =
-            selectedYearLevel.value === 'all' ||
-            user.year_level === selectedYearLevel.value;
+            activeRoleFilter.value !== 'all' &&
+            activeRoleFilter.value !== 'student'
+                ? true
+                : selectedYearLevel.value === 'all' ||
+                  user.year_level === selectedYearLevel.value;
 
         const matchesSearch =
             searchValue === '' ||
@@ -182,7 +210,7 @@ const filteredUsers = computed(() => {
             officeName.toLowerCase().includes(searchValue) ||
             activeStatus.includes(searchValue);
 
-        return matchesRole && matchesYearLevel && matchesSearch;
+        return matchesRole && matchesCourse && matchesYearLevel && matchesSearch;
     });
 });
 
@@ -204,10 +232,15 @@ const presidentCount = computed(() => {
 
 const setRoleFilter = (role: RoleFilter) => {
     activeRoleFilter.value = role;
+    if (role !== 'all' && role !== 'student') {
+        selectedCourse.value = 'all';
+        selectedYearLevel.value = 'all';
+    }
 };
 
 const clearUserFilters = () => {
     activeRoleFilter.value = 'all';
+    selectedCourse.value = 'all';
     selectedYearLevel.value = 'all';
     userSearchQuery.value = '';
 };
@@ -714,10 +747,29 @@ const roleFilterButtonClass = (role: RoleFilter) => {
                                 <input
                                     v-model="userSearchQuery"
                                     type="text"
-                                    class="min-h-11 w-full rounded-2xl border border-slate-200 bg-white py-3 pr-4 pl-10 text-sm font-medium text-slate-900 shadow-sm outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 sm:w-80"
+                                    class="min-h-11 w-full rounded-2xl border border-slate-200 bg-white py-3 pr-4 pl-10 text-sm font-medium text-slate-900 shadow-sm outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 sm:w-64"
                                     placeholder="Search name, ID, role, course, office, or status"
                                 />
                             </div>
+
+                            <select
+                                v-if="
+                                    activeRoleFilter === 'all' ||
+                                    activeRoleFilter === 'student'
+                                "
+                                v-model="selectedCourse"
+                                class="min-h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-black text-slate-700 shadow-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 sm:w-auto"
+                            >
+                                <option value="all">All Courses</option>
+                                <option
+                                    v-for="course in availableCourses"
+                                    :key="course.id"
+                                    :value="course.code"
+                                    :title="course.name"
+                                >
+                                    {{ course.code }}
+                                </option>
+                            </select>
 
                             <select
                                 v-if="
@@ -764,7 +816,7 @@ const roleFilterButtonClass = (role: RoleFilter) => {
                     </p>
 
                     <p class="mt-1 text-sm font-medium text-slate-500">
-                        Try changing the search text or role filter.
+                        Try changing the search text, role, course, or year level filter.
                     </p>
                 </div>
 
