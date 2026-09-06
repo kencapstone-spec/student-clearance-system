@@ -566,7 +566,7 @@ const roleFilterButtonClass = (role: RoleFilter) => {
                             <p
                                 class="text-[0.65rem] leading-tight font-black tracking-wide text-green-700 uppercase sm:text-sm"
                             >
-                                Staff
+                                Staffs
                             </p>
 
                             <p
@@ -592,7 +592,7 @@ const roleFilterButtonClass = (role: RoleFilter) => {
                             <p
                                 class="text-[0.65rem] leading-tight font-black tracking-wide text-purple-700 uppercase sm:text-sm"
                             >
-                                Admins
+                                Admin
                             </p>
 
                             <p
@@ -618,7 +618,7 @@ const roleFilterButtonClass = (role: RoleFilter) => {
                             <p
                                 class="text-[0.65rem] leading-tight font-black tracking-wide text-orange-700 uppercase sm:text-sm"
                             >
-                                Presidents
+                                President
                             </p>
 
                             <p
@@ -683,7 +683,7 @@ const roleFilterButtonClass = (role: RoleFilter) => {
                                 :class="roleFilterButtonClass('staff')"
                                 @click="setRoleFilter('staff')"
                             >
-                                Staff
+                                Staffs
                             </button>
 
                             <button

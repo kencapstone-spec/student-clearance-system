@@ -473,7 +473,7 @@ onUnmounted(() => {
                         </h3>
 
                         <p class="mt-2 text-sm leading-6 text-slate-600">
-                            Students, office staff, admins, and the president
+                            Students, office staffs, admin, and the president
                             each access only the tools needed for their role.
                         </p>
                     </div>
