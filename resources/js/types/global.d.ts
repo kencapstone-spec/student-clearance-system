@@ -1,3 +1,4 @@
+import '@inertiajs/core';
 import type {
     createHeadManager,
     Page,
@@ -20,14 +21,14 @@ declare module 'vite/client' {
 }
 
 declare module '@inertiajs/core' {
-    // Augment PageProps so $page.props.auth is typed in Vue templates
     interface PageProps {
         auth: Auth;
         name: string;
         sidebarOpen: boolean;
+        [key: string]: unknown;
     }
 
-    export interface InertiaConfig {
+    interface InertiaConfig {
         sharedPageProps: {
             name: string;
             auth: Auth;
@@ -35,6 +36,15 @@ declare module '@inertiajs/core' {
             [key: string]: unknown;
         };
     }
+}
+
+declare module '@inertiajs/vue3' {
+    export function usePage<T extends PageProps = PageProps>(): Page<T & {
+        auth: Auth;
+        name: string;
+        sidebarOpen: boolean;
+        [key: string]: unknown;
+    }>;
 }
 
 declare module 'vue' {
