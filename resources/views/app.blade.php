@@ -4,6 +4,17 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
+        {{-- Suppress external extension / DevTools performance observer error --}}
+        <script>
+            window.addEventListener('error', function(e) {
+                if (e.message && (e.message.indexOf('startTime') !== -1 || e.message.indexOf('reportAllChanges') !== -1)) {
+                    e.stopImmediatePropagation();
+                    e.preventDefault();
+                    return true;
+                }
+            }, true);
+        </script>
+
         {{-- Inline script to detect system dark mode preference and apply it immediately --}}
         <script>
             (function() {
