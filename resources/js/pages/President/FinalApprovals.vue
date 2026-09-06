@@ -435,7 +435,7 @@ const confirmAutoApproveAll = () => {
     <Head title="President Final Approvals" />
 
     <div
-        class="min-h-screen bg-linear-to-br from-slate-50 via-white to-blue-50/40 p-3 pb-28 text-slate-900 sm:p-4 sm:pb-28 md:p-6 md:pb-6"
+        class="min-h-screen bg-linear-to-br from-slate-50 via-white to-blue-50/40 p-4 pb-12 text-slate-900 sm:p-6 sm:pb-12 md:p-8 md:pb-8"
     >
         <div class="mx-auto flex max-w-7xl flex-col gap-4 md:gap-6">
             <!-- Hero -->
@@ -450,7 +450,7 @@ const confirmAutoApproveAll = () => {
                             class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-3 py-2 text-[0.65rem] font-black tracking-[0.14em] text-blue-700 uppercase sm:px-4 sm:text-xs sm:tracking-[0.18em]"
                         >
                             <ShieldCheck class="size-4" />
-                            President / Final Approver Panel
+                            College President • Final Clearance Authority
                         </div>
 
                         <div
@@ -536,38 +536,46 @@ const confirmAutoApproveAll = () => {
             <section
                 class="grid grid-cols-2 gap-3 sm:gap-4 md:gap-5 lg:grid-cols-4"
             >
+                <!-- Card 1: Total Requests -->
                 <div
-                    class="col-span-2 rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl sm:col-span-1 md:rounded-3xl md:p-6"
+                    class="cursor-pointer rounded-2xl border bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-3xl md:p-6"
+                    :class="
+                        activeFilter === 'all'
+                            ? 'border-blue-500 ring-2 ring-blue-500/30'
+                            : 'border-slate-200'
+                    "
+                    @click="setFilter('all')"
                 >
                     <div class="flex items-center gap-3 md:gap-4">
                         <div
                             class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-blue-50 text-blue-700 shadow-sm md:h-14 md:w-14"
                         >
-                            <ShieldCheck class="size-6 md:size-7" />
+                            <Inbox class="size-6 md:size-7" />
                         </div>
 
-                        <div class="min-w-0">
+                        <div>
                             <p
                                 class="text-[0.65rem] leading-tight font-black tracking-wide text-blue-700 uppercase sm:text-sm"
                             >
-                                Office / Role
+                                Total
                             </p>
 
-                            <h2
-                                class="mt-1 truncate text-base font-black text-blue-950 md:text-xl"
+                            <p
+                                class="mt-1 text-2xl font-black text-blue-950 md:text-4xl"
                             >
-                                College President
-                            </h2>
+                                {{ approvalRequests.length }}
+                            </p>
 
                             <p
                                 class="text-xs font-medium text-slate-500 sm:text-sm"
                             >
-                                Final Clearance Approver
+                                All submissions
                             </p>
                         </div>
                     </div>
                 </div>
 
+                <!-- Card 2: Pending -->
                 <div
                     class="cursor-pointer rounded-2xl border bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-3xl md:p-6"
                     :class="
@@ -606,6 +614,7 @@ const confirmAutoApproveAll = () => {
                     </div>
                 </div>
 
+                <!-- Card 3: Approved -->
                 <div
                     class="cursor-pointer rounded-2xl border bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-3xl md:p-6"
                     :class="
@@ -644,8 +653,9 @@ const confirmAutoApproveAll = () => {
                     </div>
                 </div>
 
+                <!-- Card 4: Rejected -->
                 <div
-                    class="col-span-2 cursor-pointer rounded-2xl border bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl sm:col-span-1 md:rounded-3xl md:p-6"
+                    class="cursor-pointer rounded-2xl border bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-3xl md:p-6"
                     :class="
                         activeFilter === 'rejected'
                             ? 'border-red-400 ring-2 ring-red-400/30'
@@ -741,6 +751,7 @@ const confirmAutoApproveAll = () => {
                                     :class="filterButtonClass('pending')"
                                     @click.prevent.stop="setFilter('pending')"
                                 >
+                                    <Clock3 class="size-4" />
                                     Pending
                                     <span
                                         class="ml-1 rounded-full px-2 py-0.5 text-[0.7rem] font-black"
@@ -760,6 +771,7 @@ const confirmAutoApproveAll = () => {
                                     :class="filterButtonClass('approved')"
                                     @click.prevent.stop="setFilter('approved')"
                                 >
+                                    <CheckCircle2 class="size-4" />
                                     Approved
                                     <span
                                         class="ml-1 rounded-full px-2 py-0.5 text-[0.7rem] font-black"
@@ -779,6 +791,7 @@ const confirmAutoApproveAll = () => {
                                     :class="filterButtonClass('rejected')"
                                     @click.prevent.stop="setFilter('rejected')"
                                 >
+                                    <XCircle class="size-4" />
                                     Rejected
                                     <span
                                         class="ml-1 rounded-full px-2 py-0.5 text-[0.7rem] font-black"
@@ -795,7 +808,7 @@ const confirmAutoApproveAll = () => {
 
                             <button
                                 type="button"
-                                class="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl px-4 py-2.5 text-sm font-black text-white shadow-md transition disabled:cursor-not-allowed disabled:opacity-60"
+                                class="inline-flex min-h-11 w-full sm:w-auto items-center justify-center gap-2 rounded-2xl px-4 py-2.5 text-sm font-black text-white shadow-md transition disabled:cursor-not-allowed disabled:opacity-60"
                                 :class="
                                     readyApprovalCount === 0
                                         ? 'bg-slate-400 shadow-slate-400/20'
@@ -1132,13 +1145,21 @@ const confirmAutoApproveAll = () => {
 
                             <div v-else class="mt-4">
                                 <span
-                                    class="inline-flex rounded-full px-3 py-1 text-xs font-black"
+                                    class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-black"
                                     :class="
                                         getRequestStatus(request) === 'approved'
                                             ? 'bg-slate-100 text-slate-500'
                                             : 'bg-red-100 text-red-700'
                                     "
                                 >
+                                    <CheckCircle2
+                                        v-if="
+                                            getRequestStatus(request) ===
+                                            'approved'
+                                        "
+                                        class="size-3.5"
+                                    />
+                                    <XCircle v-else class="size-3.5" />
                                     {{
                                         getRequestStatus(request) === 'approved'
                                             ? 'Completed'
@@ -1366,7 +1387,7 @@ const confirmAutoApproveAll = () => {
 
                                         <span
                                             v-else
-                                            class="inline-flex rounded-full px-3 py-1 text-xs font-black"
+                                            class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-black"
                                             :class="
                                                 getRequestStatus(request) ===
                                                 'approved'
@@ -1374,6 +1395,15 @@ const confirmAutoApproveAll = () => {
                                                     : 'bg-red-100 text-red-700'
                                             "
                                         >
+                                            <CheckCircle2
+                                                v-if="
+                                                    getRequestStatus(
+                                                        request,
+                                                    ) === 'approved'
+                                                "
+                                                class="size-3.5"
+                                            />
+                                            <XCircle v-else class="size-3.5" />
                                             {{
                                                 getRequestStatus(request) ===
                                                 'approved'

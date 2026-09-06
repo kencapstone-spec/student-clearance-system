@@ -443,7 +443,7 @@ const filterButtonClass = (filter: FilterStatus) => {
     <Head title="Staff Clearance Requests" />
 
     <div
-        class="min-h-screen bg-linear-to-br from-slate-50 via-white to-blue-50/40 p-3 pb-28 text-slate-900 sm:p-4 sm:pb-28 md:p-6 md:pb-6"
+        class="min-h-screen bg-linear-to-br from-slate-50 via-white to-blue-50/40 p-4 pb-12 text-slate-900 sm:p-6 sm:pb-12 md:p-8 md:pb-8"
     >
         <div class="mx-auto flex max-w-7xl flex-col gap-4 md:gap-6">
             <!-- Hero -->
@@ -457,8 +457,8 @@ const filterButtonClass = (filter: FilterStatus) => {
                         <div
                             class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-3 py-2 text-[0.65rem] font-black tracking-[0.14em] text-blue-700 uppercase sm:px-4 sm:text-xs sm:tracking-[0.18em]"
                         >
-                            <ShieldCheck class="size-4" />
-                            Staff / Approver Panel
+                            <Building2 class="size-4" />
+                            {{ staff.office?.name ?? 'Assigned Office' }} • Approver Panel
                         </div>
 
                         <h1
@@ -479,9 +479,10 @@ const filterButtonClass = (filter: FilterStatus) => {
                         >
                             <span class="font-black">Logged in as:</span>
                             {{ staff.name }}
-                            <span v-if="staff.office">
-                                - {{ staff.office.name }}
-                            </span>
+                            <br />
+                            <span class="font-black">Role:</span>
+                            Staff Approver for
+                            {{ staff.office?.name ?? 'Assigned Office' }}
                         </div>
 
                         <div class="mt-5 flex flex-wrap gap-3">
@@ -524,7 +525,7 @@ const filterButtonClass = (filter: FilterStatus) => {
                             <p
                                 class="text-center text-sm font-black tracking-[0.18em] text-blue-700 uppercase"
                             >
-                                Office Review
+                                Review Queue
                             </p>
                         </div>
                     </div>
@@ -533,40 +534,48 @@ const filterButtonClass = (filter: FilterStatus) => {
 
             <!-- Summary Cards -->
             <section
-                class="grid grid-cols-2 gap-3 md:grid-cols-2 md:gap-4 xl:grid-cols-4"
+                class="grid grid-cols-2 gap-3 sm:gap-4 md:gap-5 lg:grid-cols-4"
             >
+                <!-- Card 1: Total -->
                 <div
-                    class="col-span-2 rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-3xl md:p-6 xl:col-span-1"
+                    class="cursor-pointer rounded-2xl border bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-3xl md:p-6"
+                    :class="
+                        activeFilter === 'all'
+                            ? 'border-blue-500 ring-2 ring-blue-500/30'
+                            : 'border-slate-200'
+                    "
+                    @click="setFilter('all')"
                 >
                     <div class="flex items-center gap-3 md:gap-4">
                         <div
                             class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-blue-50 text-blue-700 shadow-sm md:h-14 md:w-14"
                         >
-                            <Building2 class="size-6 md:size-7" />
+                            <Inbox class="size-6 md:size-7" />
                         </div>
 
-                        <div class="min-w-0">
+                        <div>
                             <p
                                 class="text-[0.65rem] leading-tight font-black tracking-wide text-blue-700 uppercase sm:text-sm"
                             >
-                                Assigned Office
+                                Total
                             </p>
 
                             <p
-                                class="mt-1 truncate text-xl font-black text-blue-950 md:text-2xl"
+                                class="mt-1 text-2xl font-black text-blue-950 md:text-4xl"
                             >
-                                {{ staff.office?.name ?? 'No Office Assigned' }}
+                                {{ approvals.length }}
                             </p>
 
                             <p
                                 class="text-xs font-medium text-slate-500 sm:text-sm"
                             >
-                                Current responsibility
+                                Office requests
                             </p>
                         </div>
                     </div>
                 </div>
 
+                <!-- Card 2: Pending -->
                 <div
                     class="cursor-pointer rounded-2xl border bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-3xl md:p-6"
                     :class="
@@ -605,6 +614,7 @@ const filterButtonClass = (filter: FilterStatus) => {
                     </div>
                 </div>
 
+                <!-- Card 3: Approved -->
                 <div
                     class="cursor-pointer rounded-2xl border bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-3xl md:p-6"
                     :class="
@@ -643,8 +653,9 @@ const filterButtonClass = (filter: FilterStatus) => {
                     </div>
                 </div>
 
+                <!-- Card 4: Rejected -->
                 <div
-                    class="col-span-2 cursor-pointer rounded-2xl border bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl sm:col-span-1 md:rounded-3xl md:p-6"
+                    class="cursor-pointer rounded-2xl border bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-3xl md:p-6"
                     :class="
                         activeFilter === 'rejected'
                             ? 'border-red-400 ring-2 ring-red-400/30'
@@ -738,6 +749,7 @@ const filterButtonClass = (filter: FilterStatus) => {
                                 :class="filterButtonClass('pending')"
                                 @click.prevent.stop="setFilter('pending')"
                             >
+                                <Clock3 class="size-4" />
                                 Pending
                                 <span
                                     class="ml-1 rounded-full px-2 py-0.5 text-[0.7rem] font-black"
@@ -757,6 +769,7 @@ const filterButtonClass = (filter: FilterStatus) => {
                                 :class="filterButtonClass('approved')"
                                 @click.prevent.stop="setFilter('approved')"
                             >
+                                <CheckCircle2 class="size-4" />
                                 Approved
                                 <span
                                     class="ml-1 rounded-full px-2 py-0.5 text-[0.7rem] font-black"
@@ -776,6 +789,7 @@ const filterButtonClass = (filter: FilterStatus) => {
                                 :class="filterButtonClass('rejected')"
                                 @click.prevent.stop="setFilter('rejected')"
                             >
+                                <XCircle class="size-4" />
                                 Rejected
                                 <span
                                     class="ml-1 rounded-full px-2 py-0.5 text-[0.7rem] font-black"
@@ -1076,9 +1090,23 @@ const filterButtonClass = (filter: FilterStatus) => {
 
                             <div v-else class="mt-4">
                                 <span
-                                    class="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-500"
+                                    class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-black"
+                                    :class="
+                                        approval.status === 'approved'
+                                            ? 'bg-slate-100 text-slate-500'
+                                            : 'bg-red-100 text-red-700'
+                                    "
                                 >
-                                    Completed
+                                    <CheckCircle2
+                                        v-if="approval.status === 'approved'"
+                                        class="size-3.5"
+                                    />
+                                    <XCircle v-else class="size-3.5" />
+                                    {{
+                                        approval.status === 'approved'
+                                            ? 'Completed'
+                                            : 'Rejected'
+                                    }}
                                 </span>
                             </div>
                         </article>
@@ -1271,9 +1299,26 @@ const filterButtonClass = (filter: FilterStatus) => {
 
                                         <span
                                             v-else
-                                            class="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-500"
+                                            class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-black"
+                                            :class="
+                                                approval.status === 'approved'
+                                                    ? 'bg-slate-100 text-slate-500'
+                                                    : 'bg-red-100 text-red-700'
+                                            "
                                         >
-                                            Completed
+                                            <CheckCircle2
+                                                v-if="
+                                                    approval.status ===
+                                                    'approved'
+                                                "
+                                                class="size-3.5"
+                                            />
+                                            <XCircle v-else class="size-3.5" />
+                                            {{
+                                                approval.status === 'approved'
+                                                    ? 'Completed'
+                                                    : 'Rejected'
+                                            }}
                                         </span>
                                     </td>
                                 </tr>
