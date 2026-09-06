@@ -181,9 +181,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 });
 
-// Routes for triggering Cron Jobs via InfinityFree
+// Routes for triggering Cron Jobs via Render (or any HTTP cron service)
 Route::get('/cron/approve-all/{secret}', function ($secret) {
-    if ($secret !== 'my-secret-key-123') {
+    if ($secret !== config('app.cron_secret') || ! config('app.cron_secret')) {
         abort(403, 'Unauthorized action.');
     }
     \Illuminate\Support\Facades\Artisan::call('clearance:approve-all');
@@ -191,7 +191,7 @@ Route::get('/cron/approve-all/{secret}', function ($secret) {
 });
 
 Route::get('/cron/reject-all/{secret}', function ($secret) {
-    if ($secret !== 'my-secret-key-123') {
+    if ($secret !== config('app.cron_secret') || ! config('app.cron_secret')) {
         abort(403, 'Unauthorized action.');
     }
     \Illuminate\Support\Facades\Artisan::call('clearance:reject-all');

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 
 class AppSetting extends Model
 {
@@ -11,26 +12,25 @@ class AppSetting extends Model
     /**
      * Retrieve a setting value by key, with an optional default.
      *
-     * Results are cached for the lifetime of the request so the database
-     * is only hit once per key, even if get() is called in multiple places.
+     * Uses Laravel's Cache facade so that cache can be properly invalidated
+     * (e.g. when an admin updates a setting via AdminSettingController).
      */
     public static function get(string $key, mixed $default = null): mixed
     {
-        static $cache = [];
-
-        if (! array_key_exists($key, $cache)) {
+        return Cache::remember("app_setting_{$key}", 300, function () use ($key, $default) {
             $setting = static::where('key', $key)->first();
-            $cache[$key] = $setting?->value ?? $default;
-        }
 
-        return $cache[$key];
+            return $setting?->value ?? $default;
+        });
     }
 
     /**
-     * Update or insert a setting by key.
+     * Update or insert a setting by key, and invalidate its cache entry.
      */
     public static function set(string $key, mixed $value): void
     {
         static::updateOrCreate(['key' => $key], ['value' => $value]);
+
+        Cache::forget("app_setting_{$key}");
     }
 }

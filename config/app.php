@@ -123,4 +123,16 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Cron Job Secret
+    |--------------------------------------------------------------------------
+    |
+    | This secret key is used to authenticate HTTP-triggered cron job routes.
+    | Set a long, random string in your environment variables.
+    |
+    */
+
+    'cron_secret' => env('CRON_SECRET'),
+
 ];

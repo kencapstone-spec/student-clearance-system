@@ -56,6 +56,7 @@ class AdminUserController extends Controller
             'role' => 'staff',
             'office_id' => $validated['office_id'],
             'course_id' => null,
+            'is_active' => true,
             'password' => Hash::make($validated['password']),
         ]);
 
