@@ -38,7 +38,7 @@ class CreateNewUser implements CreatesNewUsers
             'year_level.required' => 'Please select your year level.',
         ])->validate();
 
-        $fullName = trim($input['first_name'] . ' ' . $input['last_name']);
+        $fullName = trim($input['first_name'].' '.$input['last_name']);
 
         return User::create([
             'student_id' => $input['student_id'],

@@ -26,7 +26,6 @@ class FortifyServiceProvider extends ServiceProvider
         $this->app->singleton(LoginResponseContract::class, LoginResponse::class);
     }
 
-
     /**
      * Bootstrap any application services.
      */

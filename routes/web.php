@@ -17,6 +17,7 @@ use App\Models\AppSetting;
 use App\Models\ClearanceRequest;
 use App\Models\Office;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -186,14 +187,16 @@ Route::get('/cron/approve-all/{secret}', function ($secret) {
     if ($secret !== config('app.cron_secret') || ! config('app.cron_secret')) {
         abort(403, 'Unauthorized action.');
     }
-    \Illuminate\Support\Facades\Artisan::call('clearance:approve-all');
-    return 'Success: ' . \Illuminate\Support\Facades\Artisan::output();
+    Artisan::call('clearance:approve-all');
+
+    return 'Success: '.Artisan::output();
 });
 
 Route::get('/cron/reject-all/{secret}', function ($secret) {
     if ($secret !== config('app.cron_secret') || ! config('app.cron_secret')) {
         abort(403, 'Unauthorized action.');
     }
-    \Illuminate\Support\Facades\Artisan::call('clearance:reject-all');
-    return 'Success: ' . \Illuminate\Support\Facades\Artisan::output();
+    Artisan::call('clearance:reject-all');
+
+    return 'Success: '.Artisan::output();
 });

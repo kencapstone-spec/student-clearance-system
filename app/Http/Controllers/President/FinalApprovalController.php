@@ -27,7 +27,6 @@ class FinalApprovalController extends Controller
         ]);
     }
 
-
     /**
      * Approve one final clearance request.
      */

@@ -18,9 +18,9 @@ test('non-admin cannot access admin dashboard', function () {
     $staff = User::factory()->create(['role' => 'staff']);
     $president = User::factory()->create(['role' => 'president']);
 
-    $this->actingAs($student)->get(route('admin.dashboard'))->assertForbidden();
-    $this->actingAs($staff)->get(route('admin.dashboard'))->assertForbidden();
-    $this->actingAs($president)->get(route('admin.dashboard'))->assertForbidden();
+    $this->actingAs($student)->get(route('admin.dashboard'))->assertRedirect(route('dashboard'));
+    $this->actingAs($staff)->get(route('admin.dashboard'))->assertRedirect(route('staff.pending-requests.index'));
+    $this->actingAs($president)->get(route('admin.dashboard'))->assertRedirect(route('president.final-approvals.index'));
 });
 
 test('admin can view users list', function () {
