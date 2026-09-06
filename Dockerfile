@@ -1,8 +1,8 @@
 FROM serversideup/php:8.3-fpm-nginx
 
-# Switch to root to install Node.js and symlinks in /usr/local/bin
 USER root
 
+# Copy Node.js 22 and npm from official Debian-based Node image
 COPY --from=node:22-bookworm-slim /usr/local/bin/node /usr/local/bin/node
 COPY --from=node:22-bookworm-slim /usr/local/lib/node_modules /usr/local/lib/node_modules
 RUN ln -sf /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm \
@@ -10,23 +10,27 @@ RUN ln -sf /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm \
 
 WORKDIR /var/www/html
 
-# Copy application files with proper ownership
-COPY --chown=9999:9999 . /var/www/html
+# Copy application files
+COPY . /var/www/html
 
 # Provide a temporary .env template for build-time tools (like wayfinder)
-RUN cp -n .env.example .env && chown 9999:9999 .env
+RUN cp -n .env.example .env
 
-# Switch back to non-root application user
-USER 9999
+# Set Composer environment
+ENV COMPOSER_ALLOW_SUPERUSER=1 \
+    COMPOSER_NO_INTERACTION=1
 
-# Configure npm cache in /tmp to prevent any permission issues
-ENV npm_config_cache=/tmp/.npm
-
-# 1. Install production PHP dependencies (generates vendor/autoload.php for wayfinder)
-RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+# 1. Install production PHP dependencies
+RUN composer install --no-dev --prefer-dist -o
 
 # 2. Install Node dependencies, build Vite assets, and prune node_modules
 RUN npm ci && npm run build && rm -rf node_modules
+
+# Ensure proper ownership for runtime user
+RUN chown -R 9999:9999 /var/www/html
+
+# Switch to non-root application user for container execution
+USER 9999
 
 # ServerSideUp production environment configuration
 ENV PHP_OPCACHE_ENABLE=1 \
