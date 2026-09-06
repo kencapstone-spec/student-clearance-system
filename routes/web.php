@@ -185,20 +185,35 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 // Routes for triggering Cron Jobs via Render (or any HTTP cron service)
-Route::get('/cron/approve-all/{secret}', function ($secret) {
+Route::get('/cron/approve-all/{secret}', function (Request $request, $secret) {
     if ($secret !== config('app.cron_secret') || ! config('app.cron_secret')) {
         abort(403, 'Unauthorized action.');
     }
-    Artisan::call('clearance:approve-all');
+
+    $params = [];
+    if ($request->has('final')) {
+        $params['--final'] = true;
+    }
+    if ($request->filled('student_id')) {
+        $params['student_id'] = $request->query('student_id');
+    }
+
+    Artisan::call('clearance:approve-all', $params);
 
     return 'Success: '.Artisan::output();
 });
 
-Route::get('/cron/reject-all/{secret}', function ($secret) {
+Route::get('/cron/reject-all/{secret}', function (Request $request, $secret) {
     if ($secret !== config('app.cron_secret') || ! config('app.cron_secret')) {
         abort(403, 'Unauthorized action.');
     }
-    Artisan::call('clearance:reject-all');
+
+    $params = [];
+    if ($request->filled('student_id')) {
+        $params['student_id'] = $request->query('student_id');
+    }
+
+    Artisan::call('clearance:reject-all', $params);
 
     return 'Success: '.Artisan::output();
 });
