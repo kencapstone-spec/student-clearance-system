@@ -164,3 +164,47 @@ test('non-president cannot reject a final clearance request', function () {
 
     $response->assertRedirect(route('dashboard'));
 });
+
+test('president dashboard returns pending, approved, and rejected requests', function () {
+    $president = User::factory()->create(['role' => 'president']);
+    $regularOffice = Office::factory()->create(['is_final_approver' => false]);
+    $presidentOffice = Office::factory()->create(['is_final_approver' => true]);
+
+    // 1. Ready Pending request
+    $pendingRequest = ClearanceRequest::factory()->create(['status' => 'pending']);
+    ClearanceApproval::factory()->create([
+        'clearance_request_id' => $pendingRequest->id,
+        'office_id' => $regularOffice->id,
+        'status' => 'approved',
+    ]);
+    ClearanceApproval::factory()->create([
+        'clearance_request_id' => $pendingRequest->id,
+        'office_id' => $presidentOffice->id,
+        'status' => 'pending',
+    ]);
+
+    // 2. Cleared/Approved request
+    $approvedRequest = ClearanceRequest::factory()->create(['status' => 'cleared']);
+    ClearanceApproval::factory()->create([
+        'clearance_request_id' => $approvedRequest->id,
+        'office_id' => $presidentOffice->id,
+        'status' => 'approved',
+    ]);
+
+    // 3. Rejected request
+    $rejectedRequest = ClearanceRequest::factory()->create(['status' => 'pending']);
+    ClearanceApproval::factory()->create([
+        'clearance_request_id' => $rejectedRequest->id,
+        'office_id' => $presidentOffice->id,
+        'status' => 'rejected',
+        'remarks' => 'Institutional obligation pending',
+    ]);
+
+    $response = $this->actingAs($president)->get(route('president.final-approvals.index'));
+
+    $response->assertStatus(200)->assertInertia(fn ($page) => $page
+        ->component('President/FinalApprovals')
+        ->has('clearanceRequests', 3)
+        ->where('readyCount', 1)
+    );
+});

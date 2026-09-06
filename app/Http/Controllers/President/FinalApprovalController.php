@@ -17,12 +17,13 @@ class FinalApprovalController extends Controller
      */
     public function index()
     {
-        $clearanceRequests = $this->readyClearanceRequests();
+        $clearanceRequests = $this->presidentClearanceRequests();
+        $readyCount = $this->readyClearanceRequests()->count();
         $courses = Course::orderBy('code')->get(['id', 'code', 'name']);
 
         return Inertia::render('President/FinalApprovals', [
             'clearanceRequests' => $clearanceRequests,
-            'readyCount' => $clearanceRequests->count(),
+            'readyCount' => $readyCount,
             'courses' => $courses,
         ]);
     }
@@ -110,6 +111,61 @@ class FinalApprovalController extends Controller
             'success',
             $clearanceRequests->count().' clearance request(s) have been automatically approved.'
         );
+    }
+
+    /**
+     * Get all clearance requests relevant to President final approval:
+     * 1. Ready pending: regular offices all approved, president approval pending, not cleared.
+     * 2. Approved: cleared or president approval approved.
+     * 3. Rejected: president approval rejected.
+     */
+    private function presidentClearanceRequests()
+    {
+        return ClearanceRequest::with([
+            'user.course',
+            'approvals.office',
+            'approvals.approver',
+        ])
+            ->where(function ($query) {
+                // 1. Ready pending
+                $query->where(function ($pendingQuery) {
+                    $pendingQuery->where('status', '!=', 'cleared')
+                        ->whereHas('approvals', function ($q) {
+                            $q->whereHas('office', function ($oq) {
+                                $oq->where('is_final_approver', false);
+                            });
+                        })
+                        ->whereDoesntHave('approvals', function ($q) {
+                            $q->whereHas('office', function ($oq) {
+                                $oq->where('is_final_approver', false);
+                            })->where('status', '!=', 'approved');
+                        })
+                        ->whereHas('approvals', function ($q) {
+                            $q->whereHas('office', function ($oq) {
+                                $oq->where('is_final_approver', true);
+                            })->where('status', 'pending');
+                        });
+                })
+                // 2. Approved by president / Cleared
+                ->orWhere(function ($approvedQuery) {
+                    $approvedQuery->where('status', 'cleared')
+                        ->orWhereHas('approvals', function ($q) {
+                            $q->whereHas('office', function ($oq) {
+                                $oq->where('is_final_approver', true);
+                            })->where('status', 'approved');
+                        });
+                })
+                // 3. Rejected by president
+                ->orWhere(function ($rejectedQuery) {
+                    $rejectedQuery->whereHas('approvals', function ($q) {
+                        $q->whereHas('office', function ($oq) {
+                            $oq->where('is_final_approver', true);
+                        })->where('status', 'rejected');
+                    });
+                });
+            })
+            ->latest()
+            ->get();
     }
 
     /**

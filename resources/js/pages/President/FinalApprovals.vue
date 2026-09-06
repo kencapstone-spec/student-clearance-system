@@ -4,7 +4,9 @@ import {
     Building2,
     CheckCircle2,
     ClipboardCheck,
+    Clock3,
     FileCheck2,
+    Filter,
     GraduationCap,
     Inbox,
     Search,
@@ -58,6 +60,8 @@ type Approval = {
     id: number;
     status: 'pending' | 'approved' | 'rejected';
     remarks: string | null;
+    acted_at?: string | null;
+    approved_by?: number | null;
     office: Office;
 };
 
@@ -65,9 +69,14 @@ type ClearanceRequest = {
     id: number;
     semester: string;
     school_year: string;
+    status?: string;
+    receipt_number?: string | null;
+    cleared_at?: string | null;
     user: Student;
     approvals: Approval[];
 };
+
+type FilterStatus = 'all' | 'pending' | 'approved' | 'rejected';
 
 const props = defineProps<{
     clearanceRequests?: ClearanceRequest[];
@@ -80,9 +89,83 @@ const approvalRequests = computed(() => {
     return props.clearanceRequests ?? props.requests ?? [];
 });
 
-const readyApprovalCount = computed(() => {
-    return props.readyCount ?? approvalRequests.value.length;
+const getPresidentApproval = (request: ClearanceRequest): Approval | undefined => {
+    return request.approvals?.find((a) => a.office?.is_final_approver);
+};
+
+const getRequestStatus = (request: ClearanceRequest): 'pending' | 'approved' | 'rejected' => {
+    const presApproval = getPresidentApproval(request);
+    if (presApproval) {
+        return presApproval.status;
+    }
+    if (request.status === 'cleared') {
+        return 'approved';
+    }
+    return 'pending';
+};
+
+const activeFilter = ref<FilterStatus>('pending');
+const setFilter = (filter: FilterStatus) => {
+    activeFilter.value = filter;
+};
+
+const pendingRequests = computed(() => {
+    return approvalRequests.value.filter((req) => getRequestStatus(req) === 'pending');
 });
+
+const approvedRequests = computed(() => {
+    return approvalRequests.value.filter((req) => getRequestStatus(req) === 'approved');
+});
+
+const rejectedRequests = computed(() => {
+    return approvalRequests.value.filter((req) => getRequestStatus(req) === 'rejected');
+});
+
+const readyApprovalCount = computed(() => pendingRequests.value.length);
+
+const filterButtonClass = (filter: FilterStatus) => {
+    if (activeFilter.value === filter) {
+        if (filter === 'pending') {
+            return 'bg-orange-500 text-white border-orange-500 shadow-md shadow-orange-500/20';
+        }
+        if (filter === 'approved') {
+            return 'bg-green-700 text-white border-green-700 shadow-md shadow-green-700/20';
+        }
+        if (filter === 'rejected') {
+            return 'bg-red-600 text-white border-red-600 shadow-md shadow-red-600/20';
+        }
+        return 'bg-blue-950 text-white border-blue-950 shadow-md shadow-blue-950/20';
+    }
+
+    return 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50 shadow-xs';
+};
+
+const statusBadgeClass = (status: 'pending' | 'approved' | 'rejected') => {
+    if (status === 'approved') {
+        return 'bg-green-50 text-green-700 border-green-200';
+    }
+    if (status === 'rejected') {
+        return 'bg-red-50 text-red-700 border-red-200';
+    }
+    return 'bg-blue-50 text-blue-700 border-blue-200';
+};
+
+const statusLabel = (status: 'pending' | 'approved' | 'rejected') => {
+    if (status === 'approved') {
+        return 'Final Approved';
+    }
+    if (status === 'rejected') {
+        return 'Rejected';
+    }
+    return 'Ready for Final Approval';
+};
+
+const resetFilters = () => {
+    searchQuery.value = '';
+    selectedYearLevel.value = 'all';
+    selectedDepartment.value = 'all';
+    activeFilter.value = 'all';
+};
 
 const selectedRequest = ref<ClearanceRequest | null>(null);
 const showFinalApproveModal = ref(false);
@@ -120,6 +203,12 @@ const availableDepartments = computed(() => {
 
 const filteredApprovalRequests = computed(() => {
     return approvalRequests.value.filter((req) => {
+        if (activeFilter.value !== 'all') {
+            if (getRequestStatus(req) !== activeFilter.value) {
+                return false;
+            }
+        }
+
         if (selectedDepartment.value !== 'all') {
             if (req.user?.course?.code !== selectedDepartment.value) {
                 return false;
@@ -151,6 +240,7 @@ const filteredApprovalRequests = computed(() => {
                 student.course?.code?.toLowerCase().includes(q) ||
                 student.course?.name?.toLowerCase().includes(q);
             const matchesYear = student.year_level?.toLowerCase().includes(q);
+            const matchesReceipt = req.receipt_number?.toLowerCase().includes(q);
 
             if (
                 !matchesName &&
@@ -158,7 +248,8 @@ const filteredApprovalRequests = computed(() => {
                 !matchesLast &&
                 !matchesId &&
                 !matchesCourse &&
-                !matchesYear
+                !matchesYear &&
+                !matchesReceipt
             ) {
                 return false;
             }
@@ -421,44 +512,80 @@ const confirmAutoApproveAll = () => {
                 </div>
             </section>
 
-            <!-- Summary Cards -->
+            <!-- Summary Stats -->
             <section
-                class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3"
+                class="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4 md:gap-5"
             >
                 <div
-                    class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-3xl md:p-6"
+                    class="col-span-2 rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl sm:col-span-1 md:rounded-3xl md:p-6"
                 >
                     <div class="flex items-center gap-3 md:gap-4">
                         <div
                             class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-blue-50 text-blue-700 shadow-sm md:h-14 md:w-14"
                         >
-                            <ClipboardCheck class="size-6 md:size-7" />
+                            <ShieldCheck class="size-6 md:size-7" />
                         </div>
 
                         <div class="min-w-0">
                             <p
                                 class="text-[0.65rem] leading-tight font-black tracking-wide text-blue-700 uppercase sm:text-sm"
                             >
-                                Ready for Final Approval
+                                Office / Role
                             </p>
 
-                            <p
-                                class="mt-1 text-2xl font-black text-blue-950 md:text-4xl"
+                            <h2
+                                class="mt-1 truncate text-base font-black text-blue-950 md:text-xl"
                             >
-                                {{ readyApprovalCount }}
-                            </p>
+                                College President
+                            </h2>
 
                             <p
                                 class="text-xs font-medium text-slate-500 sm:text-sm"
                             >
-                                Requests awaiting final action
+                                Final Clearance Approver
                             </p>
                         </div>
                     </div>
                 </div>
 
                 <div
-                    class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-3xl md:p-6"
+                    class="cursor-pointer rounded-2xl border bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-3xl md:p-6"
+                    :class="activeFilter === 'pending' ? 'border-orange-400 ring-2 ring-orange-400/30' : 'border-slate-200'"
+                    @click="setFilter('pending')"
+                >
+                    <div class="flex items-center gap-3 md:gap-4">
+                        <div
+                            class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-orange-50 text-orange-600 shadow-sm md:h-14 md:w-14"
+                        >
+                            <Clock3 class="size-6 md:size-7" />
+                        </div>
+
+                        <div>
+                            <p
+                                class="text-[0.65rem] leading-tight font-black tracking-wide text-orange-600 uppercase sm:text-sm"
+                            >
+                                Pending
+                            </p>
+
+                            <p
+                                class="mt-1 text-2xl font-black text-blue-950 md:text-4xl"
+                            >
+                                {{ pendingRequests.length }}
+                            </p>
+
+                            <p
+                                class="text-xs font-medium text-slate-500 sm:text-sm"
+                            >
+                                Waiting review
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="cursor-pointer rounded-2xl border bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-3xl md:p-6"
+                    :class="activeFilter === 'approved' ? 'border-green-500 ring-2 ring-green-500/30' : 'border-slate-200'"
+                    @click="setFilter('approved')"
                 >
                     <div class="flex items-center gap-3 md:gap-4">
                         <div
@@ -467,56 +594,57 @@ const confirmAutoApproveAll = () => {
                             <CheckCircle2 class="size-6 md:size-7" />
                         </div>
 
-                        <div class="min-w-0">
+                        <div>
                             <p
                                 class="text-[0.65rem] leading-tight font-black tracking-wide text-green-700 uppercase sm:text-sm"
                             >
-                                Available Actions
+                                Approved
                             </p>
 
                             <p
-                                class="mt-1 text-lg font-black text-blue-950 md:text-xl"
+                                class="mt-1 text-2xl font-black text-blue-950 md:text-4xl"
                             >
-                                Approve or Reject
+                                {{ approvedRequests.length }}
                             </p>
 
                             <p
                                 class="text-xs font-medium text-slate-500 sm:text-sm"
                             >
-                                Approve, reject, or bulk approve ready requests.
+                                Completed reviews
                             </p>
                         </div>
                     </div>
                 </div>
 
                 <div
-                    class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl sm:col-span-2 md:rounded-3xl md:p-6 xl:col-span-1"
+                    class="cursor-pointer col-span-2 rounded-2xl border bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl sm:col-span-1 md:rounded-3xl md:p-6"
+                    :class="activeFilter === 'rejected' ? 'border-red-400 ring-2 ring-red-400/30' : 'border-slate-200'"
+                    @click="setFilter('rejected')"
                 >
                     <div class="flex items-center gap-3 md:gap-4">
                         <div
-                            class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-indigo-50 text-indigo-700 shadow-sm md:h-14 md:w-14"
+                            class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-red-50 text-red-600 shadow-sm md:h-14 md:w-14"
                         >
-                            <FileCheck2 class="size-6 md:size-7" />
+                            <XCircle class="size-6 md:size-7" />
                         </div>
 
-                        <div class="min-w-0">
+                        <div>
                             <p
-                                class="text-[0.65rem] leading-tight font-black tracking-wide text-indigo-700 uppercase sm:text-sm"
+                                class="text-[0.65rem] leading-tight font-black tracking-wide text-red-600 uppercase sm:text-sm"
                             >
-                                Finalization Result
+                                Rejected
                             </p>
 
                             <p
-                                class="mt-1 text-lg font-black text-blue-950 md:text-xl"
+                                class="mt-1 text-2xl font-black text-blue-950 md:text-4xl"
                             >
-                                Receipt + QR Generation
+                                {{ rejectedRequests.length }}
                             </p>
 
                             <p
                                 class="text-xs font-medium text-slate-500 sm:text-sm"
                             >
-                                Approval clears the request and enables receipt
-                                verification.
+                                Needs correction
                             </p>
                         </div>
                     </div>
@@ -546,25 +674,105 @@ const confirmAutoApproveAll = () => {
                             </h2>
 
                             <p class="mt-1 text-sm font-medium text-slate-500">
-                                These requests already passed all regular office
-                                approvals.
+                                Filter pending, approved, and rejected requests for final clearance.
                             </p>
                         </div>
 
-                        <button
-                            type="button"
-                            class="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl px-4 py-2.5 text-sm font-black text-white shadow-md transition disabled:cursor-not-allowed disabled:opacity-60"
-                            :class="
-                                readyApprovalCount === 0
-                                    ? 'bg-slate-400 shadow-slate-400/20'
-                                    : 'bg-green-700 shadow-green-700/20 hover:-translate-y-0.5 hover:bg-green-800 hover:shadow-lg'
-                            "
-                            :disabled="readyApprovalCount === 0"
-                            @click="openAutoApproveModal"
-                        >
-                            <Sparkles class="size-4" />
-                            Auto Approve All
-                        </button>
+                        <div class="flex flex-wrap items-center gap-3">
+                            <div class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+                                <button
+                                    type="button"
+                                    class="inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-2xl border px-4 py-2.5 text-sm font-black transition"
+                                    :class="filterButtonClass('all')"
+                                    @click.prevent.stop="setFilter('all')"
+                                >
+                                    <Filter class="size-4" />
+                                    All
+                                    <span
+                                        class="ml-1 rounded-full px-2 py-0.5 text-[0.7rem] font-black"
+                                        :class="
+                                            activeFilter === 'all'
+                                                ? 'bg-white/25 text-white'
+                                                : 'bg-slate-100 text-slate-600'
+                                        "
+                                    >
+                                        {{ approvalRequests.length }}
+                                    </span>
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-2xl border px-4 py-2.5 text-sm font-black transition"
+                                    :class="filterButtonClass('pending')"
+                                    @click.prevent.stop="setFilter('pending')"
+                                >
+                                    Pending
+                                    <span
+                                        class="ml-1 rounded-full px-2 py-0.5 text-[0.7rem] font-black"
+                                        :class="
+                                            activeFilter === 'pending'
+                                                ? 'bg-white/25 text-white'
+                                                : 'bg-orange-100 text-orange-700'
+                                        "
+                                    >
+                                        {{ pendingRequests.length }}
+                                    </span>
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-2xl border px-4 py-2.5 text-sm font-black transition"
+                                    :class="filterButtonClass('approved')"
+                                    @click.prevent.stop="setFilter('approved')"
+                                >
+                                    Approved
+                                    <span
+                                        class="ml-1 rounded-full px-2 py-0.5 text-[0.7rem] font-black"
+                                        :class="
+                                            activeFilter === 'approved'
+                                                ? 'bg-white/25 text-white'
+                                                : 'bg-green-100 text-green-700'
+                                        "
+                                    >
+                                        {{ approvedRequests.length }}
+                                    </span>
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-2xl border px-4 py-2.5 text-sm font-black transition"
+                                    :class="filterButtonClass('rejected')"
+                                    @click.prevent.stop="setFilter('rejected')"
+                                >
+                                    Rejected
+                                    <span
+                                        class="ml-1 rounded-full px-2 py-0.5 text-[0.7rem] font-black"
+                                        :class="
+                                            activeFilter === 'rejected'
+                                                ? 'bg-white/25 text-white'
+                                                : 'bg-red-100 text-red-700'
+                                        "
+                                    >
+                                        {{ rejectedRequests.length }}
+                                    </span>
+                                </button>
+                            </div>
+
+                            <button
+                                type="button"
+                                class="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl px-4 py-2.5 text-sm font-black text-white shadow-md transition disabled:cursor-not-allowed disabled:opacity-60"
+                                :class="
+                                    readyApprovalCount === 0
+                                        ? 'bg-slate-400 shadow-slate-400/20'
+                                        : 'bg-green-700 shadow-green-700/20 hover:-translate-y-0.5 hover:bg-green-800 hover:shadow-lg'
+                                "
+                                :disabled="readyApprovalCount === 0"
+                                @click="openAutoApproveModal"
+                            >
+                                <Sparkles class="size-4" />
+                                Auto Approve All
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Secondary Bar: Search, Department & Year Level Filters -->
@@ -580,7 +788,7 @@ const confirmAutoApproveAll = () => {
                             <input
                                 v-model="searchQuery"
                                 type="text"
-                                placeholder="Search by student name, ID, course, or year..."
+                                placeholder="Search by student name, ID, course, year, or receipt..."
                                 class="h-11 w-full rounded-2xl border border-slate-200 bg-slate-50/70 pr-10 pl-10 text-sm font-semibold text-slate-900 shadow-inner transition placeholder:font-medium placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:outline-none"
                             />
                             <button
@@ -677,19 +885,16 @@ const confirmAutoApproveAll = () => {
                                 v-if="
                                     searchQuery ||
                                     selectedYearLevel !== 'all' ||
-                                    selectedDepartment !== 'all'
+                                    selectedDepartment !== 'all' ||
+                                    activeFilter !== 'pending'
                                 "
                                 type="button"
                                 class="inline-flex h-11 items-center gap-1.5 rounded-2xl border border-slate-200 bg-white px-3.5 text-xs font-bold text-slate-600 shadow-sm transition hover:bg-slate-100 hover:text-slate-900"
                                 title="Clear search and filters"
-                                @click="
-                                    searchQuery = '';
-                                    selectedYearLevel = 'all';
-                                    selectedDepartment = 'all';
-                                "
+                                @click="resetFilters"
                             >
                                 <X class="size-3.5" />
-                                <span class="hidden sm:inline">Clear</span>
+                                <span class="hidden sm:inline">Reset</span>
                             </button>
                         </div>
                     </div>
@@ -706,7 +911,7 @@ const confirmAutoApproveAll = () => {
                     </div>
 
                     <p class="mt-4 font-black text-slate-700">
-                        No requests ready for final approval.
+                        No clearance requests found.
                     </p>
 
                     <p class="mt-1 text-sm font-medium text-slate-500">
@@ -730,21 +935,28 @@ const confirmAutoApproveAll = () => {
                     </p>
 
                     <p class="mt-1 text-sm font-medium text-slate-500">
-                        No requests match your current search, department, or
-                        year level filter.
+                        <span
+                            v-if="
+                                searchQuery ||
+                                selectedYearLevel !== 'all' ||
+                                selectedDepartment !== 'all'
+                            "
+                        >
+                            No requests match your current search, department, or
+                            year level filter.
+                        </span>
+                        <span v-else>
+                            No {{ activeFilter }} clearance requests found.
+                        </span>
                     </p>
 
                     <button
                         type="button"
-                        class="mt-4 inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 shadow-sm transition hover:bg-slate-50"
-                        @click="
-                            searchQuery = '';
-                            selectedYearLevel = 'all';
-                            selectedDepartment = 'all';
-                        "
+                        class="mt-4 inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-black text-blue-700 shadow-sm transition hover:bg-slate-50"
+                        @click="resetFilters"
                     >
                         <X class="size-3.5" />
-                        Clear Filters
+                        Reset All Filters
                     </button>
                 </div>
 
@@ -778,9 +990,10 @@ const confirmAutoApproveAll = () => {
                                 </div>
 
                                 <span
-                                    class="shrink-0 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-black text-blue-700"
+                                    class="shrink-0 rounded-full border px-3 py-1 text-xs font-black"
+                                    :class="statusBadgeClass(getRequestStatus(request))"
                                 >
-                                    Ready
+                                    {{ statusLabel(getRequestStatus(request)) }}
                                 </span>
                             </div>
 
@@ -817,15 +1030,35 @@ const confirmAutoApproveAll = () => {
                             </div>
 
                             <div
+                                v-if="getRequestStatus(request) === 'pending'"
                                 class="mt-3 rounded-xl border border-green-100 bg-green-50 px-3 py-2 text-sm leading-6 font-medium text-green-800"
                             >
                                 <span class="font-black">
                                     Office approval status:
                                 </span>
-                                All regular office approvals are complete.
+                                All regular office approvals are complete. Ready for President final action.
                             </div>
 
-                            <div class="mt-4 grid grid-cols-2 gap-2">
+                            <div
+                                v-else-if="getRequestStatus(request) === 'approved'"
+                                class="mt-3 rounded-xl border border-green-200 bg-green-50 px-3 py-2 text-sm font-medium text-green-800"
+                            >
+                                <span class="font-black">Receipt No:</span>
+                                {{ request.receipt_number ?? 'Cleared & Receipt Generated' }}
+                            </div>
+
+                            <div
+                                v-else-if="getRequestStatus(request) === 'rejected'"
+                                class="mt-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-800"
+                            >
+                                <span class="font-black">Rejection Remarks:</span>
+                                {{ getPresidentApproval(request)?.remarks ?? '-' }}
+                            </div>
+
+                            <div
+                                v-if="getRequestStatus(request) === 'pending'"
+                                class="mt-4 grid grid-cols-2 gap-2"
+                            >
                                 <button
                                     type="button"
                                     class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl border border-red-200 bg-white px-4 py-3 text-sm font-black text-red-600 shadow-sm transition hover:bg-red-50"
@@ -843,6 +1076,19 @@ const confirmAutoApproveAll = () => {
                                     <CheckCircle2 class="size-4" />
                                     Final Approve
                                 </button>
+                            </div>
+
+                            <div v-else class="mt-4">
+                                <span
+                                    class="inline-flex rounded-full px-3 py-1 text-xs font-black"
+                                    :class="
+                                        getRequestStatus(request) === 'approved'
+                                            ? 'bg-slate-100 text-slate-500'
+                                            : 'bg-red-100 text-red-700'
+                                    "
+                                >
+                                    {{ getRequestStatus(request) === 'approved' ? 'Completed' : 'Rejected' }}
+                                </span>
                             </div>
                         </article>
                     </div>
@@ -892,6 +1138,12 @@ const confirmAutoApproveAll = () => {
                                         class="px-6 py-4 text-xs font-black tracking-wide uppercase"
                                     >
                                         Status
+                                    </th>
+
+                                    <th
+                                        class="px-6 py-4 text-xs font-black tracking-wide uppercase"
+                                    >
+                                        Remarks / Receipt
                                     </th>
 
                                     <th
@@ -976,14 +1228,44 @@ const confirmAutoApproveAll = () => {
 
                                     <td class="px-6 py-4">
                                         <span
-                                            class="inline-flex rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-black text-blue-700"
+                                            class="inline-flex rounded-full border px-3 py-1 text-xs font-black"
+                                            :class="
+                                                statusBadgeClass(
+                                                    getRequestStatus(request),
+                                                )
+                                            "
                                         >
-                                            Ready for Final Approval
+                                            {{
+                                                statusLabel(
+                                                    getRequestStatus(request),
+                                                )
+                                            }}
+                                        </span>
+                                    </td>
+
+                                    <td
+                                        class="max-w-xs px-6 py-4 text-sm font-medium text-slate-600"
+                                    >
+                                        <span
+                                            v-if="getRequestStatus(request) === 'approved'"
+                                            class="font-semibold text-green-700"
+                                        >
+                                            {{ request.receipt_number ?? 'Receipt Generated' }}
+                                        </span>
+                                        <span
+                                            v-else-if="getRequestStatus(request) === 'rejected'"
+                                            class="font-medium text-red-700"
+                                        >
+                                            {{ getPresidentApproval(request)?.remarks ?? '-' }}
+                                        </span>
+                                        <span v-else class="text-slate-400">
+                                            Ready for final review
                                         </span>
                                     </td>
 
                                     <td class="px-6 py-4 text-right">
                                         <div
+                                            v-if="getRequestStatus(request) === 'pending'"
                                             class="inline-flex items-center gap-2"
                                         >
                                             <button
@@ -1010,6 +1292,18 @@ const confirmAutoApproveAll = () => {
                                                 Final Approve
                                             </button>
                                         </div>
+
+                                        <span
+                                            v-else
+                                            class="inline-flex rounded-full px-3 py-1 text-xs font-black"
+                                            :class="
+                                                getRequestStatus(request) === 'approved'
+                                                    ? 'bg-slate-100 text-slate-500'
+                                                    : 'bg-red-100 text-red-700'
+                                            "
+                                        >
+                                            {{ getRequestStatus(request) === 'approved' ? 'Completed' : 'Rejected' }}
+                                        </span>
                                     </td>
                                 </tr>
                             </tbody>
