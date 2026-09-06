@@ -18,11 +18,5 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             CourseOfficeSeeder::class,
         ]);
-
-        if (app()->environment('local')) {
-            $this->call([
-                ReadyForPresidentApprovalSeeder::class,
-            ]);
-        }
     }
 }
