@@ -337,58 +337,15 @@ const handleReceiptClick = () => {
             </button>
         </div>
 
-        <!-- STUDENT NAVIGATION (4 items - Symmetrical & Clean) -->
+        <!-- STUDENT NAVIGATION (3 items - Symmetrical: Request, Home, Status) -->
         <div
             v-else-if="userRole === 'student'"
-            class="grid grid-cols-4 items-center justify-items-center gap-1"
+            class="grid grid-cols-3 items-end justify-items-center gap-2"
         >
-            <!-- Home -->
-            <button
-                type="button"
-                class="flex w-full flex-col items-center justify-center py-1.5 transition active:scale-95"
-                :class="
-                    isUrlActive('/dashboard')
-                        ? 'text-blue-950'
-                        : 'text-slate-500 hover:text-blue-950'
-                "
-                @click="handleStudentHomeClick"
-            >
-                <LayoutGrid class="size-5" />
-                <span
-                    class="mt-0.5 h-1 w-1 rounded-full transition-all"
-                    :class="
-                        isUrlActive('/dashboard')
-                            ? 'bg-blue-700'
-                            : 'bg-transparent'
-                    "
-                ></span>
-                <span
-                    class="text-[0.65rem] tracking-tight"
-                    :class="
-                        isUrlActive('/dashboard') ? 'font-black' : 'font-bold'
-                    "
-                >
-                    Home
-                </span>
-            </button>
-
-            <!-- Status Modal Trigger -->
-            <button
-                type="button"
-                class="flex w-full flex-col items-center justify-center py-1.5 text-slate-500 transition hover:text-blue-950 active:scale-95"
-                @click="handleStudentStatusClick"
-            >
-                <ClipboardCheck class="size-5" />
-                <span class="mt-0.5 h-1 w-1 rounded-full bg-transparent"></span>
-                <span class="text-[0.65rem] font-bold tracking-tight">
-                    Status
-                </span>
-            </button>
-
             <!-- Request Modal Trigger -->
             <button
                 type="button"
-                class="flex w-full flex-col items-center justify-center py-1.5 text-slate-500 transition hover:text-blue-950 active:scale-95"
+                class="flex w-full flex-col items-center justify-center py-1 text-slate-500 transition hover:text-blue-950 active:scale-95"
                 @click="handleStudentRequestClick"
             >
                 <FilePlus class="size-5" />
@@ -398,16 +355,42 @@ const handleReceiptClick = () => {
                 </span>
             </button>
 
-            <!-- More -->
+            <!-- Elevated Center Focal Button: Dashboard -->
+            <div class="-mt-5 flex flex-col items-center justify-center">
+                <button
+                    type="button"
+                    class="flex h-12 w-12 items-center justify-center rounded-2xl shadow-lg ring-4 ring-white transition-transform active:scale-95"
+                    :class="
+                        isUrlActive('/dashboard')
+                            ? 'bg-gradient-to-tr from-blue-950 via-blue-800 to-indigo-600 text-white shadow-blue-900/30'
+                            : 'border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100'
+                    "
+                    @click="handleStudentHomeClick"
+                >
+                    <LayoutGrid class="size-6" />
+                </button>
+                <span
+                    class="mt-1 text-[0.65rem] font-black tracking-tight"
+                    :class="
+                        isUrlActive('/dashboard')
+                            ? 'font-black text-blue-950'
+                            : 'text-slate-500'
+                    "
+                >
+                    Home
+                </span>
+            </div>
+
+            <!-- Status Modal Trigger -->
             <button
                 type="button"
-                class="flex w-full flex-col items-center justify-center py-1.5 text-slate-500 transition hover:text-slate-900 active:scale-95"
-                @click="openMoreSheet"
+                class="flex w-full flex-col items-center justify-center py-1 text-slate-500 transition hover:text-blue-950 active:scale-95"
+                @click="handleStudentStatusClick"
             >
-                <MoreHorizontal class="size-5" />
+                <ClipboardCheck class="size-5" />
                 <span class="mt-0.5 h-1 w-1 rounded-full bg-transparent"></span>
                 <span class="text-[0.65rem] font-bold tracking-tight">
-                    More
+                    Status
                 </span>
             </button>
         </div>
