@@ -113,7 +113,7 @@ const markAllNotificationsAsRead = () => {
 
 <template>
     <header
-        class="sticky top-0 z-20 flex h-16 shrink-0 items-center border-b border-slate-200/80 bg-white/90 px-4 text-slate-900 shadow-sm shadow-slate-200/70 backdrop-blur-xl transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-14 md:px-6"
+        class="fixed inset-x-0 top-0 z-20 flex h-16 shrink-0 items-center border-b border-slate-200/80 bg-white/90 px-4 text-slate-900 shadow-sm shadow-slate-200/70 backdrop-blur-xl transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-14 md:sticky md:top-0 md:px-6"
     >
         <div class="flex min-w-0 flex-1 items-center gap-3 md:gap-4">
             <!-- Mobile: User Profile Avatar Dropdown (Upper Left replacing Sidebar Trigger on Mobile) -->

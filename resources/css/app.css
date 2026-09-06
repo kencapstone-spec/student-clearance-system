@@ -191,11 +191,11 @@
 
     html {
         @apply bg-background;
-        overflow-x: hidden;
+        overflow-x: clip;
     }
 
     body {
         @apply bg-background text-foreground antialiased;
-        overflow-x: hidden;
+        overflow-x: clip;
     }
 }
