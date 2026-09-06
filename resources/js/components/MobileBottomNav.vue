@@ -365,57 +365,60 @@ const handleReceiptClick = () => {
     <Sheet v-model:open="showMoreSheet">
         <SheetContent
             side="bottom"
-            class="max-h-[85vh] overflow-y-auto rounded-t-3xl border-slate-200 bg-white p-6 shadow-2xl"
+            class="max-h-[85vh] overflow-y-auto rounded-t-[1.75rem] border-t border-slate-200/90 bg-slate-50/60 px-4 pt-2.5 pb-8 shadow-2xl gap-0 focus:outline-hidden sm:px-6 sm:pb-8"
         >
-            <div
-                class="mx-auto mb-4 h-1.5 w-12 rounded-full bg-slate-300"
-            ></div>
+            <!-- Drag handle -->
+            <div class="mx-auto my-1.5 h-1 w-10 rounded-full bg-slate-300/90"></div>
 
-            <SheetHeader class="text-left">
-                <SheetTitle class="text-lg font-black text-slate-900">
+            <!-- Header -->
+            <div class="pr-8 pt-1 pb-3">
+                <SheetTitle class="text-base font-black tracking-tight text-slate-950">
                     Menu & Quick Actions
                 </SheetTitle>
-            </SheetHeader>
+                <p class="text-xs font-medium text-slate-500 mt-0.5">
+                    Account details and system navigation
+                </p>
+            </div>
 
             <!-- User Info Card -->
             <div
                 v-if="authUser"
-                class="mt-4 flex items-center gap-3.5 rounded-2xl border border-slate-200/80 bg-slate-50/80 p-3.5"
+                class="mb-3.5 flex items-center gap-3 rounded-2xl border border-slate-200/90 bg-white p-3 shadow-xs"
             >
                 <div
-                    class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-blue-950 text-sm font-black text-white shadow-sm"
+                    class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-950 via-blue-900 to-indigo-900 text-xs font-black text-white shadow-xs"
                 >
                     {{ getInitials(authUser.name) }}
                 </div>
 
                 <div class="min-w-0 flex-1">
-                    <p class="truncate text-sm font-black text-slate-950">
+                    <p class="truncate text-sm font-black text-slate-950 leading-tight">
                         {{ authUser.name }}
                     </p>
-                    <p class="truncate text-xs font-medium text-slate-500">
+                    <p class="truncate text-xs font-medium text-slate-500 mt-0.5">
                         {{ authUser.email }}
                     </p>
-                    <div class="mt-1 flex flex-wrap gap-1.5">
+                    <div class="mt-1.5 flex flex-wrap gap-1.5">
                         <span
-                            class="inline-flex rounded-full bg-blue-100 px-2 py-0.5 text-[0.65rem] font-black text-blue-900 uppercase"
+                            class="inline-flex items-center rounded-md bg-blue-100/80 px-2 py-0.5 text-[0.625rem] font-bold uppercase tracking-wide text-blue-900"
                         >
                             {{ userRole }}
                         </span>
                         <span
                             v-if="authUser.student_id"
-                            class="inline-flex rounded-full bg-slate-200/80 px-2 py-0.5 text-[0.65rem] font-bold text-slate-700"
+                            class="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-[0.625rem] font-medium text-slate-600"
                         >
                             ID: {{ authUser.student_id }}
                         </span>
                         <span
                             v-if="authUser.course?.code"
-                            class="inline-flex rounded-full bg-emerald-100 px-2 py-0.5 text-[0.65rem] font-bold text-emerald-800"
+                            class="inline-flex items-center rounded-md border border-emerald-200/60 bg-emerald-50 px-2 py-0.5 text-[0.625rem] font-semibold text-emerald-700"
                         >
                             {{ authUser.course.code }}
                         </span>
                         <span
                             v-if="authUser.year_level"
-                            class="inline-flex rounded-full bg-indigo-100 px-2 py-0.5 text-[0.65rem] font-bold text-indigo-800"
+                            class="inline-flex items-center rounded-md border border-indigo-200/60 bg-indigo-50 px-2 py-0.5 text-[0.625rem] font-semibold text-indigo-700"
                         >
                             {{ authUser.year_level }}
                         </span>
@@ -423,77 +426,76 @@ const handleReceiptClick = () => {
                 </div>
             </div>
 
+            <!-- Category label -->
+            <p class="mb-2 px-1 text-[0.65rem] font-bold uppercase tracking-wider text-slate-400">
+                Navigation & Shortcuts
+            </p>
+
             <!-- Role-Specific Action Links -->
-            <div class="mt-4 space-y-2">
+            <div class="space-y-2">
                 <!-- Admin Secondary Links -->
                 <template v-if="userRole === 'admin'">
                     <Link
                         href="/admin/course-modules"
-                        class="flex items-center justify-between rounded-2xl border border-slate-200/80 bg-white p-3.5 shadow-xs transition hover:bg-slate-50 active:scale-[0.99]"
+                        class="group flex items-center gap-3 rounded-2xl border border-slate-200/90 bg-white p-3 shadow-xs transition-all hover:border-slate-300 hover:bg-slate-50/80 active:scale-[0.99] focus:outline-hidden"
                         @click="closeMoreSheet"
                     >
-                        <div class="flex items-center gap-3">
-                            <div
-                                class="flex size-10 items-center justify-center rounded-xl bg-blue-50 text-blue-700"
-                            >
-                                <Layers class="size-5" />
-                            </div>
-                            <div>
-                                <p class="text-sm font-bold text-slate-900">
-                                    Course Modules
-                                </p>
-                                <p class="text-xs text-slate-500">
-                                    Manage academic courses and assigned offices
-                                </p>
-                            </div>
+                        <div
+                            class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-700 transition group-hover:bg-blue-100"
+                        >
+                            <Layers class="size-5" />
                         </div>
-                        <ChevronRight class="size-5 text-slate-400" />
+                        <div class="min-w-0 flex-1">
+                            <p class="text-sm font-bold text-slate-900 leading-tight">
+                                Course Modules
+                            </p>
+                            <p class="mt-0.5 text-xs text-slate-500 leading-snug truncate sm:whitespace-normal">
+                                Manage academic courses and assigned offices
+                            </p>
+                        </div>
+                        <ChevronRight class="size-4.5 shrink-0 text-slate-400 transition-transform group-hover:translate-x-0.5" />
                     </Link>
 
                     <Link
                         href="/admin/office-prerequisites"
-                        class="flex items-center justify-between rounded-2xl border border-slate-200/80 bg-white p-3.5 shadow-xs transition hover:bg-slate-50 active:scale-[0.99]"
+                        class="group flex items-center gap-3 rounded-2xl border border-slate-200/90 bg-white p-3 shadow-xs transition-all hover:border-slate-300 hover:bg-slate-50/80 active:scale-[0.99] focus:outline-hidden"
                         @click="closeMoreSheet"
                     >
-                        <div class="flex items-center gap-3">
-                            <div
-                                class="flex size-10 items-center justify-center rounded-xl bg-indigo-50 text-indigo-700"
-                            >
-                                <GraduationCap class="size-5" />
-                            </div>
-                            <div>
-                                <p class="text-sm font-bold text-slate-900">
-                                    Office Prerequisites
-                                </p>
-                                <p class="text-xs text-slate-500">
-                                    Configure dependency workflows for offices
-                                </p>
-                            </div>
+                        <div
+                            class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-indigo-700 transition group-hover:bg-indigo-100"
+                        >
+                            <GraduationCap class="size-5" />
                         </div>
-                        <ChevronRight class="size-5 text-slate-400" />
+                        <div class="min-w-0 flex-1">
+                            <p class="text-sm font-bold text-slate-900 leading-tight">
+                                Office Prerequisites
+                            </p>
+                            <p class="mt-0.5 text-xs text-slate-500 leading-snug truncate sm:whitespace-normal">
+                                Configure dependency workflows for offices
+                            </p>
+                        </div>
+                        <ChevronRight class="size-4.5 shrink-0 text-slate-400 transition-transform group-hover:translate-x-0.5" />
                     </Link>
 
                     <Link
                         href="/admin/settings"
-                        class="flex items-center justify-between rounded-2xl border border-slate-200/80 bg-white p-3.5 shadow-xs transition hover:bg-slate-50 active:scale-[0.99]"
+                        class="group flex items-center gap-3 rounded-2xl border border-slate-200/90 bg-white p-3 shadow-xs transition-all hover:border-slate-300 hover:bg-slate-50/80 active:scale-[0.99] focus:outline-hidden"
                         @click="closeMoreSheet"
                     >
-                        <div class="flex items-center gap-3">
-                            <div
-                                class="flex size-10 items-center justify-center rounded-xl bg-slate-100 text-slate-700"
-                            >
-                                <Settings class="size-5" />
-                            </div>
-                            <div>
-                                <p class="text-sm font-bold text-slate-900">
-                                    System Settings
-                                </p>
-                                <p class="text-xs text-slate-500">
-                                    Active semester and clearance rules
-                                </p>
-                            </div>
+                        <div
+                            class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-700 transition group-hover:bg-slate-200/70"
+                        >
+                            <Settings class="size-5" />
                         </div>
-                        <ChevronRight class="size-5 text-slate-400" />
+                        <div class="min-w-0 flex-1">
+                            <p class="text-sm font-bold text-slate-900 leading-tight">
+                                System Settings
+                            </p>
+                            <p class="mt-0.5 text-xs text-slate-500 leading-snug truncate sm:whitespace-normal">
+                                Active semester and clearance rules
+                            </p>
+                        </div>
+                        <ChevronRight class="size-4.5 shrink-0 text-slate-400 transition-transform group-hover:translate-x-0.5" />
                     </Link>
                 </template>
 
@@ -501,25 +503,23 @@ const handleReceiptClick = () => {
                 <button
                     v-if="userRole === 'student' && canPrintReceipt"
                     type="button"
-                    class="flex w-full items-center justify-between rounded-2xl border border-emerald-200 bg-emerald-50/70 p-3.5 text-left transition hover:bg-emerald-100/70 active:scale-[0.99]"
+                    class="group flex w-full items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50/70 p-3 text-left transition hover:bg-emerald-100/70 active:scale-[0.99] focus:outline-hidden"
                     @click="handleReceiptClick"
                 >
-                    <div class="flex items-center gap-3">
-                        <div
-                            class="flex size-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700"
-                        >
-                            <Printer class="size-5" />
-                        </div>
-                        <div>
-                            <p class="text-sm font-bold text-emerald-900">
-                                Official Clearance Receipt
-                            </p>
-                            <p class="text-xs text-emerald-700/80">
-                                View or print your signed clearance
-                            </p>
-                        </div>
+                    <div
+                        class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700"
+                    >
+                        <Printer class="size-5" />
                     </div>
-                    <ChevronRight class="size-5 text-emerald-500" />
+                    <div class="min-w-0 flex-1">
+                        <p class="text-sm font-bold text-emerald-900 leading-tight">
+                            Official Clearance Receipt
+                        </p>
+                        <p class="mt-0.5 text-xs text-emerald-700/80 leading-snug truncate sm:whitespace-normal">
+                            View or print your signed clearance
+                        </p>
+                    </div>
+                    <ChevronRight class="size-4.5 shrink-0 text-emerald-500 transition-transform group-hover:translate-x-0.5" />
                 </button>
             </div>
         </SheetContent>
