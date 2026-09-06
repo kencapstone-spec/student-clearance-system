@@ -176,6 +176,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('/president/final-approvals/{clearanceRequest}/approve', [FinalApprovalController::class, 'approve'])
             ->name('president.final-approvals.approve');
 
+        Route::patch('/president/final-approvals/{clearanceRequest}/reject', [FinalApprovalController::class, 'reject'])
+            ->name('president.final-approvals.reject');
+
         Route::patch('/president/final-approvals/approve-all', [FinalApprovalController::class, 'approveAll'])
             ->name('president.final-approvals.approve-all');
     });

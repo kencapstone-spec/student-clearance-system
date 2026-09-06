@@ -12,6 +12,7 @@ import {
     Sparkles,
     Users,
     X,
+    XCircle,
 } from 'lucide-vue-next';
 import { computed, ref, onMounted, onUnmounted } from 'vue';
 
@@ -86,6 +87,9 @@ const readyApprovalCount = computed(() => {
 const selectedRequest = ref<ClearanceRequest | null>(null);
 const showFinalApproveModal = ref(false);
 const showAutoApproveModal = ref(false);
+const showRejectModal = ref(false);
+const rejectRemarks = ref('');
+const isSubmittingReject = ref(false);
 const successMessage = ref('');
 const errorMessage = ref('');
 
@@ -246,6 +250,49 @@ const confirmFinalApproval = () => {
             onError: () => {
                 errorMessage.value =
                     'Unable to complete final approval. Please try again.';
+            },
+        },
+    );
+};
+
+const openRejectModal = (request: ClearanceRequest) => {
+    clearMessages();
+    selectedRequest.value = request;
+    rejectRemarks.value = '';
+    showRejectModal.value = true;
+};
+
+const closeRejectModal = () => {
+    selectedRequest.value = null;
+    rejectRemarks.value = '';
+    showRejectModal.value = false;
+};
+
+const confirmReject = () => {
+    if (!selectedRequest.value || !rejectRemarks.value.trim()) {
+        return;
+    }
+
+    clearMessages();
+    isSubmittingReject.value = true;
+
+    router.patch(
+        `/president/final-approvals/${selectedRequest.value.id}/reject`,
+        {
+            remarks: rejectRemarks.value.trim(),
+        },
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                closeRejectModal();
+                successMessage.value = 'Clearance request has been rejected.';
+            },
+            onError: () => {
+                errorMessage.value =
+                    'Unable to reject clearance request. Please try again.';
+            },
+            onFinish: () => {
+                isSubmittingReject.value = false;
             },
         },
     );
@@ -430,13 +477,13 @@ const confirmAutoApproveAll = () => {
                             <p
                                 class="mt-1 text-lg font-black text-blue-950 md:text-xl"
                             >
-                                Manual or Bulk Approval
+                                Approve or Reject
                             </p>
 
                             <p
                                 class="text-xs font-medium text-slate-500 sm:text-sm"
                             >
-                                Approve one request or all ready requests.
+                                Approve, reject, or bulk approve ready requests.
                             </p>
                         </div>
                     </div>
@@ -778,14 +825,25 @@ const confirmAutoApproveAll = () => {
                                 All regular office approvals are complete.
                             </div>
 
-                            <button
-                                type="button"
-                                class="mt-4 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl bg-green-700 px-4 py-3 text-sm font-black text-white shadow-md shadow-green-700/20 transition hover:bg-green-800"
-                                @click="openFinalApproveModal(request)"
-                            >
-                                <CheckCircle2 class="size-4" />
-                                Final Approve
-                            </button>
+                            <div class="mt-4 grid grid-cols-2 gap-2">
+                                <button
+                                    type="button"
+                                    class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl border border-red-200 bg-white px-4 py-3 text-sm font-black text-red-600 shadow-sm transition hover:bg-red-50"
+                                    @click="openRejectModal(request)"
+                                >
+                                    <XCircle class="size-4" />
+                                    Reject
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl bg-green-700 px-4 py-3 text-sm font-black text-white shadow-md shadow-green-700/20 transition hover:bg-green-800"
+                                    @click="openFinalApproveModal(request)"
+                                >
+                                    <CheckCircle2 class="size-4" />
+                                    Final Approve
+                                </button>
+                            </div>
                         </article>
                     </div>
 
@@ -925,16 +983,33 @@ const confirmAutoApproveAll = () => {
                                     </td>
 
                                     <td class="px-6 py-4 text-right">
-                                        <button
-                                            type="button"
-                                            class="inline-flex min-h-11 items-center gap-2 rounded-2xl bg-green-700 px-4 py-2.5 text-sm font-black text-white shadow-md shadow-green-700/20 transition hover:-translate-y-0.5 hover:bg-green-800 hover:shadow-lg"
-                                            @click="
-                                                openFinalApproveModal(request)
-                                            "
+                                        <div
+                                            class="inline-flex items-center gap-2"
                                         >
-                                            <CheckCircle2 class="size-4" />
-                                            Final Approve
-                                        </button>
+                                            <button
+                                                type="button"
+                                                class="inline-flex min-h-11 items-center gap-2 rounded-2xl border border-red-200 bg-white px-4 py-2.5 text-sm font-black text-red-600 shadow-sm transition hover:-translate-y-0.5 hover:bg-red-50 hover:text-red-700 hover:shadow-md"
+                                                @click="
+                                                    openRejectModal(request)
+                                                "
+                                            >
+                                                <XCircle class="size-4" />
+                                                Reject
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                class="inline-flex min-h-11 items-center gap-2 rounded-2xl bg-green-700 px-4 py-2.5 text-sm font-black text-white shadow-md shadow-green-700/20 transition hover:-translate-y-0.5 hover:bg-green-800 hover:shadow-lg"
+                                                @click="
+                                                    openFinalApproveModal(
+                                                        request,
+                                                    )
+                                                "
+                                            >
+                                                <CheckCircle2 class="size-4" />
+                                                Final Approve
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             </tbody>
@@ -1140,6 +1215,123 @@ const confirmAutoApproveAll = () => {
                         @click="confirmAutoApproveAll"
                     >
                         Confirm Auto Approve All
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Single Final Rejection Modal -->
+    <div
+        v-if="showRejectModal"
+        class="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/50 p-3 backdrop-blur-sm sm:items-center sm:p-4"
+        @click.self="closeRejectModal"
+    >
+        <div
+            class="flex max-h-[92dvh] w-full max-w-lg flex-col overflow-hidden rounded-t-4xl border border-slate-200 bg-white shadow-2xl shadow-slate-900/20 sm:max-h-[90vh] sm:rounded-4xl"
+        >
+            <div class="shrink-0 border-b border-slate-200 p-4 sm:p-6">
+                <div class="flex items-start justify-between gap-4">
+                    <div class="flex min-w-0 items-start gap-3 sm:gap-4">
+                        <div
+                            class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-red-50 text-red-600 sm:h-12 sm:w-12"
+                        >
+                            <XCircle class="size-6" />
+                        </div>
+
+                        <div class="min-w-0">
+                            <h2
+                                class="text-lg font-black text-blue-950 sm:text-xl"
+                            >
+                                Reject Final Clearance
+                            </h2>
+
+                            <p class="mt-2 text-sm leading-6 text-slate-600">
+                                Provide a clear reason why this clearance request is being rejected. The student will be notified and guided to resolve the issue.
+                            </p>
+                        </div>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="grid size-10 shrink-0 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:bg-slate-50 hover:text-slate-900"
+                        @click="closeRejectModal"
+                    >
+                        <X class="size-5" />
+                    </button>
+                </div>
+            </div>
+
+            <div class="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6">
+                <div
+                    v-if="selectedRequest"
+                    class="mb-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700"
+                >
+                    <div class="grid gap-2">
+                        <p>
+                            <span class="font-black">Student:</span>
+                            {{ formatStudentName(selectedRequest.user) }}
+                            <span class="text-xs font-semibold text-slate-500">
+                                ({{ selectedRequest.user.student_id }})
+                            </span>
+                        </p>
+                        <p>
+                            <span class="font-black">Course & Year:</span>
+                            {{ selectedRequest.user.course?.code ?? 'N/A' }}
+                            <span
+                                v-if="selectedRequest.user.year_level"
+                                class="ml-1.5 inline-flex items-center gap-1 rounded-full bg-purple-50 px-2 py-0.5 text-xs font-black text-purple-700"
+                            >
+                                <GraduationCap class="size-3" />
+                                {{ selectedRequest.user.year_level }}
+                            </span>
+                        </p>
+                        <p>
+                            <span class="font-black">Semester & School Year:</span>
+                            {{ selectedRequest.semester }} • {{ selectedRequest.school_year }}
+                        </p>
+                    </div>
+                </div>
+
+                <div>
+                    <label
+                        for="president-reject-remarks"
+                        class="text-sm font-black text-slate-700"
+                    >
+                        Rejection Remarks <span class="text-red-500">*</span>
+                    </label>
+
+                    <textarea
+                        id="president-reject-remarks"
+                        v-model="rejectRemarks"
+                        rows="5"
+                        class="mt-2 min-h-32 w-full rounded-2xl border border-slate-200 bg-white p-4 text-sm font-medium text-slate-900 shadow-sm outline-none placeholder:text-slate-400 focus:border-red-500 focus:ring-4 focus:ring-red-500/20"
+                        placeholder="State the reason for rejecting this clearance request (e.g. pending institutional obligation, discrepancy in records)..."
+                    ></textarea>
+
+                    <p class="mt-2 text-xs font-medium text-slate-500">
+                        Remarks are required so the student knows what requirements to fulfill.
+                    </p>
+                </div>
+            </div>
+
+            <div class="shrink-0 border-t border-slate-200 bg-white p-4 sm:p-6">
+                <div class="grid grid-cols-2 gap-3 sm:flex sm:justify-end">
+                    <button
+                        type="button"
+                        class="min-h-11 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-black text-slate-700 transition hover:bg-slate-50"
+                        @click="closeRejectModal"
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        type="button"
+                        class="min-h-11 rounded-2xl bg-red-600 px-4 py-3 text-sm font-black text-white shadow-md shadow-red-600/20 transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+                        :disabled="!rejectRemarks.trim() || isSubmittingReject"
+                        @click="confirmReject"
+                    >
+                        {{ isSubmittingReject ? 'Rejecting...' : 'Reject Clearance' }}
                     </button>
                 </div>
             </div>

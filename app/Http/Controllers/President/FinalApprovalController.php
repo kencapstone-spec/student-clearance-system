@@ -50,6 +50,45 @@ class FinalApprovalController extends Controller
     }
 
     /**
+     * Reject one final clearance request.
+     */
+    public function reject(Request $request, ClearanceRequest $clearanceRequest)
+    {
+        $clearanceRequest->loadMissing([
+            'user',
+            'approvals.office',
+        ]);
+
+        $presidentApproval = $clearanceRequest->approvals->first(function ($approval) {
+            return $approval->office?->is_final_approver;
+        });
+
+        if (! $presidentApproval || $presidentApproval->status !== 'pending' || $clearanceRequest->status === 'cleared') {
+            return back()->with('error', 'This clearance request cannot be rejected.');
+        }
+
+        $validated = $request->validate([
+            'remarks' => ['required', 'string', 'max:1000'],
+        ]);
+
+        $presidentApproval->update([
+            'status' => 'rejected',
+            'remarks' => $validated['remarks'],
+            'approved_by' => $request->user()->id,
+            'acted_at' => now(),
+        ]);
+
+        NotificationService::send(
+            user: $clearanceRequest->user,
+            title: 'Clearance Rejected by College President',
+            message: "Your clearance request was rejected by the College President. Remarks: {$validated['remarks']}",
+            link: '/dashboard'
+        );
+
+        return back()->with('success', 'Clearance request has been rejected.');
+    }
+
+    /**
      * Auto approve all clearance requests that are ready for final approval.
      */
     public function approveAll(Request $request)

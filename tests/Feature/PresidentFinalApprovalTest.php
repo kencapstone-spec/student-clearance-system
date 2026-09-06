@@ -70,3 +70,97 @@ test('president can approve all ready clearance requests', function () {
     $response->assertRedirect()->assertSessionHas('success');
     expect($clearanceRequest->fresh()->status)->toBe('cleared');
 });
+
+test('president can reject a final clearance request with remarks', function () {
+    $president = User::factory()->create(['role' => 'president']);
+    $student = User::factory()->create(['role' => 'student']);
+    $regularOffice = Office::factory()->create(['is_final_approver' => false]);
+    $presidentOffice = Office::factory()->create(['is_final_approver' => true]);
+
+    $clearanceRequest = ClearanceRequest::factory()->create([
+        'user_id' => $student->id,
+        'status' => 'pending',
+    ]);
+
+    ClearanceApproval::factory()->create([
+        'clearance_request_id' => $clearanceRequest->id,
+        'office_id' => $regularOffice->id,
+        'status' => 'approved',
+    ]);
+
+    $presidentApproval = ClearanceApproval::factory()->create([
+        'clearance_request_id' => $clearanceRequest->id,
+        'office_id' => $presidentOffice->id,
+        'status' => 'pending',
+    ]);
+
+    $response = $this->actingAs($president)->patch(
+        route('president.final-approvals.reject', $clearanceRequest),
+        ['remarks' => 'Please settle your graduation fee at the cashier first.']
+    );
+
+    $response->assertRedirect()->assertSessionHas('success');
+
+    $clearanceRequest->refresh();
+    expect($presidentApproval->fresh()->status)->toBe('rejected')
+        ->and($presidentApproval->fresh()->remarks)->toBe('Please settle your graduation fee at the cashier first.')
+        ->and($presidentApproval->fresh()->approved_by)->toBe($president->id)
+        ->and($clearanceRequest->status)->toBe('pending');
+
+    $this->assertDatabaseHas('notifications', [
+        'user_id' => $student->id,
+        'title' => 'Clearance Rejected by College President',
+    ]);
+});
+
+test('president cannot reject a final clearance request without remarks', function () {
+    $president = User::factory()->create(['role' => 'president']);
+    $presidentOffice = Office::factory()->create(['is_final_approver' => true]);
+
+    $clearanceRequest = ClearanceRequest::factory()->create(['status' => 'pending']);
+
+    ClearanceApproval::factory()->create([
+        'clearance_request_id' => $clearanceRequest->id,
+        'office_id' => $presidentOffice->id,
+        'status' => 'pending',
+    ]);
+
+    $response = $this->actingAs($president)->patch(
+        route('president.final-approvals.reject', $clearanceRequest),
+        ['remarks' => '']
+    );
+
+    $response->assertSessionHasErrors('remarks');
+});
+
+test('president cannot reject a clearance request that is already cleared', function () {
+    $president = User::factory()->create(['role' => 'president']);
+    $presidentOffice = Office::factory()->create(['is_final_approver' => true]);
+
+    $clearanceRequest = ClearanceRequest::factory()->create(['status' => 'cleared']);
+
+    ClearanceApproval::factory()->create([
+        'clearance_request_id' => $clearanceRequest->id,
+        'office_id' => $presidentOffice->id,
+        'status' => 'approved',
+    ]);
+
+    $response = $this->actingAs($president)->patch(
+        route('president.final-approvals.reject', $clearanceRequest),
+        ['remarks' => 'Some remarks']
+    );
+
+    $response->assertRedirect()->assertSessionHas('error');
+});
+
+test('non-president cannot reject a final clearance request', function () {
+    $student = User::factory()->create(['role' => 'student']);
+    $clearanceRequest = ClearanceRequest::factory()->create(['status' => 'pending']);
+
+    $response = $this->actingAs($student)->patch(
+        route('president.final-approvals.reject', $clearanceRequest),
+        ['remarks' => 'Unauthorized rejection']
+    );
+
+    $response->assertRedirect(route('dashboard'));
+});
