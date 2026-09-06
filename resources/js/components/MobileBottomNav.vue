@@ -365,17 +365,17 @@ const handleReceiptClick = () => {
     <Sheet v-model:open="showMoreSheet">
         <SheetContent
             side="bottom"
-            class="max-h-[85vh] overflow-y-auto rounded-t-[1.75rem] border-t border-slate-200/90 bg-slate-50/60 px-4 pt-2.5 pb-8 shadow-2xl gap-0 focus:outline-hidden sm:px-6 sm:pb-8"
+            class="max-h-[85vh] overflow-y-auto rounded-t-[1.75rem] border-t border-slate-200 bg-white px-4 pt-2.5 pb-8 shadow-2xl gap-0 focus:outline-hidden sm:px-6 sm:pb-8"
         >
             <!-- Drag handle -->
-            <div class="mx-auto my-1.5 h-1 w-10 rounded-full bg-slate-300/90"></div>
+            <div class="mx-auto my-1.5 h-1 w-10 rounded-full bg-slate-300"></div>
 
             <!-- Header -->
             <div class="pr-8 pt-1 pb-3">
                 <SheetTitle class="text-base font-black tracking-tight text-slate-950">
                     Menu & Quick Actions
                 </SheetTitle>
-                <p class="text-xs font-medium text-slate-500 mt-0.5">
+                <p class="mt-0.5 text-xs font-medium text-slate-500">
                     Account details and system navigation
                 </p>
             </div>
@@ -383,7 +383,7 @@ const handleReceiptClick = () => {
             <!-- User Info Card -->
             <div
                 v-if="authUser"
-                class="mb-3.5 flex items-center gap-3 rounded-2xl border border-slate-200/90 bg-white p-3 shadow-xs"
+                class="mb-3.5 flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-slate-50 p-3 shadow-xs"
             >
                 <div
                     class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-950 via-blue-900 to-indigo-900 text-xs font-black text-white shadow-xs"
@@ -406,7 +406,7 @@ const handleReceiptClick = () => {
                         </span>
                         <span
                             v-if="authUser.student_id"
-                            class="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-[0.625rem] font-medium text-slate-600"
+                            class="inline-flex items-center rounded-md bg-slate-200/80 px-2 py-0.5 text-[0.625rem] font-medium text-slate-700"
                         >
                             ID: {{ authUser.student_id }}
                         </span>
@@ -437,11 +437,11 @@ const handleReceiptClick = () => {
                 <template v-if="userRole === 'admin'">
                     <Link
                         href="/admin/course-modules"
-                        class="group flex items-center gap-3 rounded-2xl border border-slate-200/90 bg-white p-3 shadow-xs transition-all hover:border-slate-300 hover:bg-slate-50/80 active:scale-[0.99] focus:outline-hidden"
+                        class="group flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/70 p-3 shadow-xs transition-all hover:border-slate-300 hover:bg-slate-100/80 active:scale-[0.99] focus:outline-hidden"
                         @click="closeMoreSheet"
                     >
                         <div
-                            class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-700 transition group-hover:bg-blue-100"
+                            class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-100/80 text-blue-700 transition group-hover:bg-blue-100"
                         >
                             <Layers class="size-5" />
                         </div>
@@ -449,7 +449,7 @@ const handleReceiptClick = () => {
                             <p class="text-sm font-bold text-slate-900 leading-tight">
                                 Course Modules
                             </p>
-                            <p class="mt-0.5 text-xs text-slate-500 leading-snug truncate sm:whitespace-normal">
+                            <p class="mt-0.5 text-xs text-slate-500 leading-snug">
                                 Manage academic courses and assigned offices
                             </p>
                         </div>
@@ -458,11 +458,11 @@ const handleReceiptClick = () => {
 
                     <Link
                         href="/admin/office-prerequisites"
-                        class="group flex items-center gap-3 rounded-2xl border border-slate-200/90 bg-white p-3 shadow-xs transition-all hover:border-slate-300 hover:bg-slate-50/80 active:scale-[0.99] focus:outline-hidden"
+                        class="group flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/70 p-3 shadow-xs transition-all hover:border-slate-300 hover:bg-slate-100/80 active:scale-[0.99] focus:outline-hidden"
                         @click="closeMoreSheet"
                     >
                         <div
-                            class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-indigo-700 transition group-hover:bg-indigo-100"
+                            class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-indigo-100/80 text-indigo-700 transition group-hover:bg-indigo-100"
                         >
                             <GraduationCap class="size-5" />
                         </div>
@@ -470,7 +470,7 @@ const handleReceiptClick = () => {
                             <p class="text-sm font-bold text-slate-900 leading-tight">
                                 Office Prerequisites
                             </p>
-                            <p class="mt-0.5 text-xs text-slate-500 leading-snug truncate sm:whitespace-normal">
+                            <p class="mt-0.5 text-xs text-slate-500 leading-snug">
                                 Configure dependency workflows for offices
                             </p>
                         </div>
@@ -479,11 +479,11 @@ const handleReceiptClick = () => {
 
                     <Link
                         href="/admin/settings"
-                        class="group flex items-center gap-3 rounded-2xl border border-slate-200/90 bg-white p-3 shadow-xs transition-all hover:border-slate-300 hover:bg-slate-50/80 active:scale-[0.99] focus:outline-hidden"
+                        class="group flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/70 p-3 shadow-xs transition-all hover:border-slate-300 hover:bg-slate-100/80 active:scale-[0.99] focus:outline-hidden"
                         @click="closeMoreSheet"
                     >
                         <div
-                            class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-700 transition group-hover:bg-slate-200/70"
+                            class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-slate-200/80 text-slate-700 transition group-hover:bg-slate-300/70"
                         >
                             <Settings class="size-5" />
                         </div>
@@ -491,7 +491,7 @@ const handleReceiptClick = () => {
                             <p class="text-sm font-bold text-slate-900 leading-tight">
                                 System Settings
                             </p>
-                            <p class="mt-0.5 text-xs text-slate-500 leading-snug truncate sm:whitespace-normal">
+                            <p class="mt-0.5 text-xs text-slate-500 leading-snug">
                                 Active semester and clearance rules
                             </p>
                         </div>
@@ -503,7 +503,7 @@ const handleReceiptClick = () => {
                 <button
                     v-if="userRole === 'student' && canPrintReceipt"
                     type="button"
-                    class="group flex w-full items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50/70 p-3 text-left transition hover:bg-emerald-100/70 active:scale-[0.99] focus:outline-hidden"
+                    class="group flex w-full items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50/80 p-3 text-left transition hover:bg-emerald-100/80 active:scale-[0.99] focus:outline-hidden"
                     @click="handleReceiptClick"
                 >
                     <div
@@ -515,7 +515,7 @@ const handleReceiptClick = () => {
                         <p class="text-sm font-bold text-emerald-900 leading-tight">
                             Official Clearance Receipt
                         </p>
-                        <p class="mt-0.5 text-xs text-emerald-700/80 leading-snug truncate sm:whitespace-normal">
+                        <p class="mt-0.5 text-xs text-emerald-700/80 leading-snug">
                             View or print your signed clearance
                         </p>
                     </div>
