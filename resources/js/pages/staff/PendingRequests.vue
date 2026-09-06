@@ -4,7 +4,6 @@ import {
     Building2,
     CheckCircle2,
     ClipboardCheck,
-    Clock3,
     Filter,
     GraduationCap,
     Inbox,
@@ -484,24 +483,15 @@ const filterButtonClass = (filter: FilterStatus) => {
                             </span>
                         </div>
 
-                        <div class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                        <div class="mt-5 flex flex-wrap gap-3">
                             <button
                                 type="button"
-                                class="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-green-700 px-5 py-3 text-sm font-black text-white shadow-lg shadow-green-700/20 transition hover:-translate-y-0.5 hover:bg-green-800 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50"
+                                class="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-green-700 px-5 py-3 text-sm font-black text-white shadow-lg shadow-green-700/20 transition hover:-translate-y-0.5 hover:bg-green-800 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
                                 :disabled="pendingApprovals.length === 0"
                                 @click="openApproveAllModal"
                             >
                                 <CheckCircle2 class="size-4" />
                                 Approve All Pending
-                            </button>
-
-                            <button
-                                type="button"
-                                class="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-black text-blue-700 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-200 hover:bg-blue-50 hover:shadow-md"
-                                @click="setFilter('pending')"
-                            >
-                                <Clock3 class="size-4" />
-                                Manual Review
                             </button>
                         </div>
 
@@ -1317,8 +1307,8 @@ const filterButtonClass = (filter: FilterStatus) => {
                 <div
                     class="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 font-medium text-amber-900"
                 >
-                    Manual review is still available if you want to check each
-                    request one by one before approving.
+                    Individual review and action is still available if you want
+                    to check each request one by one.
                 </div>
             </div>
 

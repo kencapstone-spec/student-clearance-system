@@ -399,36 +399,11 @@ const handleReceiptClick = () => {
             </button>
         </div>
 
-        <!-- STAFF NAVIGATION (3 items - Symmetrical) -->
+        <!-- STAFF NAVIGATION (Centered Requests Button) -->
         <div
             v-else-if="userRole === 'staff'"
-            class="grid grid-cols-3 items-end justify-items-center gap-2"
+            class="flex items-center justify-center py-1"
         >
-            <!-- Alerts -->
-            <button
-                type="button"
-                class="flex w-full flex-col items-center justify-center py-1 text-slate-500 transition hover:text-blue-950 active:scale-95"
-                @click="openAlertsSheet"
-            >
-                <div class="relative">
-                    <Bell class="size-5" />
-                    <span
-                        v-if="notifications.unread_count > 0"
-                        class="absolute -top-1 -right-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[0.6rem] font-black text-white shadow-xs"
-                    >
-                        {{
-                            notifications.unread_count > 99
-                                ? '99+'
-                                : notifications.unread_count
-                        }}
-                    </span>
-                </div>
-                <span class="mt-0.5 h-1 w-1 rounded-full bg-transparent"></span>
-                <span class="text-[0.65rem] font-bold tracking-tight"
-                    >Alerts</span
-                >
-            </button>
-
             <!-- Elevated Center Focal Button: Pending Requests -->
             <div class="-mt-5 flex flex-col items-center justify-center">
                 <Link
@@ -453,51 +428,13 @@ const handleReceiptClick = () => {
                     Requests
                 </span>
             </div>
-
-            <!-- More -->
-            <button
-                type="button"
-                class="flex w-full flex-col items-center justify-center py-1 text-slate-500 transition hover:text-slate-900 active:scale-95"
-                @click="openMoreSheet"
-            >
-                <MoreHorizontal class="size-5" />
-                <span class="mt-0.5 h-1 w-1 rounded-full bg-transparent"></span>
-                <span class="text-[0.65rem] font-bold tracking-tight"
-                    >More</span
-                >
-            </button>
         </div>
 
-        <!-- PRESIDENT NAVIGATION (3 items - Symmetrical) -->
+        <!-- PRESIDENT NAVIGATION (Centered Approvals Button) -->
         <div
             v-else-if="userRole === 'president'"
-            class="grid grid-cols-3 items-end justify-items-center gap-2"
+            class="flex items-center justify-center py-1"
         >
-            <!-- Alerts -->
-            <button
-                type="button"
-                class="flex w-full flex-col items-center justify-center py-1 text-slate-500 transition hover:text-blue-950 active:scale-95"
-                @click="openAlertsSheet"
-            >
-                <div class="relative">
-                    <Bell class="size-5" />
-                    <span
-                        v-if="notifications.unread_count > 0"
-                        class="absolute -top-1 -right-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[0.6rem] font-black text-white shadow-xs"
-                    >
-                        {{
-                            notifications.unread_count > 99
-                                ? '99+'
-                                : notifications.unread_count
-                        }}
-                    </span>
-                </div>
-                <span class="mt-0.5 h-1 w-1 rounded-full bg-transparent"></span>
-                <span class="text-[0.65rem] font-bold tracking-tight"
-                    >Alerts</span
-                >
-            </button>
-
             <!-- Elevated Center Focal Button: Final Approvals -->
             <div class="-mt-5 flex flex-col items-center justify-center">
                 <Link
@@ -522,19 +459,6 @@ const handleReceiptClick = () => {
                     Approvals
                 </span>
             </div>
-
-            <!-- More -->
-            <button
-                type="button"
-                class="flex w-full flex-col items-center justify-center py-1 text-slate-500 transition hover:text-slate-900 active:scale-95"
-                @click="openMoreSheet"
-            >
-                <MoreHorizontal class="size-5" />
-                <span class="mt-0.5 h-1 w-1 rounded-full bg-transparent"></span>
-                <span class="text-[0.65rem] font-bold tracking-tight"
-                    >More</span
-                >
-            </button>
         </div>
     </nav>
 
