@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { Link, router, usePage } from '@inertiajs/vue3';
 import {
-    Bell,
     ChevronRight,
     FilePlus,
     FileText,
@@ -41,21 +40,6 @@ type AuthUser = {
     course?: UserCourse | null;
 };
 
-type SharedNotification = {
-    id: number;
-    title: string;
-    message: string;
-    link: string | null;
-    read_at: string | null;
-    created_at: string | null;
-    created_at_human: string | null;
-};
-
-type NotificationsProp = {
-    items: SharedNotification[];
-    unread_count: number;
-};
-
 type StudentClearanceProp = {
     id: number;
     is_cleared: boolean;
@@ -66,15 +50,6 @@ const { getInitials } = useInitials();
 
 const authUser = computed(() => (page.props.auth as { user?: AuthUser })?.user);
 const userRole = computed(() => authUser.value?.role ?? 'student');
-
-const notifications = computed<NotificationsProp>(() => {
-    const shared = page.props.notifications as NotificationsProp | undefined;
-
-    return {
-        items: shared?.items ?? [],
-        unread_count: shared?.unread_count ?? 0,
-    };
-});
 
 const studentClearance = computed<StudentClearanceProp | null>(() => {
     return (
@@ -132,7 +107,6 @@ const isUrlActive = (target: string) => {
 };
 
 const showMoreSheet = ref(false);
-const showAlertsSheet = ref(false);
 
 const openMoreSheet = () => {
     showMoreSheet.value = true;
@@ -140,24 +114,6 @@ const openMoreSheet = () => {
 
 const closeMoreSheet = () => {
     showMoreSheet.value = false;
-};
-
-const openAlertsSheet = () => {
-    showAlertsSheet.value = true;
-};
-
-const closeAlertsSheet = () => {
-    showAlertsSheet.value = false;
-};
-
-const markAllAsRead = () => {
-    router.patch(
-        '/notifications/mark-all-as-read',
-        {},
-        {
-            preserveScroll: true,
-        },
-    );
 };
 
 // Student interactive actions
@@ -559,92 +515,6 @@ const handleReceiptClick = () => {
                     </div>
                     <ChevronRight class="size-5 text-emerald-500" />
                 </button>
-            </div>
-        </SheetContent>
-    </Sheet>
-
-    <!-- SLIDE-UP "ALERTS" SHEET -->
-    <Sheet v-model:open="showAlertsSheet">
-        <SheetContent
-            side="bottom"
-            class="max-h-[85vh] overflow-y-auto rounded-t-3xl border-slate-200 bg-white p-6 shadow-2xl"
-        >
-            <div
-                class="mx-auto mb-4 h-1.5 w-12 rounded-full bg-slate-300"
-            ></div>
-
-            <div
-                class="flex items-center justify-between border-b border-slate-100 pb-4"
-            >
-                <div>
-                    <SheetTitle class="text-lg font-black text-slate-900">
-                        Notifications
-                    </SheetTitle>
-                    <p class="text-xs font-medium text-slate-500">
-                        {{ notifications.unread_count }} unread message(s)
-                    </p>
-                </div>
-
-                <button
-                    v-if="notifications.unread_count > 0"
-                    type="button"
-                    class="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-700 transition hover:bg-slate-200"
-                    @click="markAllAsRead"
-                >
-                    Mark all as read
-                </button>
-            </div>
-
-            <div class="mt-4">
-                <div
-                    v-if="notifications.items.length === 0"
-                    class="py-10 text-center text-sm font-medium text-slate-500"
-                >
-                    No notifications yet.
-                </div>
-
-                <div v-else class="space-y-2">
-                    <Link
-                        v-for="notification in notifications.items"
-                        :key="notification.id"
-                        :href="`/notifications/${notification.id}/open`"
-                        class="block rounded-2xl border border-slate-100 p-3.5 text-left transition hover:bg-slate-50"
-                        :class="
-                            notification.read_at
-                                ? 'bg-white opacity-80'
-                                : 'bg-slate-50/90 font-medium'
-                        "
-                        @click="closeAlertsSheet"
-                    >
-                        <div class="flex items-start gap-3">
-                            <span
-                                class="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full"
-                                :class="
-                                    notification.read_at
-                                        ? 'bg-slate-300'
-                                        : 'bg-blue-600 ring-2 ring-blue-100'
-                                "
-                            ></span>
-
-                            <div class="min-w-0 flex-1">
-                                <p class="text-sm font-bold text-slate-900">
-                                    {{ notification.title }}
-                                </p>
-                                <p
-                                    class="mt-0.5 line-clamp-2 text-xs text-slate-600"
-                                >
-                                    {{ notification.message }}
-                                </p>
-                                <p
-                                    v-if="notification.created_at_human"
-                                    class="mt-1 text-[0.65rem] font-semibold text-slate-400"
-                                >
-                                    {{ notification.created_at_human }}
-                                </p>
-                            </div>
-                        </div>
-                    </Link>
-                </div>
             </div>
         </SheetContent>
     </Sheet>

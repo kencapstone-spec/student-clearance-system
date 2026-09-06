@@ -218,36 +218,44 @@ const calculateOfficePrerequisiteDepths = <T extends Office>(
         }
 
         const office = map.get(id);
+
         if (!office) {
             return 0;
         }
 
         if (office.is_final_approver) {
             depths.set(id, 99999);
+
             return 99999;
         }
 
         if (!office.prerequisites || office.prerequisites.length === 0) {
             depths.set(id, 0);
+
             return 0;
         }
 
         visiting.add(id);
         let maxPrereqDepth = 0;
+
         for (const prereq of office.prerequisites) {
             const d = getDepth(prereq.id);
+
             if (d > maxPrereqDepth) {
                 maxPrereqDepth = d;
             }
         }
+
         visiting.delete(id);
 
         const depth = maxPrereqDepth + 1;
         depths.set(id, depth);
+
         return depth;
     };
 
     offices.forEach((o) => getDepth(o.id));
+
     return depths;
 };
 

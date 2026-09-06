@@ -569,7 +569,11 @@ const filterButtonClass = (filter: FilterStatus) => {
 
                 <div
                     class="cursor-pointer rounded-2xl border bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-3xl md:p-6"
-                    :class="activeFilter === 'pending' ? 'border-orange-400 ring-2 ring-orange-400/30' : 'border-slate-200'"
+                    :class="
+                        activeFilter === 'pending'
+                            ? 'border-orange-400 ring-2 ring-orange-400/30'
+                            : 'border-slate-200'
+                    "
                     @click="setFilter('pending')"
                 >
                     <div class="flex items-center gap-3 md:gap-4">
@@ -603,7 +607,11 @@ const filterButtonClass = (filter: FilterStatus) => {
 
                 <div
                     class="cursor-pointer rounded-2xl border bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-3xl md:p-6"
-                    :class="activeFilter === 'approved' ? 'border-green-500 ring-2 ring-green-500/30' : 'border-slate-200'"
+                    :class="
+                        activeFilter === 'approved'
+                            ? 'border-green-500 ring-2 ring-green-500/30'
+                            : 'border-slate-200'
+                    "
                     @click="setFilter('approved')"
                 >
                     <div class="flex items-center gap-3 md:gap-4">
@@ -636,8 +644,12 @@ const filterButtonClass = (filter: FilterStatus) => {
                 </div>
 
                 <div
-                    class="cursor-pointer col-span-2 rounded-2xl border bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl sm:col-span-1 md:rounded-3xl md:p-6"
-                    :class="activeFilter === 'rejected' ? 'border-red-400 ring-2 ring-red-400/30' : 'border-slate-200'"
+                    class="col-span-2 cursor-pointer rounded-2xl border bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl sm:col-span-1 md:rounded-3xl md:p-6"
+                    :class="
+                        activeFilter === 'rejected'
+                            ? 'border-red-400 ring-2 ring-red-400/30'
+                            : 'border-slate-200'
+                    "
                     @click="setFilter('rejected')"
                 >
                     <div class="flex items-center gap-3 md:gap-4">

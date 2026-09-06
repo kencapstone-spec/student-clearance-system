@@ -147,22 +147,22 @@ class FinalApprovalController extends Controller
                         });
                 })
                 // 2. Approved by president / Cleared
-                ->orWhere(function ($approvedQuery) {
-                    $approvedQuery->where('status', 'cleared')
-                        ->orWhereHas('approvals', function ($q) {
+                    ->orWhere(function ($approvedQuery) {
+                        $approvedQuery->where('status', 'cleared')
+                            ->orWhereHas('approvals', function ($q) {
+                                $q->whereHas('office', function ($oq) {
+                                    $oq->where('is_final_approver', true);
+                                })->where('status', 'approved');
+                            });
+                    })
+                // 3. Rejected by president
+                    ->orWhere(function ($rejectedQuery) {
+                        $rejectedQuery->whereHas('approvals', function ($q) {
                             $q->whereHas('office', function ($oq) {
                                 $oq->where('is_final_approver', true);
-                            })->where('status', 'approved');
+                            })->where('status', 'rejected');
                         });
-                })
-                // 3. Rejected by president
-                ->orWhere(function ($rejectedQuery) {
-                    $rejectedQuery->whereHas('approvals', function ($q) {
-                        $q->whereHas('office', function ($oq) {
-                            $oq->where('is_final_approver', true);
-                        })->where('status', 'rejected');
                     });
-                });
             })
             ->latest()
             ->get();

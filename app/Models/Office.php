@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
 
 class Office extends Model
 {
@@ -52,7 +53,7 @@ class Office extends Model
      */
     public static function sortByPrerequisites($offices)
     {
-        $collection = $offices instanceof \Illuminate\Support\Collection ? $offices : collect($offices);
+        $collection = $offices instanceof Collection ? $offices : collect($offices);
         if ($collection->isEmpty()) {
             return $collection;
         }
@@ -77,6 +78,7 @@ class Office extends Model
 
             if ($office->is_final_approver) {
                 $depths[$officeId] = 99999;
+
                 return 99999;
             }
 
@@ -86,6 +88,7 @@ class Office extends Model
 
             if ($prereqs->isEmpty()) {
                 $depths[$officeId] = 0;
+
                 return 0;
             }
 
@@ -101,6 +104,7 @@ class Office extends Model
 
             $depth = $maxPrereqDepth + 1;
             $depths[$officeId] = $depth;
+
             return $depth;
         };
 

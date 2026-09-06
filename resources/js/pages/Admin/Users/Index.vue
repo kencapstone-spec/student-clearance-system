@@ -82,7 +82,7 @@ const availableCourses = computed(() => {
     });
 
     return Array.from(courseMap.values()).sort((a, b) =>
-        a.code.localeCompare(b.code)
+        a.code.localeCompare(b.code),
     );
 });
 
@@ -210,7 +210,9 @@ const filteredUsers = computed(() => {
             officeName.toLowerCase().includes(searchValue) ||
             activeStatus.includes(searchValue);
 
-        return matchesRole && matchesCourse && matchesYearLevel && matchesSearch;
+        return (
+            matchesRole && matchesCourse && matchesYearLevel && matchesSearch
+        );
     });
 });
 
@@ -232,6 +234,7 @@ const presidentCount = computed(() => {
 
 const setRoleFilter = (role: RoleFilter) => {
     activeRoleFilter.value = role;
+
     if (role !== 'all' && role !== 'student') {
         selectedCourse.value = 'all';
         selectedYearLevel.value = 'all';
@@ -816,7 +819,8 @@ const roleFilterButtonClass = (role: RoleFilter) => {
                     </p>
 
                     <p class="mt-1 text-sm font-medium text-slate-500">
-                        Try changing the search text, role, course, or year level filter.
+                        Try changing the search text, role, course, or year
+                        level filter.
                     </p>
                 </div>
 

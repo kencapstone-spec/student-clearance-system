@@ -39,12 +39,14 @@ declare module '@inertiajs/core' {
 }
 
 declare module '@inertiajs/vue3' {
-    export function usePage<T extends PageProps = PageProps>(): Page<T & {
-        auth: Auth;
-        name: string;
-        sidebarOpen: boolean;
-        [key: string]: unknown;
-    }>;
+    export function usePage<T extends PageProps = PageProps>(): Page<
+        T & {
+            auth: Auth;
+            name: string;
+            sidebarOpen: boolean;
+            [key: string]: unknown;
+        }
+    >;
 }
 
 declare module 'vue' {

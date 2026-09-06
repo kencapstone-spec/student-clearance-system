@@ -3,9 +3,7 @@ import { Head, router } from '@inertiajs/vue3';
 import {
     Building2,
     CheckCircle2,
-    ClipboardCheck,
     Clock3,
-    FileCheck2,
     Filter,
     GraduationCap,
     Inbox,
@@ -89,18 +87,25 @@ const approvalRequests = computed(() => {
     return props.clearanceRequests ?? props.requests ?? [];
 });
 
-const getPresidentApproval = (request: ClearanceRequest): Approval | undefined => {
+const getPresidentApproval = (
+    request: ClearanceRequest,
+): Approval | undefined => {
     return request.approvals?.find((a) => a.office?.is_final_approver);
 };
 
-const getRequestStatus = (request: ClearanceRequest): 'pending' | 'approved' | 'rejected' => {
+const getRequestStatus = (
+    request: ClearanceRequest,
+): 'pending' | 'approved' | 'rejected' => {
     const presApproval = getPresidentApproval(request);
+
     if (presApproval) {
         return presApproval.status;
     }
+
     if (request.status === 'cleared') {
         return 'approved';
     }
+
     return 'pending';
 };
 
@@ -110,15 +115,21 @@ const setFilter = (filter: FilterStatus) => {
 };
 
 const pendingRequests = computed(() => {
-    return approvalRequests.value.filter((req) => getRequestStatus(req) === 'pending');
+    return approvalRequests.value.filter(
+        (req) => getRequestStatus(req) === 'pending',
+    );
 });
 
 const approvedRequests = computed(() => {
-    return approvalRequests.value.filter((req) => getRequestStatus(req) === 'approved');
+    return approvalRequests.value.filter(
+        (req) => getRequestStatus(req) === 'approved',
+    );
 });
 
 const rejectedRequests = computed(() => {
-    return approvalRequests.value.filter((req) => getRequestStatus(req) === 'rejected');
+    return approvalRequests.value.filter(
+        (req) => getRequestStatus(req) === 'rejected',
+    );
 });
 
 const readyApprovalCount = computed(() => pendingRequests.value.length);
@@ -128,12 +139,15 @@ const filterButtonClass = (filter: FilterStatus) => {
         if (filter === 'pending') {
             return 'bg-orange-500 text-white border-orange-500 shadow-md shadow-orange-500/20';
         }
+
         if (filter === 'approved') {
             return 'bg-green-700 text-white border-green-700 shadow-md shadow-green-700/20';
         }
+
         if (filter === 'rejected') {
             return 'bg-red-600 text-white border-red-600 shadow-md shadow-red-600/20';
         }
+
         return 'bg-blue-950 text-white border-blue-950 shadow-md shadow-blue-950/20';
     }
 
@@ -144,9 +158,11 @@ const statusBadgeClass = (status: 'pending' | 'approved' | 'rejected') => {
     if (status === 'approved') {
         return 'bg-green-50 text-green-700 border-green-200';
     }
+
     if (status === 'rejected') {
         return 'bg-red-50 text-red-700 border-red-200';
     }
+
     return 'bg-blue-50 text-blue-700 border-blue-200';
 };
 
@@ -154,9 +170,11 @@ const statusLabel = (status: 'pending' | 'approved' | 'rejected') => {
     if (status === 'approved') {
         return 'Final Approved';
     }
+
     if (status === 'rejected') {
         return 'Rejected';
     }
+
     return 'Ready for Final Approval';
 };
 
@@ -240,7 +258,9 @@ const filteredApprovalRequests = computed(() => {
                 student.course?.code?.toLowerCase().includes(q) ||
                 student.course?.name?.toLowerCase().includes(q);
             const matchesYear = student.year_level?.toLowerCase().includes(q);
-            const matchesReceipt = req.receipt_number?.toLowerCase().includes(q);
+            const matchesReceipt = req.receipt_number
+                ?.toLowerCase()
+                .includes(q);
 
             if (
                 !matchesName &&
@@ -514,7 +534,7 @@ const confirmAutoApproveAll = () => {
 
             <!-- Summary Stats -->
             <section
-                class="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4 md:gap-5"
+                class="grid grid-cols-2 gap-3 sm:gap-4 md:gap-5 lg:grid-cols-4"
             >
                 <div
                     class="col-span-2 rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl sm:col-span-1 md:rounded-3xl md:p-6"
@@ -550,7 +570,11 @@ const confirmAutoApproveAll = () => {
 
                 <div
                     class="cursor-pointer rounded-2xl border bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-3xl md:p-6"
-                    :class="activeFilter === 'pending' ? 'border-orange-400 ring-2 ring-orange-400/30' : 'border-slate-200'"
+                    :class="
+                        activeFilter === 'pending'
+                            ? 'border-orange-400 ring-2 ring-orange-400/30'
+                            : 'border-slate-200'
+                    "
                     @click="setFilter('pending')"
                 >
                     <div class="flex items-center gap-3 md:gap-4">
@@ -584,7 +608,11 @@ const confirmAutoApproveAll = () => {
 
                 <div
                     class="cursor-pointer rounded-2xl border bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl md:rounded-3xl md:p-6"
-                    :class="activeFilter === 'approved' ? 'border-green-500 ring-2 ring-green-500/30' : 'border-slate-200'"
+                    :class="
+                        activeFilter === 'approved'
+                            ? 'border-green-500 ring-2 ring-green-500/30'
+                            : 'border-slate-200'
+                    "
                     @click="setFilter('approved')"
                 >
                     <div class="flex items-center gap-3 md:gap-4">
@@ -617,8 +645,12 @@ const confirmAutoApproveAll = () => {
                 </div>
 
                 <div
-                    class="cursor-pointer col-span-2 rounded-2xl border bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl sm:col-span-1 md:rounded-3xl md:p-6"
-                    :class="activeFilter === 'rejected' ? 'border-red-400 ring-2 ring-red-400/30' : 'border-slate-200'"
+                    class="col-span-2 cursor-pointer rounded-2xl border bg-white/95 p-4 shadow-sm shadow-slate-200/70 transition hover:-translate-y-1 hover:shadow-xl sm:col-span-1 md:rounded-3xl md:p-6"
+                    :class="
+                        activeFilter === 'rejected'
+                            ? 'border-red-400 ring-2 ring-red-400/30'
+                            : 'border-slate-200'
+                    "
                     @click="setFilter('rejected')"
                 >
                     <div class="flex items-center gap-3 md:gap-4">
@@ -674,12 +706,15 @@ const confirmAutoApproveAll = () => {
                             </h2>
 
                             <p class="mt-1 text-sm font-medium text-slate-500">
-                                Filter pending, approved, and rejected requests for final clearance.
+                                Filter pending, approved, and rejected requests
+                                for final clearance.
                             </p>
                         </div>
 
                         <div class="flex flex-wrap items-center gap-3">
-                            <div class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+                            <div
+                                class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap"
+                            >
                                 <button
                                     type="button"
                                     class="inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-2xl border px-4 py-2.5 text-sm font-black transition"
@@ -942,8 +977,8 @@ const confirmAutoApproveAll = () => {
                                 selectedDepartment !== 'all'
                             "
                         >
-                            No requests match your current search, department, or
-                            year level filter.
+                            No requests match your current search, department,
+                            or year level filter.
                         </span>
                         <span v-else>
                             No {{ activeFilter }} clearance requests found.
@@ -991,7 +1026,11 @@ const confirmAutoApproveAll = () => {
 
                                 <span
                                     class="shrink-0 rounded-full border px-3 py-1 text-xs font-black"
-                                    :class="statusBadgeClass(getRequestStatus(request))"
+                                    :class="
+                                        statusBadgeClass(
+                                            getRequestStatus(request),
+                                        )
+                                    "
                                 >
                                     {{ statusLabel(getRequestStatus(request)) }}
                                 </span>
@@ -1036,23 +1075,36 @@ const confirmAutoApproveAll = () => {
                                 <span class="font-black">
                                     Office approval status:
                                 </span>
-                                All regular office approvals are complete. Ready for President final action.
+                                All regular office approvals are complete. Ready
+                                for President final action.
                             </div>
 
                             <div
-                                v-else-if="getRequestStatus(request) === 'approved'"
+                                v-else-if="
+                                    getRequestStatus(request) === 'approved'
+                                "
                                 class="mt-3 rounded-xl border border-green-200 bg-green-50 px-3 py-2 text-sm font-medium text-green-800"
                             >
                                 <span class="font-black">Receipt No:</span>
-                                {{ request.receipt_number ?? 'Cleared & Receipt Generated' }}
+                                {{
+                                    request.receipt_number ??
+                                    'Cleared & Receipt Generated'
+                                }}
                             </div>
 
                             <div
-                                v-else-if="getRequestStatus(request) === 'rejected'"
+                                v-else-if="
+                                    getRequestStatus(request) === 'rejected'
+                                "
                                 class="mt-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-800"
                             >
-                                <span class="font-black">Rejection Remarks:</span>
-                                {{ getPresidentApproval(request)?.remarks ?? '-' }}
+                                <span class="font-black"
+                                    >Rejection Remarks:</span
+                                >
+                                {{
+                                    getPresidentApproval(request)?.remarks ??
+                                    '-'
+                                }}
                             </div>
 
                             <div
@@ -1087,7 +1139,11 @@ const confirmAutoApproveAll = () => {
                                             : 'bg-red-100 text-red-700'
                                     "
                                 >
-                                    {{ getRequestStatus(request) === 'approved' ? 'Completed' : 'Rejected' }}
+                                    {{
+                                        getRequestStatus(request) === 'approved'
+                                            ? 'Completed'
+                                            : 'Rejected'
+                                    }}
                                 </span>
                             </div>
                         </article>
@@ -1247,16 +1303,28 @@ const confirmAutoApproveAll = () => {
                                         class="max-w-xs px-6 py-4 text-sm font-medium text-slate-600"
                                     >
                                         <span
-                                            v-if="getRequestStatus(request) === 'approved'"
+                                            v-if="
+                                                getRequestStatus(request) ===
+                                                'approved'
+                                            "
                                             class="font-semibold text-green-700"
                                         >
-                                            {{ request.receipt_number ?? 'Receipt Generated' }}
+                                            {{
+                                                request.receipt_number ??
+                                                'Receipt Generated'
+                                            }}
                                         </span>
                                         <span
-                                            v-else-if="getRequestStatus(request) === 'rejected'"
+                                            v-else-if="
+                                                getRequestStatus(request) ===
+                                                'rejected'
+                                            "
                                             class="font-medium text-red-700"
                                         >
-                                            {{ getPresidentApproval(request)?.remarks ?? '-' }}
+                                            {{
+                                                getPresidentApproval(request)
+                                                    ?.remarks ?? '-'
+                                            }}
                                         </span>
                                         <span v-else class="text-slate-400">
                                             Ready for final review
@@ -1265,7 +1333,10 @@ const confirmAutoApproveAll = () => {
 
                                     <td class="px-6 py-4 text-right">
                                         <div
-                                            v-if="getRequestStatus(request) === 'pending'"
+                                            v-if="
+                                                getRequestStatus(request) ===
+                                                'pending'
+                                            "
                                             class="inline-flex items-center gap-2"
                                         >
                                             <button
@@ -1297,12 +1368,18 @@ const confirmAutoApproveAll = () => {
                                             v-else
                                             class="inline-flex rounded-full px-3 py-1 text-xs font-black"
                                             :class="
-                                                getRequestStatus(request) === 'approved'
+                                                getRequestStatus(request) ===
+                                                'approved'
                                                     ? 'bg-slate-100 text-slate-500'
                                                     : 'bg-red-100 text-red-700'
                                             "
                                         >
-                                            {{ getRequestStatus(request) === 'approved' ? 'Completed' : 'Rejected' }}
+                                            {{
+                                                getRequestStatus(request) ===
+                                                'approved'
+                                                    ? 'Completed'
+                                                    : 'Rejected'
+                                            }}
                                         </span>
                                     </td>
                                 </tr>
@@ -1541,7 +1618,9 @@ const confirmAutoApproveAll = () => {
                             </h2>
 
                             <p class="mt-2 text-sm leading-6 text-slate-600">
-                                Provide a clear reason why this clearance request is being rejected. The student will be notified and guided to resolve the issue.
+                                Provide a clear reason why this clearance
+                                request is being rejected. The student will be
+                                notified and guided to resolve the issue.
                             </p>
                         </div>
                     </div>
@@ -1581,8 +1660,11 @@ const confirmAutoApproveAll = () => {
                             </span>
                         </p>
                         <p>
-                            <span class="font-black">Semester & School Year:</span>
-                            {{ selectedRequest.semester }} • {{ selectedRequest.school_year }}
+                            <span class="font-black"
+                                >Semester & School Year:</span
+                            >
+                            {{ selectedRequest.semester }} •
+                            {{ selectedRequest.school_year }}
                         </p>
                     </div>
                 </div>
@@ -1604,7 +1686,8 @@ const confirmAutoApproveAll = () => {
                     ></textarea>
 
                     <p class="mt-2 text-xs font-medium text-slate-500">
-                        Remarks are required so the student knows what requirements to fulfill.
+                        Remarks are required so the student knows what
+                        requirements to fulfill.
                     </p>
                 </div>
             </div>
@@ -1625,7 +1708,11 @@ const confirmAutoApproveAll = () => {
                         :disabled="!rejectRemarks.trim() || isSubmittingReject"
                         @click="confirmReject"
                     >
-                        {{ isSubmittingReject ? 'Rejecting...' : 'Reject Clearance' }}
+                        {{
+                            isSubmittingReject
+                                ? 'Rejecting...'
+                                : 'Reject Clearance'
+                        }}
                     </button>
                 </div>
             </div>
