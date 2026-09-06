@@ -66,7 +66,7 @@ defineOptions({
                         pattern="[0-9]{9}"
                         inputmode="numeric"
                         title="Student ID must be exactly 9 digits and contain numbers only."
-                        class="!h-9.5 sm:!h-10 !rounded-xl !border-slate-200 !bg-white !px-3.5 !text-xs sm:!text-sm !font-semibold !text-slate-900 !shadow-xs placeholder:!font-normal placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20"
+                        class="!h-9.5 !rounded-xl !border-slate-200 !bg-white !px-3.5 !text-xs !font-semibold !text-slate-900 !shadow-xs placeholder:!font-normal placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20 sm:!h-10 sm:!text-sm"
                     />
 
                     <InputError :message="errors.student_id" />
@@ -88,7 +88,7 @@ defineOptions({
                         autocomplete="email"
                         name="email"
                         placeholder="student@example.com"
-                        class="!h-9.5 sm:!h-10 !rounded-xl !border-slate-200 !bg-white !px-3.5 !text-xs sm:!text-sm !font-semibold !text-slate-900 !shadow-xs placeholder:!font-normal placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20"
+                        class="!h-9.5 !rounded-xl !border-slate-200 !bg-white !px-3.5 !text-xs !font-semibold !text-slate-900 !shadow-xs placeholder:!font-normal placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20 sm:!h-10 sm:!text-sm"
                     />
 
                     <InputError :message="errors.email" />
@@ -113,7 +113,7 @@ defineOptions({
                         autocomplete="family-name"
                         name="last_name"
                         placeholder="Last name"
-                        class="!h-9.5 sm:!h-10 !rounded-xl !border-slate-200 !bg-white !px-3.5 !text-xs sm:!text-sm !font-semibold !text-slate-900 !shadow-xs placeholder:!font-normal placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20"
+                        class="!h-9.5 !rounded-xl !border-slate-200 !bg-white !px-3.5 !text-xs !font-semibold !text-slate-900 !shadow-xs placeholder:!font-normal placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20 sm:!h-10 sm:!text-sm"
                     />
 
                     <InputError :message="errors.last_name" />
@@ -135,7 +135,7 @@ defineOptions({
                         autocomplete="given-name"
                         name="first_name"
                         placeholder="First name"
-                        class="!h-9.5 sm:!h-10 !rounded-xl !border-slate-200 !bg-white !px-3.5 !text-xs sm:!text-sm !font-semibold !text-slate-900 !shadow-xs placeholder:!font-normal placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20"
+                        class="!h-9.5 !rounded-xl !border-slate-200 !bg-white !px-3.5 !text-xs !font-semibold !text-slate-900 !shadow-xs placeholder:!font-normal placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20 sm:!h-10 sm:!text-sm"
                     />
 
                     <InputError :message="errors.first_name" />
@@ -157,7 +157,7 @@ defineOptions({
                         name="year_level"
                         required
                         :tabindex="5"
-                        class="h-9.5 sm:h-10 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-xs sm:text-sm font-semibold text-slate-900 shadow-xs transition outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+                        class="h-9.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-xs font-semibold text-slate-900 shadow-xs transition outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 disabled:cursor-not-allowed disabled:opacity-50 sm:h-10 sm:text-sm"
                     >
                         <option value="">Select year level</option>
                         <option value="1st Year">1st Year</option>
@@ -182,7 +182,7 @@ defineOptions({
                         name="course_id"
                         required
                         :tabindex="6"
-                        class="h-9.5 sm:h-10 w-full truncate rounded-xl border border-slate-200 bg-white px-3.5 text-xs sm:text-sm font-semibold text-slate-900 shadow-xs transition outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+                        class="h-9.5 w-full truncate rounded-xl border border-slate-200 bg-white px-3.5 text-xs font-semibold text-slate-900 shadow-xs transition outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 disabled:cursor-not-allowed disabled:opacity-50 sm:h-10 sm:text-sm"
                     >
                         <option value="">Select course</option>
                         <option
@@ -215,7 +215,7 @@ defineOptions({
                         autocomplete="new-password"
                         name="password"
                         placeholder="Password"
-                        class="!h-9.5 sm:!h-10 !rounded-xl !border-slate-200 !bg-white !px-3.5 !text-xs sm:!text-sm !font-semibold !text-slate-900 !shadow-xs placeholder:!font-normal placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20"
+                        class="!h-9.5 !rounded-xl !border-slate-200 !bg-white !px-3.5 !text-xs !font-semibold !text-slate-900 !shadow-xs placeholder:!font-normal placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20 sm:!h-10 sm:!text-sm"
                     />
 
                     <InputError :message="errors.password" />
@@ -236,7 +236,7 @@ defineOptions({
                         autocomplete="new-password"
                         name="password_confirmation"
                         placeholder="Confirm password"
-                        class="!h-9.5 sm:!h-10 !rounded-xl !border-slate-200 !bg-white !px-3.5 !text-xs sm:!text-sm !font-semibold !text-slate-900 !shadow-xs placeholder:!font-normal placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20"
+                        class="!h-9.5 !rounded-xl !border-slate-200 !bg-white !px-3.5 !text-xs !font-semibold !text-slate-900 !shadow-xs placeholder:!font-normal placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20 sm:!h-10 sm:!text-sm"
                     />
 
                     <InputError :message="errors.password_confirmation" />
@@ -245,7 +245,7 @@ defineOptions({
 
             <Button
                 type="submit"
-                class="mt-1 h-10.5 sm:h-11 w-full rounded-xl bg-blue-700 text-xs sm:text-sm font-black text-white shadow-lg shadow-blue-700/25 transition hover:-translate-y-0.5 hover:bg-blue-800 hover:shadow-xl disabled:translate-y-0 disabled:opacity-70"
+                class="mt-1 h-10.5 w-full rounded-xl bg-blue-700 text-xs font-black text-white shadow-lg shadow-blue-700/25 transition hover:-translate-y-0.5 hover:bg-blue-800 hover:shadow-xl disabled:translate-y-0 disabled:opacity-70 sm:h-11 sm:text-sm"
                 tabindex="9"
                 :disabled="processing"
                 data-test="register-user-button"
@@ -255,7 +255,7 @@ defineOptions({
             </Button>
         </div>
 
-        <div class="text-center text-xs sm:text-sm font-medium text-slate-500">
+        <div class="text-center text-xs font-medium text-slate-500 sm:text-sm">
             Already have an account?
             <Link
                 :href="login()"

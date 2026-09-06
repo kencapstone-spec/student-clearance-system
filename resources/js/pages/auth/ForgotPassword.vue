@@ -33,7 +33,10 @@ defineProps<{
     <div class="space-y-6">
         <Form v-bind="email.form()" v-slot="{ errors, processing }">
             <div class="grid gap-1.5">
-                <Label for="email" class="text-xs font-bold text-slate-700 sm:text-xs sm:font-black">
+                <Label
+                    for="email"
+                    class="text-xs font-bold text-slate-700 sm:text-xs sm:font-black"
+                >
                     Email Address
                 </Label>
                 <Input
@@ -43,14 +46,14 @@ defineProps<{
                     autocomplete="off"
                     autofocus
                     placeholder="email@example.com"
-                    class="!h-10 sm:!h-10.5 !rounded-xl !border-slate-200 !bg-white !px-3.5 !text-xs sm:!text-sm !font-semibold !text-slate-900 !shadow-xs placeholder:!font-normal placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20"
+                    class="!h-10 !rounded-xl !border-slate-200 !bg-white !px-3.5 !text-xs !font-semibold !text-slate-900 !shadow-xs placeholder:!font-normal placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20 sm:!h-10.5 sm:!text-sm"
                 />
                 <InputError :message="errors.email" />
             </div>
 
             <div class="my-5 flex items-center justify-start">
                 <Button
-                    class="h-10.5 sm:h-11 w-full rounded-xl bg-blue-700 text-xs sm:text-sm font-black text-white shadow-lg shadow-blue-700/25 transition hover:-translate-y-0.5 hover:bg-blue-800 hover:shadow-xl disabled:translate-y-0 disabled:opacity-70"
+                    class="h-10.5 w-full rounded-xl bg-blue-700 text-xs font-black text-white shadow-lg shadow-blue-700/25 transition hover:-translate-y-0.5 hover:bg-blue-800 hover:shadow-xl disabled:translate-y-0 disabled:opacity-70 sm:h-11 sm:text-sm"
                     :disabled="processing"
                     data-test="email-password-reset-link-button"
                 >

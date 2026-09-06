@@ -14,6 +14,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (app()->runningUnitTests() || app()->environment('testing')) {
+            return;
+        }
+
         (new AppSettingSeeder)->run();
         (new CourseSeeder)->run();
         (new OfficeSeeder)->run();

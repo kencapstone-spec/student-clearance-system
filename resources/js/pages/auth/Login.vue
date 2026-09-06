@@ -59,7 +59,7 @@ defineProps<{
                     :tabindex="1"
                     autocomplete="username"
                     placeholder="Enter your Account ID"
-                    class="!h-10 sm:!h-10.5 !rounded-xl !border-slate-200 !bg-white !px-3.5 !text-xs sm:!text-sm !font-semibold !text-slate-900 !shadow-xs placeholder:!font-normal placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20"
+                    class="!h-10 !rounded-xl !border-slate-200 !bg-white !px-3.5 !text-xs !font-semibold !text-slate-900 !shadow-xs placeholder:!font-normal placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20 sm:!h-10.5 sm:!text-sm"
                 />
 
                 <InputError :message="errors.student_id" />
@@ -91,7 +91,7 @@ defineProps<{
                     :tabindex="2"
                     autocomplete="current-password"
                     placeholder="Enter your password"
-                    class="!h-10 sm:!h-10.5 !rounded-xl !border-slate-200 !bg-white !px-3.5 !text-xs sm:!text-sm !font-semibold !text-slate-900 !shadow-xs placeholder:!font-normal placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20"
+                    class="!h-10 !rounded-xl !border-slate-200 !bg-white !px-3.5 !text-xs !font-semibold !text-slate-900 !shadow-xs placeholder:!font-normal placeholder:!text-slate-400 focus-visible:!border-blue-500 focus-visible:!ring-blue-500/20 sm:!h-10.5 sm:!text-sm"
                 />
 
                 <InputError :message="errors.password" />
@@ -100,7 +100,7 @@ defineProps<{
             <div class="flex items-center justify-between">
                 <Label
                     for="remember"
-                    class="flex items-center space-x-2.5 text-xs sm:text-sm font-semibold text-slate-600"
+                    class="flex items-center space-x-2.5 text-xs font-semibold text-slate-600 sm:text-sm"
                 >
                     <Checkbox id="remember" name="remember" :tabindex="3" />
                     <span>Remember me</span>
@@ -109,7 +109,7 @@ defineProps<{
 
             <Button
                 type="submit"
-                class="mt-1 h-10.5 sm:h-11 w-full rounded-xl bg-blue-700 text-xs sm:text-sm font-black text-white shadow-lg shadow-blue-700/25 transition hover:-translate-y-0.5 hover:bg-blue-800 hover:shadow-xl disabled:translate-y-0 disabled:opacity-70"
+                class="mt-1 h-10.5 w-full rounded-xl bg-blue-700 text-xs font-black text-white shadow-lg shadow-blue-700/25 transition hover:-translate-y-0.5 hover:bg-blue-800 hover:shadow-xl disabled:translate-y-0 disabled:opacity-70 sm:h-11 sm:text-sm"
                 :tabindex="4"
                 :disabled="processing"
                 data-test="login-button"
@@ -120,7 +120,7 @@ defineProps<{
         </div>
 
         <div
-            class="text-center text-xs sm:text-sm font-medium text-slate-500"
+            class="text-center text-xs font-medium text-slate-500 sm:text-sm"
             v-if="canRegister"
         >
             Don't have an account?

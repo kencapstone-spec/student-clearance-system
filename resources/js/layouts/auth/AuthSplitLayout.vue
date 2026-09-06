@@ -62,9 +62,7 @@ defineProps<{
                         >
                             Talibon Polytechnic College
                         </p>
-                        <p
-                            class="text-sm font-black tracking-tight text-white"
-                        >
+                        <p class="text-sm font-black tracking-tight text-white">
                             Student Clearance System
                         </p>
                     </div>
@@ -92,11 +90,17 @@ defineProps<{
                         College President.
                     </p>
 
-                    <div class="mt-6 grid max-w-xl grid-cols-3 gap-2.5 xl:gap-3">
+                    <div
+                        class="mt-6 grid max-w-xl grid-cols-3 gap-2.5 xl:gap-3"
+                    >
                         <div
-                            class="rounded-2xl border border-white/15 bg-white/10 p-3 xl:p-3.5 backdrop-blur-xl"
+                            class="rounded-2xl border border-white/15 bg-white/10 p-3 backdrop-blur-xl xl:p-3.5"
                         >
-                            <p class="text-xl font-black text-white xl:text-2xl">4</p>
+                            <p
+                                class="text-xl font-black text-white xl:text-2xl"
+                            >
+                                4
+                            </p>
                             <p
                                 class="mt-0.5 text-[11px] font-semibold tracking-wide text-blue-100 uppercase"
                             >
@@ -105,9 +109,13 @@ defineProps<{
                         </div>
 
                         <div
-                            class="rounded-2xl border border-white/15 bg-white/10 p-3 xl:p-3.5 backdrop-blur-xl"
+                            class="rounded-2xl border border-white/15 bg-white/10 p-3 backdrop-blur-xl xl:p-3.5"
                         >
-                            <p class="text-xl font-black text-white xl:text-2xl">QR</p>
+                            <p
+                                class="text-xl font-black text-white xl:text-2xl"
+                            >
+                                QR
+                            </p>
                             <p
                                 class="mt-0.5 text-[11px] font-semibold tracking-wide text-blue-100 uppercase"
                             >
@@ -116,9 +124,13 @@ defineProps<{
                         </div>
 
                         <div
-                            class="rounded-2xl border border-white/15 bg-white/10 p-3 xl:p-3.5 backdrop-blur-xl"
+                            class="rounded-2xl border border-white/15 bg-white/10 p-3 backdrop-blur-xl xl:p-3.5"
                         >
-                            <p class="text-xl font-black text-white xl:text-2xl">CSV</p>
+                            <p
+                                class="text-xl font-black text-white xl:text-2xl"
+                            >
+                                CSV
+                            </p>
                             <p
                                 class="mt-0.5 text-[11px] font-semibold tracking-wide text-blue-100 uppercase"
                             >
@@ -128,10 +140,12 @@ defineProps<{
                     </div>
 
                     <div
-                        class="mt-6 rounded-2xl border border-white/15 bg-white/10 p-3.5 xl:p-4 shadow-xl shadow-blue-950/20 backdrop-blur-xl"
+                        class="mt-6 rounded-2xl border border-white/15 bg-white/10 p-3.5 shadow-xl shadow-blue-950/20 backdrop-blur-xl xl:p-4"
                     >
                         <div class="grid gap-2.5 sm:grid-cols-2">
-                            <div class="flex gap-2.5 rounded-xl bg-white/10 p-3">
+                            <div
+                                class="flex gap-2.5 rounded-xl bg-white/10 p-3"
+                            >
                                 <div
                                     class="flex size-8.5 shrink-0 items-center justify-center rounded-lg bg-white text-blue-700"
                                 >
@@ -150,7 +164,9 @@ defineProps<{
                                 </div>
                             </div>
 
-                            <div class="flex gap-2.5 rounded-xl bg-white/10 p-3">
+                            <div
+                                class="flex gap-2.5 rounded-xl bg-white/10 p-3"
+                            >
                                 <div
                                     class="flex size-8.5 shrink-0 items-center justify-center rounded-lg bg-white text-green-700"
                                 >
@@ -169,7 +185,9 @@ defineProps<{
                                 </div>
                             </div>
 
-                            <div class="flex gap-2.5 rounded-xl bg-white/10 p-3">
+                            <div
+                                class="flex gap-2.5 rounded-xl bg-white/10 p-3"
+                            >
                                 <div
                                     class="flex size-8.5 shrink-0 items-center justify-center rounded-lg bg-white text-purple-700"
                                 >
@@ -188,7 +206,9 @@ defineProps<{
                                 </div>
                             </div>
 
-                            <div class="flex gap-2.5 rounded-xl bg-white/10 p-3">
+                            <div
+                                class="flex gap-2.5 rounded-xl bg-white/10 p-3"
+                            >
                                 <div
                                     class="flex size-8.5 shrink-0 items-center justify-center rounded-lg bg-white text-orange-700"
                                 >
@@ -231,7 +251,9 @@ defineProps<{
                 ></div>
             </div>
 
-            <div class="relative z-10 my-auto w-full max-w-md sm:max-w-lg lg:max-w-xl">
+            <div
+                class="relative z-10 my-auto w-full max-w-md sm:max-w-lg lg:max-w-xl"
+            >
                 <div class="mb-4 text-center lg:hidden">
                     <Link
                         :href="home()"
@@ -266,7 +288,7 @@ defineProps<{
                     <div class="mb-4 sm:mb-5">
                         <div class="mb-2.5 flex items-center justify-center">
                             <div
-                                class="flex size-9 sm:size-10 items-center justify-center rounded-xl bg-blue-50 text-blue-700"
+                                class="flex size-9 items-center justify-center rounded-xl bg-blue-50 text-blue-700 sm:size-10"
                             >
                                 <FileCheck2 class="size-5" />
                             </div>
@@ -274,14 +296,14 @@ defineProps<{
 
                         <h1
                             v-if="title"
-                            class="text-center text-xl sm:text-2xl font-black tracking-tight text-slate-950"
+                            class="text-center text-xl font-black tracking-tight text-slate-950 sm:text-2xl"
                         >
                             {{ title }}
                         </h1>
 
                         <p
                             v-if="description"
-                            class="mt-1 text-center text-xs sm:text-sm leading-5 text-slate-500"
+                            class="mt-1 text-center text-xs leading-5 text-slate-500 sm:text-sm"
                         >
                             {{ description }}
                         </p>
