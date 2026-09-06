@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\AppSetting;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -65,7 +66,15 @@ class HandleInertiaRequests extends Middleware
 
         $studentClearance = null;
         if ($user && $user->role === 'student') {
-            $latestClearance = $user->clearanceRequests()->latest()->first(['id', 'status']);
+            $activeSemester = AppSetting::get('active_semester', '1st Semester');
+            $activeSchoolYear = AppSetting::get('active_school_year', '2026-2027');
+
+            $latestClearance = $user->clearanceRequests()
+                ->where('semester', $activeSemester)
+                ->where('school_year', $activeSchoolYear)
+                ->latest()
+                ->first(['id', 'status']);
+
             if ($latestClearance) {
                 $studentClearance = [
                     'id' => $latestClearance->id,

@@ -2,6 +2,7 @@
 import { Link, router, usePage } from '@inertiajs/vue3';
 import {
     ChevronRight,
+    ClipboardCheck,
     FilePlus,
     FileText,
     GraduationCap,
@@ -79,19 +80,24 @@ const canPrintReceipt = computed(() => {
         return false;
     }
 
-    if (studentClearance.value?.is_cleared) {
-        return true;
+    // When on the student dashboard, the active term's clearanceRequest is authoritative
+    if (currentUrl.value === '/dashboard') {
+        return dashboardClearance.value?.status === 'cleared';
     }
 
-    if (dashboardClearance.value?.status === 'cleared') {
-        return true;
-    }
-
-    return false;
+    return Boolean(studentClearance.value?.is_cleared);
 });
 
 const receiptClearanceId = computed(() => {
-    return studentClearance.value?.id ?? dashboardClearance.value?.id ?? null;
+    if (currentUrl.value === '/dashboard') {
+        return dashboardClearance.value?.status === 'cleared'
+            ? dashboardClearance.value.id
+            : null;
+    }
+
+    return studentClearance.value?.is_cleared
+        ? studentClearance.value.id
+        : null;
 });
 
 const currentUrl = computed(() => page.url?.split('?')[0] ?? '');

@@ -6,13 +6,41 @@
 
         {{-- Suppress external extension / DevTools performance observer error --}}
         <script>
-            window.addEventListener('error', function(e) {
-                if (e.message && (e.message.indexOf('startTime') !== -1 || e.message.indexOf('reportAllChanges') !== -1)) {
-                    e.stopImmediatePropagation();
-                    e.preventDefault();
-                    return true;
+            (function() {
+                function isExtensionNoise(val) {
+                    if (!val) return false;
+                    var str = typeof val === 'object' ? (val.message || val.stack || '') : String(val);
+                    return str.indexOf('startTime') !== -1 ||
+                           str.indexOf('reportAllChanges') !== -1 ||
+                           str.indexOf('chrome-extension://') !== -1 ||
+                           str.indexOf('moz-extension://') !== -1;
                 }
-            }, true);
+
+                window.addEventListener('error', function(e) {
+                    if (isExtensionNoise(e.message) || isExtensionNoise(e.error) || (e.filename && isExtensionNoise(e.filename))) {
+                        e.stopImmediatePropagation();
+                        e.preventDefault();
+                        return true;
+                    }
+                }, true);
+
+                window.addEventListener('unhandledrejection', function(e) {
+                    if (isExtensionNoise(e.reason)) {
+                        e.stopImmediatePropagation();
+                        e.preventDefault();
+                    }
+                }, true);
+
+                var origError = console.error;
+                console.error = function() {
+                    for (var i = 0; i < arguments.length; i++) {
+                        if (isExtensionNoise(arguments[i])) {
+                            return;
+                        }
+                    }
+                    origError.apply(console, arguments);
+                };
+            })();
         </script>
 
         {{-- Inline script to detect system dark mode preference and apply it immediately --}}

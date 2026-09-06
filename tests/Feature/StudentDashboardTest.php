@@ -92,3 +92,51 @@ test('student can mark rejected clearance as complied', function () {
     $response->assertRedirect()->assertSessionHas('success');
     expect($approval->fresh()->status)->toBe('pending');
 });
+
+test('studentClearance prop is null when active term has no clearance even if previous term was cleared', function () {
+    \App\Models\AppSetting::set('active_semester', '1st Semester');
+    \App\Models\AppSetting::set('active_school_year', '2026-2027');
+
+    $student = User::factory()->create(['role' => 'student']);
+
+    // Previous semester cleared request
+    ClearanceRequest::factory()->create([
+        'user_id' => $student->id,
+        'semester' => '2nd Semester',
+        'school_year' => '2025-2026',
+        'status' => 'cleared',
+    ]);
+
+    $response = $this->actingAs($student)->get('/dashboard');
+
+    $response->assertStatus(200)
+        ->assertInertia(fn ($page) => $page
+            ->component('Dashboard')
+            ->where('studentClearance', null)
+            ->where('clearanceRequest', null)
+        );
+});
+
+test('studentClearance prop is cleared when current active term is cleared', function () {
+    \App\Models\AppSetting::set('active_semester', '1st Semester');
+    \App\Models\AppSetting::set('active_school_year', '2026-2027');
+
+    $student = User::factory()->create(['role' => 'student']);
+
+    $clearedRequest = ClearanceRequest::factory()->create([
+        'user_id' => $student->id,
+        'semester' => '1st Semester',
+        'school_year' => '2026-2027',
+        'status' => 'cleared',
+    ]);
+
+    $response = $this->actingAs($student)->get('/dashboard');
+
+    $response->assertStatus(200)
+        ->assertInertia(fn ($page) => $page
+            ->component('Dashboard')
+            ->where('studentClearance.id', $clearedRequest->id)
+            ->where('studentClearance.is_cleared', true)
+        );
+});
+
