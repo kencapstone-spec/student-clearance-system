@@ -76,3 +76,21 @@ test('password cannot be reset with invalid token', function () {
 
     $response->assertSessionHasErrors('email');
 });
+
+test('forgot password handles mail delivery failure gracefully without 500 error', function () {
+    $user = User::factory()->create();
+
+    // Mock Mail facade to throw a TransportException
+    Illuminate\Support\Facades\Mail::shouldReceive('mailer')
+        ->andThrow(new \Symfony\Component\Mailer\Exception\TransportException('SMTP Connection timed out'));
+
+    $response = $this->from(route('password.request'))->post(route('password.email'), [
+        'email' => $user->email,
+    ]);
+
+    $response
+        ->assertStatus(302)
+        ->assertRedirect(route('password.request'))
+        ->assertSessionHasErrors('email');
+});
+

@@ -57,5 +57,9 @@ services:
         sync: false
       - key: MAIL_FROM_NAME
         value: "Student Clearance System"
+      - key: MAIL_TIMEOUT
+        value: 10
+      - key: RESEND_API_KEY
+        sync: false
       - key: CRON_SECRET
         generateValue: true
