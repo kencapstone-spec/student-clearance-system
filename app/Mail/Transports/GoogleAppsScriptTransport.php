@@ -53,11 +53,7 @@ class GoogleAppsScriptTransport extends AbstractTransport
         }
 
         $client = new Client([
-            'allow_redirects' => [
-                'max' => 5,
-                'strict' => true,
-                'protocols' => ['http', 'https'],
-            ],
+            'allow_redirects' => true,
             'timeout' => 15,
         ]);
 
