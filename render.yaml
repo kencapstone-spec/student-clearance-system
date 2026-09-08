@@ -61,5 +61,7 @@ services:
         value: 10
       - key: RESEND_API_KEY
         sync: false
+      - key: GMAIL_RELAY_URL
+        sync: false
       - key: CRON_SECRET
         generateValue: true

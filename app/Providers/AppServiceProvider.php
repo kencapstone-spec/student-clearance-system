@@ -26,6 +26,17 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->configureDefaults();
         $this->forceHttpsWhenUsingSecureAppUrl();
+        $this->registerGoogleAppsScriptMailer();
+    }
+
+    protected function registerGoogleAppsScriptMailer(): void
+    {
+        \Illuminate\Support\Facades\Mail::extend('gas', function (array $config = []) {
+            return new \App\Mail\Transports\GoogleAppsScriptTransport(
+                $config['endpoint'] ?? (string) env('GMAIL_RELAY_URL', ''),
+                $config['secret'] ?? env('GMAIL_RELAY_SECRET')
+            );
+        });
     }
 
     protected function configureDefaults(): void

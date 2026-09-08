@@ -65,6 +65,12 @@ return [
             'transport' => 'resend',
         ],
 
+        'gas' => [
+            'transport' => 'gas',
+            'endpoint' => env('GMAIL_RELAY_URL'),
+            'secret' => env('GMAIL_RELAY_SECRET'),
+        ],
+
         'sendmail' => [
             'transport' => 'sendmail',
             'path' => env('MAIL_SENDMAIL_PATH', '/usr/sbin/sendmail -bs -i'),
