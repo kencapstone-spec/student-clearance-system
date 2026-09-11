@@ -20,6 +20,7 @@ import {
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { dashboard, login, register } from '@/routes';
 import type { Auth } from '@/types/auth';
+import tpcLogo from '../../images/tpc-logo.webp';
 
 withDefaults(
     defineProps<{
@@ -86,7 +87,7 @@ onUnmounted(() => {
                 >
                     <div class="flex min-w-0 items-center gap-2 sm:gap-3">
                         <img
-                            src="/images/tpc-logo.webp"
+                            :src="tpcLogo"
                             alt="Talibon Polytechnic College Logo"
                             class="size-9 shrink-0 rounded-full object-cover sm:size-11"
                         />

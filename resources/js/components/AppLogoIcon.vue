@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { HTMLAttributes } from 'vue';
+import tpcLogo from '../../images/tpc-logo.webp';
 
 defineOptions({
     inheritAttrs: false,
@@ -15,7 +16,7 @@ defineProps<Props>();
 <template>
     <!-- TPC Logo -->
     <img
-        src="/images/tpc-logo.webp"
+        :src="tpcLogo"
         alt="Talibon Polytechnic College Logo"
         :class="className"
         v-bind="$attrs"

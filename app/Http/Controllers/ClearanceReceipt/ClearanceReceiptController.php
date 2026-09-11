@@ -150,7 +150,7 @@ class ClearanceReceiptController extends Controller
         $student = $clearanceRequest->user;
         $course = $student?->course;
 
-        $headerImageDataUri = $this->imageToDataUri(public_path('images/header_receipt.jpg'));
+        $headerImageDataUri = $this->imageToDataUri(resource_path('images/header_receipt.jpg'));
         $qrCodeDataUri = $this->qrCodeToDataUri($verificationUrl);
 
         $submittedAt = $clearanceRequest->submitted_at?->format('F d, Y h:i A') ?? 'N/A';
