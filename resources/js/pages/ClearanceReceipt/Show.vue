@@ -2,7 +2,6 @@
 import { Head, router } from '@inertiajs/vue3';
 import QRCode from 'qrcode';
 import { onMounted, ref } from 'vue';
-import headerReceipt from '../../../images/header_receipt.jpg';
 
 type ClearanceRequest = {
     id: number;
@@ -34,6 +33,7 @@ const props = defineProps<{
     student: Student;
     regularApprovals: Approval[];
     presidentApproval: Approval | null;
+    headerImageDataUri?: string | null;
 }>();
 
 const qrCodeDataUrl = ref<string | null>(null);
@@ -509,7 +509,7 @@ const goBack = () => {
                 class="receipt-page rounded-xl bg-white p-5 shadow print:rounded-none print:p-0 print:shadow-none"
             >
                 <img
-                    :src="headerReceipt"
+                    :src="props.headerImageDataUri || ''"
                     alt="Talibon Polytechnic College"
                     class="receipt-header-image mb-3 h-[72px] w-full object-fill"
                 />

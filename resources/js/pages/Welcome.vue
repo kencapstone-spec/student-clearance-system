@@ -20,7 +20,7 @@ import {
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { dashboard, login, register } from '@/routes';
 import type { Auth } from '@/types/auth';
-import tpcLogo from '../../images/tpc-logo.webp';
+import tpcLogo from '../../../storage/app/private/images/tpc-logo.webp';
 
 withDefaults(
     defineProps<{

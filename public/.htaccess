@@ -4,13 +4,16 @@ Options -Indexes -MultiViews
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
-    # Block direct requests to /storage and /images
-    RewriteRule ^storage(/.*)?$ - [R=404,L]
-    RewriteRule ^images(/.*)?$ - [R=404,L]
+    # Block direct requests to any .php file
+    RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s/[^?]*\.php [NC]
+    RewriteRule ^ - [R=404,L]
+
+    # Block direct requests to internal directories
+    RewriteRule ^(resources|storage|images|app|bootstrap|config|database|routes|tests|vendor)(/.*)?$ - [R=404,L]
 
     # Block access to hidden or sensitive files
     RewriteRule ^\.(?!well-known).* - [F,L]
-    RewriteRule \.(env|git|sql|log|sh|bak|config)$ - [F,L]
+    RewriteRule \.(env|git|sql|log|sh|bak|config|md|yml|yaml|json)$ - [F,L]
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .

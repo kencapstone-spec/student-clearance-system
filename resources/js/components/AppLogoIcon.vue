@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { HTMLAttributes } from 'vue';
-import tpcLogo from '../../images/tpc-logo.webp';
+import tpcLogo from '../../../storage/app/private/images/tpc-logo.webp';
 
 defineOptions({
     inheritAttrs: false,
