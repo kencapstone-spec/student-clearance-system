@@ -12,6 +12,7 @@ WORKDIR /var/www/html
 
 # Copy application files
 COPY . /var/www/html
+COPY docker/nginx/security.conf /etc/nginx/server-opts.d/security.conf
 
 # Provide a temporary .env template for build-time tools (like wayfinder)
 RUN cp -n .env.example .env
@@ -32,6 +33,7 @@ RUN mkdir -p /var/www/html/storage/framework/cache/data \
              /var/www/html/storage/framework/views \
              /var/www/html/storage/logs \
              /var/www/html/bootstrap/cache \
+    && rm -rf /var/www/html/public/storage \
     && chown -R www-data:www-data /var/www/html \
     && chmod -R 777 /var/www/html/storage /var/www/html/bootstrap/cache
 
@@ -41,7 +43,7 @@ ENV PHP_OPCACHE_ENABLE=1 \
     AUTORUN_LARAVEL_MIGRATION=true \
     AUTORUN_LARAVEL_MIGRATION_FORCE=true \
     AUTORUN_LARAVEL_MIGRATION_SEED=true \
-    AUTORUN_LARAVEL_STORAGE_LINK=true \
+    AUTORUN_LARAVEL_STORAGE_LINK=false \
     AUTORUN_LARAVEL_CONFIG_CACHE=true \
     AUTORUN_LARAVEL_ROUTE_CACHE=true \
     AUTORUN_LARAVEL_VIEW_CACHE=true \

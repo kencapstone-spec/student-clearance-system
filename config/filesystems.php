@@ -68,13 +68,14 @@ return [
     |--------------------------------------------------------------------------
     |
     | Here you may configure the symbolic links that will be created when the
-    | `storage:link` Artisan command is executed. The array keys should be
-    | the locations of the links and the values should be their targets.
+    | `storage:link` Artisan command is executed.
+    |
+    | Kept empty for security hardening: user files/storage must not be
+    | linked directly to the public web root to prevent unauthorized access
+    | and arbitrary upload execution.
     |
     */
 
-    'links' => [
-        public_path('storage') => storage_path('app/public'),
-    ],
+    'links' => [],
 
 ];

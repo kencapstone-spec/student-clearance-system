@@ -1,9 +1,15 @@
-<IfModule mod_rewrite.c>
-    <IfModule mod_negotiation.c>
-        Options -MultiViews -Indexes
-    </IfModule>
+# Disable directory browsing
+Options -Indexes -MultiViews
 
+<IfModule mod_rewrite.c>
     RewriteEngine On
+
+    # Block direct requests to /storage
+    RewriteRule ^storage(/.*)?$ - [R=404,L]
+
+    # Block access to hidden or sensitive files
+    RewriteRule ^\.(?!well-known).* - [F,L]
+    RewriteRule \.(env|git|sql|log|sh|bak|config)$ - [F,L]
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
@@ -22,4 +28,12 @@
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
+</IfModule>
+
+# Security Headers
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
 </IfModule>
